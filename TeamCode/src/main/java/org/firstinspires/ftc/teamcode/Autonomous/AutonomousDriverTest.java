@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 
 /**
@@ -18,6 +19,8 @@ public class AutonomousDriverTest extends LinearOpMode {
     public void runOpMode() {
 
         robot.init(hardwareMap);
+        CommonLibrary cl = new CommonLibrary();
+        cl.declareRobot(robot);
         waitForStart();
 
         while (opModeIsActive()) {

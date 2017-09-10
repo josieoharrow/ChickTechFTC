@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 
 /**
@@ -20,6 +21,8 @@ public class TeleOpDriver extends OpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+        CommonLibrary cl = new CommonLibrary();
+        cl.declareRobot(robot);
     }
 
     /*

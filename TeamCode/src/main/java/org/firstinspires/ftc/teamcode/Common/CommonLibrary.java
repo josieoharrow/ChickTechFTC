@@ -7,7 +7,7 @@ public class CommonLibrary {
 
     RobotHardware robot   = new RobotHardware();
 
-    void declareRobot(RobotHardware robotSent) {
+    public void declareRobot(RobotHardware robotSent) {
 
         robot = robotSent;
     }
