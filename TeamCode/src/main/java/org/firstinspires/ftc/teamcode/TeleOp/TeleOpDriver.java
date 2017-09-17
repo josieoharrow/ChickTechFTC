@@ -23,6 +23,8 @@ public class TeleOpDriver extends OpMode {
         robot.init(hardwareMap);
         CommonLibrary cl = new CommonLibrary();
         cl.declareRobot(robot);
+        TeleOpLibrary tol = new TeleOpLibrary();
+        tol.declareRobot(robot);
     }
 
     /*

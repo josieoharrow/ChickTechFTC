@@ -10,19 +10,25 @@ public class RobotHardware {
 
     /* Public OpMode members. */
     public DcMotor leftMotor;
+    public DcMotor rightMotor;
+    public DcMotor frontMotor;
+    public DcMotor backMotor;
+
     /* local OpMode members. */
     HardwareMap hardwareMap;
 
     /* Constructor */
-    public RobotHardware(){
+    public RobotHardware() {
     }
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap hwMap) {
 
-        hardwareMap = hwMap;
-
         // Define and Initialize
+        hardwareMap = hwMap;
         leftMotor   = hardwareMap.dcMotor.get("left_drive");
+        rightMotor  = hardwareMap.dcMotor.get("right_drive");
+        frontMotor  = hardwareMap.dcMotor.get("front_drive");
+        backMotor   = hardwareMap.dcMotor.get("back_drive");
     }
 }

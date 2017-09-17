@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 
 /**
@@ -7,10 +9,19 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
  */
 public class AutonomousLibrary {
 
-    RobotHardware robot   = new RobotHardware();
+    RobotHardware robot;
+    HardwareMap hardwareMap;
 
-    void declareRobot(RobotHardware robotSent) {
+    public void declareRobot(RobotHardware robotSent) {
 
         robot = robotSent;
+    }
+
+    public void init() {
+        robot.init(hardwareMap);
+    }
+
+    public void motorsOn(){
+        robot.frontMotor.setPower(1);
     }
 }

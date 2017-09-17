@@ -21,6 +21,8 @@ public class AutonomousDriverTest extends LinearOpMode {
         robot.init(hardwareMap);
         CommonLibrary cl = new CommonLibrary();
         cl.declareRobot(robot);
+        AutonomousLibrary al = new AutonomousLibrary();
+        al.declareRobot(robot);
         waitForStart();
 
         while (opModeIsActive()) {
