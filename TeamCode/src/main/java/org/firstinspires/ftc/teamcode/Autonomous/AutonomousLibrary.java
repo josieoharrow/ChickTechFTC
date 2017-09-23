@@ -19,7 +19,7 @@ public class AutonomousLibrary {
     RobotHardware robot;
     HardwareMap hardwareMap;
     VuforiaLocalizer vuforia;
-    public String pictoKey = "unknown";
+    public static String pictoKey = "unknown";
 
 
 
