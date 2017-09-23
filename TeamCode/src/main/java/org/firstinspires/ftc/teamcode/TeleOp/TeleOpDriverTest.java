@@ -46,46 +46,12 @@ public class TeleOpDriverTest extends OpMode {
      */
     @Override
     public void loop() {
+        TeleOpLibrary tol = new TeleOpLibrary();
+        tol.declareRobot(robot);
 
-        if (gamepad1.y)
-            robot.frontMotor.setPower(1);
-        else
-            robot.frontMotor.setPower(0);
-
-        if (gamepad1.x)
-            robot.leftMotor.setPower(1);
-        else
-            robot.leftMotor.setPower(0);
-
-        if (gamepad1.a)
-            robot.backMotor.setPower(1);
-        else
-            robot.backMotor.setPower(0);
-
-        if (gamepad1.b)
-            robot.rightMotor.setPower(1);
-        else
-            robot.rightMotor.setPower(0);
-
-        if (gamepad1.dpad_up)
-            robot.frontMotor.setPower(-1);
-        else
-            robot.frontMotor.setPower(0);
-
-        if (gamepad1.dpad_left)
-            robot.leftMotor.setPower(-1);
-        else
-            robot.leftMotor.setPower(0);
-
-        if (gamepad1.dpad_down)
-            robot.backMotor.setPower(-1);
-        else
-            robot.backMotor.setPower(0);
-
-        if (gamepad1.dpad_right)
-            robot.rightMotor.setPower(-1);
-        else
-            robot.rightMotor.setPower(0);
+        tol.rotationJoystick(gamepad1);
+        tol.movementForwardJoystickTest(gamepad1);
+        tol.movementSidewaysJoystickTest(gamepad1);
 
     }
 
