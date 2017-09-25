@@ -1,15 +1,15 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -31,10 +31,19 @@ public class AutonomousLibrary {
 
     public void init() {
         robot.init(hardwareMap);
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        robot.imu = hardwareMap.get(BNO055IMU.class, "imu");
+        robot.imu.initialize(parameters);
     }
 
     public void motorsOn(){
-        robot.frontMotor.setPower(1);
+        robot.frontRightMotor.setPower(1);
     }
 
     public static void pictoDecipher(Telemetry telemetry){

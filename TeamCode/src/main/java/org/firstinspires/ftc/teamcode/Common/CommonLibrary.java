@@ -20,6 +20,6 @@ public class CommonLibrary {
     }
 
     public void motorsOn(){
-        robot.frontMotor.setPower(1);
+        robot.frontRightMotor.setPower(1);
     }
 }

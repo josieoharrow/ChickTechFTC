@@ -49,9 +49,9 @@ public class TeleOpDriverTest extends OpMode {
         TeleOpLibrary tol = new TeleOpLibrary();
         tol.declareRobot(robot);
 
-        tol.rotationJoystick(gamepad1);
-        tol.movementForwardJoystickTest(gamepad1);
-        tol.movementSidewaysJoystickTest(gamepad1);
+        tol.translateLeftStickToRotation(gamepad1);
+        tol.gyroTelemetry(gamepad1, telemetry);
+        tol.translateRightStickToSliding(gamepad1);
 
     }
 
