@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -21,8 +23,8 @@ public class AutonomousLibrary {
     static VuforiaLocalizer vuforia;
     public static String pictoKey = "unknown";
 
-
-
+    static double SLOWING_INCHES_THRESHOLD = 10;
+    static double DRIVING_POWER_SLOW_MODIFIER = 0.5;
 
     public void declareRobot(RobotHardware robotSent) {
 
@@ -74,4 +76,89 @@ public class AutonomousLibrary {
         }
         telemetry.update();
     }
+
+    public void driveAtAngle(double distance, double angle, Telemetry telemetry) {
+
+        runUsingEncoders();
+        double wheelPowerAngle = 90 - angle;
+
+        double xInput = Math.cos(wheelPowerAngle);
+        double yInput = Math.sin(wheelPowerAngle);
+        double flPower = (Range.clip((yInput - xInput), -1, 1));
+        double frPower = (Range.clip((yInput + xInput), -1, 1));
+        double rrPower = (Range.clip((yInput - xInput), -1, 1));
+        double rlPower = (Range.clip((yInput + xInput), -1, 1));
+        //ok to here
+        DcMotor motorToCheck = null;
+        robot.frontLeftMotor.setPower(flPower);
+        robot.frontRightMotor.setPower(frPower);
+        robot.rearRightMotor.setPower(rrPower);
+        robot.rearLeftMotor.setPower(rlPower);
+
+        if (robot.frontLeftMotor.getPower() == 1) {
+            motorToCheck = robot.frontLeftMotor;
+        } else {
+            motorToCheck = robot.frontRightMotor;
+        }
+        double distanceRemaining = Math.abs(Math.abs(convertEncoderTicksToInches((double) motorToCheck.getCurrentPosition())) - distance);
+        telemetry.addData("distanc lef ", distanceRemaining);
+        telemetry.update();
+        
+        while (distanceRemaining > SLOWING_INCHES_THRESHOLD) {
+
+            distanceRemaining = Math.abs(convertEncoderTicksToInches((double)motorToCheck.getCurrentPosition())) - distance;
+        }
+        while (distanceRemaining > 0) {
+            robot.frontLeftMotor.setPower(flPower * DRIVING_POWER_SLOW_MODIFIER);
+            robot.frontRightMotor.setPower(frPower * DRIVING_POWER_SLOW_MODIFIER);
+            robot.rearRightMotor.setPower(rrPower * DRIVING_POWER_SLOW_MODIFIER);
+            robot.rearLeftMotor.setPower(rlPower * DRIVING_POWER_SLOW_MODIFIER);
+            distanceRemaining = Math.abs(convertEncoderTicksToInches((double)motorToCheck.getCurrentPosition())) - distance;
+        }
+
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower(0);
+        robot.rearRightMotor.setPower(0);
+        robot.rearLeftMotor.setPower(0);
+        resetMotorEncoders();
+    }
+
+    double convertEncoderValuesToLinearDrivingInches(double drivingAngle, double encoderValue) {
+
+        double wheelToDrivingAngle = 45 - drivingAngle;
+        double modifiedEncoderTicks = encoderValue * Math.cos(wheelToDrivingAngle);
+        return convertEncoderTicksToInches(modifiedEncoderTicks);
+    }
+
+    double convertEncoderTicksToInches(double encoderTicks) {
+
+        double rotationCount = encoderTicks / 1440;
+        return rotationCount * Math.PI * 4;
+    }
+
+    public void resetMotorEncoders() {
+
+        robot.frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rearRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rearLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public void runUsingEncoders() {
+
+        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void RunWithoutEncoders() {
+
+        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
 }
+
+

@@ -2,11 +2,9 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
-import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoDecipher;
 
 
 /**
@@ -31,7 +29,11 @@ public class AutonomousDriverTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            pictoDecipher(telemetry);
+            //pictoDecipher(telemetry);
+            al.driveAtAngle(10, 0, telemetry);
+            al.driveAtAngle(10, 90, telemetry);
+            al.driveAtAngle(10, 180, telemetry);
+            al.driveAtAngle(10, 270, telemetry);
         }
     }
 }
