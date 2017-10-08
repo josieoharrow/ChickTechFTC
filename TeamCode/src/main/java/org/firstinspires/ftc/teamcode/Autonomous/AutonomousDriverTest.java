@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoDecipher;
+import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.initial;
 
 
 /**
@@ -22,16 +23,18 @@ public class AutonomousDriverTest extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        robot.init(hardwareMap);
-        CommonLibrary cl = new CommonLibrary();
-        cl.declareRobot(robot);
-        AutonomousLibrary al = new AutonomousLibrary();
-        al.declareRobot(robot);
+        initial(hardwareMap);
         waitForStart();
 
-        while (opModeIsActive()) {
+        while (opModeIsActive()){
 
-            pictoDecipher(telemetry);
+            pictoDecipher(telemetry, hardwareMap);
+
+
         }
+
+
+
+
     }
 }
