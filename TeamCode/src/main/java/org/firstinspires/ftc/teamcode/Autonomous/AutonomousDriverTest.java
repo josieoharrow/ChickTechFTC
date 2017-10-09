@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 public class AutonomousDriverTest extends LinearOpMode {
 
     RobotHardware robot   = new RobotHardware();
+    boolean runLinearCode = true;
 
 
     @Override
@@ -28,12 +29,19 @@ public class AutonomousDriverTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+           // al.MotorEncoderTest(telemetry);
+            if (runLinearCode) {
+                //pictoDecipher(telemetry);
+                al.driveAtAngle(10, 0, telemetry,this);
+               // al.driveAtAngle(10, 90, telemetry, this);
+              //  al.driveAtAngle(10, 180, telemetry, this);
+            //    al.driveAtAngle(10, 270, telemetry, this);
 
-            //pictoDecipher(telemetry);
-            al.driveAtAngle(10, 0, telemetry);
-            al.driveAtAngle(10, 90, telemetry);
-            al.driveAtAngle(10, 180, telemetry);
-            al.driveAtAngle(10, 270, telemetry);
+
+            }
+            runLinearCode = false;
+
+
         }
     }
 }
