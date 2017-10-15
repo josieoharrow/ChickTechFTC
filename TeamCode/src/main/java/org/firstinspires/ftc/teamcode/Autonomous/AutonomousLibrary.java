@@ -66,7 +66,7 @@ public class AutonomousLibrary {
         relicTemplate.setName("relicVuMarkTemplate");
         relicTrackables.activate();
 
-        while (vuMarkSeen == "no") { // While the vumark has not been seen
+        while ("no".equals(vuMarkSeen)) { // While the vumark has not been seen
 
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
 
@@ -76,7 +76,7 @@ public class AutonomousLibrary {
                     pictoKey = "left"; //Record that the pictograph is the left one
                     telemetry.addData("VuMark", "%s visible", vuMark); //Display which vumark has been seen
 
-                    if (pictoKey == "left"){ //See if it's been recorded that the pictograph is the left one
+                    if ("left".equals(pictoKey)){ //See if it's been recorded that the pictograph is the left one
                         telemetry.addLine();
                         telemetry.addData("left",""); //Write that it is the left one
                     }
@@ -87,7 +87,7 @@ public class AutonomousLibrary {
                     pictoKey = "center"; //Record that the pictograph is the center one
                     telemetry.addData("VuMark", "%s visible", vuMark); //Display which vumark has been seen
 
-                    if (pictoKey == "center"){ //See if it's been recorded that the pictograph is the center one
+                    if ("center".equals(pictoKey)){ //See if it's been recorded that the pictograph is the center one
                         telemetry.addLine();
                         telemetry.addData("center",""); //Write that it is the left one
                     }
@@ -98,7 +98,7 @@ public class AutonomousLibrary {
                     pictoKey = "right"; //Record that the pictograph is the right one
                     telemetry.addData("VuMark", "%s visible", vuMark); //Display which vumark has been seen
 
-                    if (pictoKey == "right"){ //See if it's been recorded that the pictograph is the right one
+                    if ("right".equals(pictoKey)){ //See if it's been recorded that the pictograph is the right one
                         telemetry.addLine();
                         telemetry.addData("right",""); //Write that it is the left one
                     }
@@ -109,15 +109,15 @@ public class AutonomousLibrary {
             }
             else { //If the vumark isn't being seen
                 telemetry.addData("VuMark", "is not visible"); //Show that the vumark hasn't been seen
-                if (pictoKey == "left"){ //See if it's been recorded that the pictograph is the left one
+                if ("left".equals(pictoKey)){ //See if it's been recorded that the pictograph is the left one
                     telemetry.addLine();
                     telemetry.addData("left",""); //Write that it is the left one
                 }
-                if (pictoKey == "center"){ //See if it's been recorded that the pictograph is the center one
+                if ("center".equals(pictoKey)){ //See if it's been recorded that the pictograph is the center one
                     telemetry.addLine();
                     telemetry.addData("center",""); //Write that it is the left one
                 }
-                if (pictoKey == "right"){ //See if it's been recorded that the pictograph is the right one
+                if ("right".equals(pictoKey)){ //See if it's been recorded that the pictograph is the right one
                     telemetry.addLine();
                     telemetry.addData("right",""); //Write that it is the left one
                 }
