@@ -19,7 +19,7 @@ public class TeleOpDriver extends OpMode {
     public void init() {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
-         */
+        */
         robot.init(hardwareMap);
         CommonLibrary cl = new CommonLibrary();
         cl.declareRobot(robot);

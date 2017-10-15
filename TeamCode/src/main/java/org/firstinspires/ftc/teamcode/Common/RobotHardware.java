@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Common;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
@@ -9,10 +11,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class RobotHardware {
 
     /* Public OpMode members. */
-    public DcMotor leftMotor;
-    public DcMotor rightMotor;
-    public DcMotor frontMotor;
-    public DcMotor backMotor;
+    public DcMotor frontLeftMotor;
+    public DcMotor rearRightMotor;
+    public DcMotor frontRightMotor;
+    public DcMotor rearLeftMotor;
+
+    public BNO055IMU imu;
 
     /* local OpMode members. */
     HardwareMap hardwareMap;
@@ -26,9 +30,26 @@ public class RobotHardware {
 
         // Define and Initialize
         hardwareMap = hwMap;
-        leftMotor   = hardwareMap.dcMotor.get("left_drive");
-        rightMotor  = hardwareMap.dcMotor.get("right_drive");
-        frontMotor  = hardwareMap.dcMotor.get("front_drive");
-        backMotor   = hardwareMap.dcMotor.get("back_drive");
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        frontLeftMotor = hardwareMap.dcMotor.get("front left motor");
+        rearRightMotor = hardwareMap.dcMotor.get("rear right motor");
+        frontRightMotor = hardwareMap.dcMotor.get("front right motor");
+        rearLeftMotor = hardwareMap.dcMotor.get("rear left motor");
+        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rearRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        rearLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        while(!imu.isGyroCalibrated()){
+        }
     }
 }
