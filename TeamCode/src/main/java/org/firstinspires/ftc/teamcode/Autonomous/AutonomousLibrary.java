@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
@@ -128,45 +129,39 @@ public class AutonomousLibrary {
 
     }
 
-    public void driveAtAngle(double distance, double angle, Telemetry telemetry) {
+    public void driveAtAngle(double distance, double angle, Telemetry telemetry, LinearOpMode caller) {
 
+        resetMotorEncoders();
         runUsingEncoders();
         double wheelPowerAngle = 90 - angle;
 
         double xInput = Math.cos(wheelPowerAngle);
         double yInput = Math.sin(wheelPowerAngle);
-        double flPower = (Range.clip((yInput - xInput), -1, 1));
-        double frPower = (Range.clip((yInput + xInput), -1, 1));
-        double rrPower = (Range.clip((yInput - xInput), -1, 1));
-        double rlPower = (Range.clip((yInput + xInput), -1, 1));
+        double flPower = Range.clip((yInput - xInput), -1, 1);
+        double frPower = Range.clip((yInput + xInput), -1, 1);
+        double rrPower = Range.clip((yInput - xInput), -1, 1);
+        double rlPower = Range.clip((yInput + xInput), -1, 1);
         //ok to here
-        DcMotor motorToCheck = null;
+
+        robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() + (Math.abs((int)distance) * 1130 * (int) flPower));
+        robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() + (Math.abs((int)distance) * 1130 * (int) frPower));
+
         robot.frontLeftMotor.setPower(flPower);
         robot.frontRightMotor.setPower(frPower);
-        robot.rearRightMotor.setPower(rrPower);
-        robot.rearLeftMotor.setPower(rlPower);
+        robot.rearRightMotor.setPower(-rrPower);
+        robot.rearLeftMotor.setPower(-rlPower);
 
-        if (robot.frontLeftMotor.getPower() == 1) {
-            motorToCheck = robot.frontLeftMotor;
-        } else {
-            motorToCheck = robot.frontRightMotor;
+        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    // keep looping while we are still active, and there is time left, and both motors are running.
+        while ((robot.frontLeftMotor.isBusy() || robot.frontRightMotor.isBusy()) && !caller.isStopRequested()) {
+
+            telemetry.addLine("Hello");
+            telemetry.update();
         }
-        double distanceRemaining = Math.abs(Math.abs(convertEncoderTicksToInches((double) motorToCheck.getCurrentPosition())) - distance);
-        telemetry.addData("distanc lef ", distanceRemaining);
+
+        telemetry.addLine("done");
         telemetry.update();
-        
-        while (distanceRemaining > SLOWING_INCHES_THRESHOLD) {
-
-            distanceRemaining = Math.abs(convertEncoderTicksToInches((double)motorToCheck.getCurrentPosition())) - distance;
-        }
-        while (distanceRemaining > 0) {
-            robot.frontLeftMotor.setPower(flPower * DRIVING_POWER_SLOW_MODIFIER);
-            robot.frontRightMotor.setPower(frPower * DRIVING_POWER_SLOW_MODIFIER);
-            robot.rearRightMotor.setPower(rrPower * DRIVING_POWER_SLOW_MODIFIER);
-            robot.rearLeftMotor.setPower(rlPower * DRIVING_POWER_SLOW_MODIFIER);
-            distanceRemaining = Math.abs(convertEncoderTicksToInches((double)motorToCheck.getCurrentPosition())) - distance;
-        }
-
         robot.frontLeftMotor.setPower(0);
         robot.frontRightMotor.setPower(0);
         robot.rearRightMotor.setPower(0);
@@ -183,7 +178,7 @@ public class AutonomousLibrary {
 
     double convertEncoderTicksToInches(double encoderTicks) {
 
-        double rotationCount = encoderTicks / 1440;
+        double rotationCount = encoderTicks / 1130;
         return rotationCount * Math.PI * 4;
     }
 
@@ -193,14 +188,16 @@ public class AutonomousLibrary {
         robot.frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rearRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rearLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        while (robot.frontLeftMotor.isBusy() || robot.frontRightMotor.isBusy() || robot.rearLeftMotor.isBusy() || robot.rearRightMotor.isBusy()) {
+        }
     }
 
     public void runUsingEncoders() {
 
         robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void RunWithoutEncoders() {
@@ -210,6 +207,30 @@ public class AutonomousLibrary {
         robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
+    public void MotorEncoderTest(Telemetry telemetry)  {
+        while (1 == 1) {
+            telemetry.addData("Left Motor Position ", robot.frontLeftMotor.getCurrentPosition());
+            telemetry.addData("Right Motor Position ", robot.frontRightMotor.getCurrentPosition());
+            telemetry.update();
+        }
+    }
+
+   /* public void turnToAngle(double turnAngle, double speed){
+        Orientation currentPosition = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        int stopTarget;
+        boolean left = false;
+        if (turnAngle < 0) left = true;
+
+        if (left){
+            stopTarget = currentPosition + turnAngle;
+            while (currentPosition > stopTarget){
+
+            }
+        }
+
+
+    }*/
 }
 
 
