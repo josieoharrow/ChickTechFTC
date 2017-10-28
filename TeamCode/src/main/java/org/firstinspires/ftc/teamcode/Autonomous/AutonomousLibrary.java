@@ -22,16 +22,27 @@ public class AutonomousLibrary {
     RobotHardware robot;
     HardwareMap hardwareMap;
     static VuforiaLocalizer vuforia;
-    public static String pictoKey = "unknown";
-
+    static String pictoKey = "unknown";
+    static String vuMarkSeen = "no";
     static double SLOWING_INCHES_THRESHOLD = 10;
     static double DRIVING_POWER_SLOW_MODIFIER = 0.5;
     static double ENCODER_TICKS_TO_INCHES = 4/1130;
     static double INCHES_TO_ENCODER_TICKS = 1130/4;
 
     public enum motor {
+
         FRONT_LEFT_MOTOR, FRONT_RIGHT_MOTOR, REAR_LEFT_MOTOR, REAR_RIGHT_MOTOR
     }
+
+    public static void initial(HardwareMap hardwareMap){
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+    }
+
     public void declareRobot(RobotHardware robotSent) {
 
         robot = robotSent;
@@ -51,7 +62,8 @@ public class AutonomousLibrary {
         robot.imu.initialize(parameters);
     }
 
-    public void motorsOn(){
+    public void motorsOn() {
+
         robot.frontRightMotor.setPower(1);
         robot.frontLeftMotor.setPower(1);
         robot.rearLeftMotor.setPower(1);
@@ -59,32 +71,72 @@ public class AutonomousLibrary {
     }
 
     public static void pictoDecipher(Telemetry telemetry){
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-        parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        vuforia = ClassFactory.createVuforiaLocalizer(parameters);
         VuforiaTrackables relicTrackables = vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
         relicTrackables.activate();
-        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-            telemetry.addData("VuMark", "%s visible", vuMark);
 
-            if (vuMark == RelicRecoveryVuMark.LEFT){
-                pictoKey = "left";
+        while ("no".equals(vuMarkSeen)) { // While the vumark has not been seen
+
+            RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+
+            if (vuMark != RelicRecoveryVuMark.UNKNOWN) { //If the pictograph is found
+
+                if (vuMark == RelicRecoveryVuMark.LEFT) { //If the pictograph is the left pictograph
+                    pictoKey = "left"; //Record that the pictograph is the left one
+                    telemetry.addData("VuMark", "%s visible", vuMark); //Display which vumark has been seen
+
+                    if ("left".equals(pictoKey)){ //See if it's been recorded that the pictograph is the left one
+                        telemetry.addLine();
+                        telemetry.addData("left",""); //Write that it is the left one
+                    }
+
+                }
+
+                if (vuMark == RelicRecoveryVuMark.CENTER) { //If the pictograph is the center pictograph
+                    pictoKey = "center"; //Record that the pictograph is the center one
+                    telemetry.addData("VuMark", "%s visible", vuMark); //Display which vumark has been seen
+
+                    if ("center".equals(pictoKey)){ //See if it's been recorded that the pictograph is the center one
+                        telemetry.addLine();
+                        telemetry.addData("center",""); //Write that it is the left one
+                    }
+
+                }
+
+                if (vuMark == RelicRecoveryVuMark.RIGHT) { //If the pictograph is the right pictograph
+                    pictoKey = "right"; //Record that the pictograph is the right one
+                    telemetry.addData("VuMark", "%s visible", vuMark); //Display which vumark has been seen
+
+                    if ("right".equals(pictoKey)){ //See if it's been recorded that the pictograph is the right one
+                        telemetry.addLine();
+                        telemetry.addData("right",""); //Write that it is the left one
+                    }
+
+                }
+                telemetry.update(); //Update the telemetry
+
             }
-            if (vuMark == RelicRecoveryVuMark.CENTER){
-                pictoKey = "center";
+            else { //If the vumark isn't being seen
+                telemetry.addData("VuMark", "is not visible"); //Show that the vumark hasn't been seen
+                if ("left".equals(pictoKey)){ //See if it's been recorded that the pictograph is the left one
+                    telemetry.addLine();
+                    telemetry.addData("left",""); //Write that it is the left one
+                }
+                if ("center".equals(pictoKey)){ //See if it's been recorded that the pictograph is the center one
+                    telemetry.addLine();
+                    telemetry.addData("center",""); //Write that it is the left one
+                }
+                if ("right".equals(pictoKey)){ //See if it's been recorded that the pictograph is the right one
+                    telemetry.addLine();
+                    telemetry.addData("right",""); //Write that it is the left one
+                }
+                telemetry.update();
+
             }
-            if (vuMark == RelicRecoveryVuMark.RIGHT){
-                pictoKey = "right";
-            }
+
         }
-        else {
-            telemetry.addData("VuMark", "not visible");
-        }
-        telemetry.update();
+
     }
 
     public void driveAtAngle(double distance, double angle, Telemetry telemetry, LinearOpMode caller) {

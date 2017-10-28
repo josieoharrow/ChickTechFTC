@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
+//import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoDecipher;
+//import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.initial;
 
 
 /**
@@ -28,7 +30,6 @@ public class AutonomousDriverTest extends LinearOpMode {
         al.declareRobot(robot);
         al.init();
         waitForStart();
-
         while (opModeIsActive()) {
            // al.MotorEncoderTest(telemetry);
             //al.declareRobot(robot);
@@ -42,5 +43,6 @@ public class AutonomousDriverTest extends LinearOpMode {
             }
             runLinearCode = false;
         }
+
     }
 }
