@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -15,6 +16,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -29,12 +35,12 @@ public class AutonomousLibrary {
     static double SLOWING_INCHES_THRESHOLD = 10;
     static double DRIVING_POWER_SLOW_MODIFIER = 0.5;
 
-    public static void initial (HardwareMap hardwareMap){
+    public void initial (HardwareMap hardwareMap){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
 
     }
 
@@ -60,8 +66,8 @@ public class AutonomousLibrary {
         robot.frontRightMotor.setPower(1);
     }
 
-    public static void pictoDecipher(Telemetry telemetry){
-        VuforiaTrackables relicTrackables = vuforia.loadTrackablesFromAsset("RelicVuMark");
+    public void pictoDecipher(Telemetry telemetry){
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
         relicTrackables.activate();
@@ -200,7 +206,7 @@ public class AutonomousLibrary {
         robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void RunWithoutEncoders() {
+    public void runWithoutEncoders() {
 
         robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -208,7 +214,7 @@ public class AutonomousLibrary {
         robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void MotorEncoderTest(Telemetry telemetry)  {
+    public void motorEncoderTest(Telemetry telemetry)  {
         while (1 == 1) {
             telemetry.addData("Left Motor Position ", robot.frontLeftMotor.getCurrentPosition());
             telemetry.addData("Right Motor Position ", robot.frontRightMotor.getCurrentPosition());
@@ -216,21 +222,32 @@ public class AutonomousLibrary {
         }
     }
 
-   /* public void turnToAngle(double turnAngle, double speed){
+    public void turnToAngle(int turnAngle, double speed){
+
         Orientation currentPosition = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        int stopTarget;
+        float stopTarget;
         boolean left = false;
-        if (turnAngle < 0) left = true;
+        if (turnAngle >= 360){turnAngle = turnAngle - 360;}
+        if (turnAngle <= -360){turnAngle = turnAngle + 360;}
+        if (turnAngle < 0){left = true;}
 
-        if (left){
-            stopTarget = currentPosition + turnAngle;
-            while (currentPosition > stopTarget){
-
+        if (left) {
+            stopTarget = currentPosition.firstAngle + turnAngle;
+            while (currentPosition.firstAngle > stopTarget) {
+                robot.frontLeftMotor.setPower(speed);
+                robot.frontRightMotor.setPower(-speed);
+                robot.rearRightMotor.setPower(-speed);
+                robot.rearLeftMotor.setPower(speed);
             }
         }
-
-
-    }*/
+        else {
+            stopTarget = currentPosition.firstAngle + turnAngle;
+            while (currentPosition.firstAngle < stopTarget) {
+                robot.frontLeftMotor.setPower(-speed);
+                robot.frontRightMotor.setPower(speed);
+                robot.rearRightMotor.setPower(speed);
+                robot.rearLeftMotor.setPower(-speed);
+            }
+        }
+    }
 }
-
-

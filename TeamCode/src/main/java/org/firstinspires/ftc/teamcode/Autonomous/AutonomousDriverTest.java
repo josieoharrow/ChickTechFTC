@@ -22,11 +22,16 @@ public class AutonomousDriverTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        AutonomousLibrary al = new AutonomousLibrary();
+        al.declareRobot(robot);
 
-        //initial(hardwareMap);
+        al.init();
         waitForStart();
         while (opModeIsActive()) {
-           // al.MotorEncoderTest(telemetry);
+
+            al.turnToAngle(-45, 1);
+            al.turnToAngle(405, 1);
+            /* al.MotorEncoderTest(telemetry);
             if (runLinearCode) {
                 //pictoDecipher(telemetry);
                 //al.driveAtAngle(10, 0, telemetry,this);
@@ -36,7 +41,7 @@ public class AutonomousDriverTest extends LinearOpMode {
 
 
             }
-            runLinearCode = false;
+            runLinearCode = false;*/
         }
 
     }
