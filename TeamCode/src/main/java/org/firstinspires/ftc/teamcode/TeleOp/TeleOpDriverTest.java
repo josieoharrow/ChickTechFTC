@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
@@ -25,6 +26,7 @@ public class TeleOpDriverTest extends OpMode {
         cl.declareRobot(robot);
         TeleOpLibrary tol = new TeleOpLibrary();
         tol.declareRobot(robot);
+
     }
 
     /*
@@ -53,6 +55,21 @@ public class TeleOpDriverTest extends OpMode {
         tol.gyroTelemetry(gamepad1, telemetry);
         tol.translateRightStickToSliding(gamepad1);
 
+        if(gamepad2.b) {
+            telemetry.addLine("here");
+            robot.leftClaw.setPosition(1);
+        } else {
+            robot.leftClaw.setPosition(0);
+            telemetry.addLine("there");
+        }
+        telemetry.update();
+
+        if(gamepad2.x) {
+            robot.rightClaw.setPosition(1);
+        }
+        else {
+            robot.rightClaw.setPosition(0);
+        }
     }
 
     /*

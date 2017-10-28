@@ -2,9 +2,13 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.PWMOutput;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
+import com.qualcomm.robotcore.hardware.PWMOutputImpl;
+import com.qualcomm.robotcore.hardware.PwmControl.PwmRange;
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -14,6 +18,13 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 public class TeleOpDriver extends OpMode {
 
     RobotHardware robot   = new RobotHardware();
+
+    double five;
+
+    public double usPulseUpper = 2500;
+    double usFrame;
+    public double usPulseLower = 500;
+
 
     @Override
     public void init() {
@@ -25,6 +36,9 @@ public class TeleOpDriver extends OpMode {
         cl.declareRobot(robot);
         TeleOpLibrary tol = new TeleOpLibrary();
         tol.declareRobot(robot);
+
+
+
     }
 
     /*
@@ -46,6 +60,33 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void loop() {
+
+
+
+
+        while(gamepad2.dpad_up)
+            robot.leftClaw.setPosition(1);
+        while (gamepad2.dpad_down)
+            robot.leftClaw.setPosition(0.5);
+
+        if(gamepad2.dpad_left)
+            robot.rightClaw.setPosition(1);
+
+        else if(gamepad2.dpad_right)
+            robot.rightClaw.setPosition(0);
+
+        if(gamepad2.x) {
+            robot.middleClaw.setPosition(1);
+        }
+
+        else if(gamepad2.b) {
+            robot.middleClaw.setPosition(0);
+            telemetry.addData("", "");
+            telemetry.update();
+        }
+
+
+
 
     }
 
