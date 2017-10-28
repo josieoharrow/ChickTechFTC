@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 //@Disabled
 public class AutonomousDriverTest extends LinearOpMode {
 
-    RobotHardware robot   = new RobotHardware();
+    RobotHardware robot = new RobotHardware();
     boolean runLinearCode = true;
 
 
@@ -26,22 +26,21 @@ public class AutonomousDriverTest extends LinearOpMode {
         cl.declareRobot(robot);
         AutonomousLibrary al = new AutonomousLibrary();
         al.declareRobot(robot);
+        al.init();
         waitForStart();
 
         while (opModeIsActive()) {
            // al.MotorEncoderTest(telemetry);
+            //al.declareRobot(robot);
             if (runLinearCode) {
-                //pictoDecipher(telemetry);
-                al.driveAtAngle(10, 0, telemetry,this);
-               // al.driveAtAngle(10, 90, telemetry, this);
-              //  al.driveAtAngle(10, 180, telemetry, this);
-            //    al.driveAtAngle(10, 270, telemetry, this);
 
+                al.driveAtAngle(10, 45, telemetry, this);
 
+                al.driveAtAngle(10, 180, telemetry, this);
+
+                al.driveAtAngle(10, 270, telemetry, this);
             }
             runLinearCode = false;
-
-
         }
     }
 }
