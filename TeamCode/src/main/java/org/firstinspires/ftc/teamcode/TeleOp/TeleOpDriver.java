@@ -46,7 +46,12 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void loop() {
+        TeleOpLibrary tol = new TeleOpLibrary();
+        tol.declareRobot(robot);
 
+        tol.translateLeftStickToRotation(gamepad1);
+        tol.telemetry(gamepad1, telemetry);
+        tol.translateRightStickToSliding(gamepad1);
     }
 
     /*
