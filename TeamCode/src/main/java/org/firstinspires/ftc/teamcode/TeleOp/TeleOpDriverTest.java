@@ -21,9 +21,9 @@ public class TeleOpDriverTest extends OpMode {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
-        robot.init(hardwareMap);
+       // robot.init(hardwareMap);
         CommonLibrary cl = new CommonLibrary();
-        cl.declareRobot(robot);
+        //cl.declareRobot(robot);
         TeleOpLibrary tol = new TeleOpLibrary();
         tol.declareRobot(robot);
 
@@ -50,26 +50,6 @@ public class TeleOpDriverTest extends OpMode {
     public void loop() {
         TeleOpLibrary tol = new TeleOpLibrary();
         tol.declareRobot(robot);
-
-        tol.translateLeftStickToRotation(gamepad1);
-        tol.gyroTelemetry(gamepad1, telemetry);
-        tol.translateRightStickToSliding(gamepad1);
-
-        if(gamepad2.b) {
-            telemetry.addLine("here");
-            robot.leftClaw.setPosition(1);
-        } else {
-            robot.leftClaw.setPosition(0);
-            telemetry.addLine("there");
-        }
-        telemetry.update();
-
-        if(gamepad2.x) {
-            robot.rightClaw.setPosition(1);
-        }
-        else {
-            robot.rightClaw.setPosition(0);
-        }
     }
 
     /*

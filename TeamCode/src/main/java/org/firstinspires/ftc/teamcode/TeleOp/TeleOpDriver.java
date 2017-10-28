@@ -60,34 +60,11 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void loop() {
-
-
-
-
-        while(gamepad2.dpad_up)
-            robot.leftClaw.setPosition(1);
-        while (gamepad2.dpad_down)
-            robot.leftClaw.setPosition(0.5);
-
-        if(gamepad2.dpad_left)
-            robot.rightClaw.setPosition(1);
-
-        else if(gamepad2.dpad_right)
-            robot.rightClaw.setPosition(0);
-
-        if(gamepad2.x) {
-            robot.middleClaw.setPosition(1);
-        }
-
-        else if(gamepad2.b) {
-            robot.middleClaw.setPosition(0);
-            telemetry.addData("", "");
-            telemetry.update();
-        }
-
-
-
-
+        TeleOpLibrary tol = new TeleOpLibrary();
+        tol.declareRobot(robot);
+        tol.translateLeftStickToRotation(gamepad1);
+        tol.telemetry(gamepad1, telemetry);
+        tol.translateRightStickToSliding(gamepad1);
     }
 
     /*

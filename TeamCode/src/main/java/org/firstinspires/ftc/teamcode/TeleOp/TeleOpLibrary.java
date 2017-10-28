@@ -22,6 +22,12 @@ public class TeleOpLibrary {
     HardwareMap hardwareMap;
     Orientation angles;
 
+    public static final double OPEN_ARMS = 0.5;
+    public static final double CLOSED_ARMS = 0;
+
+    boolean gamepad1AHasBeenPressed = false;
+    boolean gamepad1BHasBeenPressed = false;
+
     public void declareRobot(RobotHardware robotSent) {
 
         robot = robotSent;
@@ -45,10 +51,11 @@ public class TeleOpLibrary {
 
     public void translateRightStickToSliding(Gamepad gamepad1) {
 
-        double flPower = scaleInput(Range.clip((gamepad1.right_stick_y - gamepad1.right_stick_x), -1, 1));
-        double frPower = scaleInput(Range.clip((gamepad1.right_stick_y + gamepad1.right_stick_x), -1, 1));
-        double rrPower = scaleInput(Range.clip((gamepad1.right_stick_y - gamepad1.right_stick_x), -1, 1));
-        double rlPower = scaleInput(Range.clip((gamepad1.right_stick_y + gamepad1.right_stick_x), -1, 1));
+        float modifiedYValue = -gamepad1.right_stick_y; //This is because the phone was receiving y values that were flipped from all controllers, resulting in backwards driving behavior
+        double flPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1)); //may need switched
+        double frPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
+        double rrPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
+        double rlPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
         robot.frontLeftMotor.setPower(flPower);
         robot.frontRightMotor.setPower(frPower);
         robot.rearRightMotor.setPower(rrPower);
@@ -56,14 +63,23 @@ public class TeleOpLibrary {
 
     }
 
-    public void gyroTelemetry(Gamepad gamepad1, Telemetry telemetry) {
+    public void telemetry(Gamepad gamepad1, Telemetry telemetry) {
+
         telemetry.clear();
-        telemetry.addData("Gyro Temperature ", robot.imu.getTemperature());
-        angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        telemetry.addData("heading", formatAngle(angles.angleUnit, angles.firstAngle));
-        telemetry.addData("Movement Angle from throttle ", returnMovementAngleFromThrottleInput(gamepad1));
+        telemetry.addData("front right motor position ", robot.frontRightMotor.getCurrentPosition());
+        telemetry.addData("front left motor position ", robot.frontLeftMotor.getCurrentPosition());
+        telemetry.addData("rear right motor position ", robot.rearRightMotor.getCurrentPosition());
+        telemetry.addData("rear left motor position ", robot.rearLeftMotor.getCurrentPosition());
         telemetry.update();
     }
+
+
+    public double returnAngleFromThrottleInput(Gamepad gamepad1) {
+
+        double angleInput = Math.atan2(gamepad1.right_stick_y, gamepad1.right_stick_x);
+        return angleInput;
+    }
+
 
     public double returnMovementAngleFromThrottleInput(Gamepad gamepad1) {
         //Returns an angle with field orientation based on view from driver station as the far wall being y = 1,

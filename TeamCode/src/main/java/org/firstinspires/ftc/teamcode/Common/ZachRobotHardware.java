@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 /**
  * Created by Robotics on 8/27/2017.
  */
-public class RobotHardware {
+public class ZachRobotHardware {
 
     /* Public OpMode members. */
     public DcMotor frontLeftMotor;
@@ -26,7 +26,7 @@ public class RobotHardware {
     HardwareMap hardwareMap;
 
     /* Constructor */
-    public RobotHardware() {
+    public ZachRobotHardware() {
     }
 
     /* Initialize standard Hardware interfaces */

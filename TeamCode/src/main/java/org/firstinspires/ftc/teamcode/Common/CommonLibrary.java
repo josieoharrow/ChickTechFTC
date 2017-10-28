@@ -18,8 +18,4 @@ public class CommonLibrary {
     public void init() {
         robot.init(hardwareMap);
     }
-
-    public void motorsOn(){
-        robot.frontRightMotor.setPower(1);
-    }
 }

@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
-import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoDecipher;
+//import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoDecipher;
+//import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.initial;
 
 
 /**
@@ -16,7 +16,8 @@ import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoD
 //@Disabled
 public class AutonomousDriverTest extends LinearOpMode {
 
-    RobotHardware robot   = new RobotHardware();
+    RobotHardware robot = new RobotHardware();
+    boolean runLinearCode = true;
 
 
     @Override
@@ -27,11 +28,21 @@ public class AutonomousDriverTest extends LinearOpMode {
         cl.declareRobot(robot);
         AutonomousLibrary al = new AutonomousLibrary();
         al.declareRobot(robot);
+        al.init();
         waitForStart();
-
         while (opModeIsActive()) {
+           // al.MotorEncoderTest(telemetry);
+            //al.declareRobot(robot);
+            if (runLinearCode) {
 
-            pictoDecipher(telemetry);
+                al.driveAtAngle(10, 45, telemetry, this);
+
+                al.driveAtAngle(10, 180, telemetry, this);
+
+                al.driveAtAngle(10, 270, telemetry, this);
+            }
+            runLinearCode = false;
         }
+
     }
 }
