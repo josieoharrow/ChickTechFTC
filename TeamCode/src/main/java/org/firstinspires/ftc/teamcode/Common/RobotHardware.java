@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Common;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,6 +19,10 @@ public class RobotHardware {
     public DcMotor rearLeftMotor;
 
     public Servo leftArm;
+    public Servo jewelActuator;
+
+    public ColorSensor colorSensorMR;
+    public ColorSensor colorSensorREV;
     //public Servo rightArm;
 
     public BNO055IMU imu;
@@ -25,7 +30,7 @@ public class RobotHardware {
     /* local OpMode members. */
     HardwareMap hardwareMap;
 
-    /* Constructor */
+    /* Constructor
     public RobotHardware() {
     }
 
@@ -34,30 +39,28 @@ public class RobotHardware {
 
         // Define and Initialize
         hardwareMap = hwMap;
-
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-
         frontLeftMotor = hardwareMap.dcMotor.get("front left motor");
         rearRightMotor = hardwareMap.dcMotor.get("rear right motor");
         frontRightMotor = hardwareMap.dcMotor.get("front right motor");
         rearLeftMotor = hardwareMap.dcMotor.get("rear left motor");
+        colorSensorMR = hardwareMap.get(ColorSensor.class, "ground color sensor");
+        colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
+        jewelActuator = hardwareMap.servo.get("jewel actuator");
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rearLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftArm = hardwareMap.servo.get("left arm");
-        //rightArm = hardwareMap.servo.get("right arm");
-        leftArm.setPosition(0);
-        //rightArm.setPosition(0);
+        jewelActuator.setPosition(1);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
         while(!imu.isGyroCalibrated()){
+
         }
     }
 }

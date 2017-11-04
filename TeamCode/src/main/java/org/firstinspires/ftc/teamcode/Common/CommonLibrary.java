@@ -10,12 +10,10 @@ public class CommonLibrary {
     RobotHardware robot;
     HardwareMap hardwareMap;
 
-    public void declareRobot(RobotHardware robotSent) {
+    public void init(HardwareMap hardwareMapSent) {
 
-        robot = robotSent;
-    }
-
-    public void init() {
+        hardwareMap = hardwareMapSent;
+        robot = new RobotHardware();
         robot.init(hardwareMap);
     }
 }
