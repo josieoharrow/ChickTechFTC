@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
@@ -14,7 +13,9 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 //@Disabled
 public class TeleOpDriverTest extends OpMode {
 
-    RobotHardware robot   = new RobotHardware();
+    RobotHardware robot = new RobotHardware();
+    TeleOpLibrary tol;
+    CommonLibrary cl;
 
     @Override
     public void init() {
@@ -22,10 +23,10 @@ public class TeleOpDriverTest extends OpMode {
          * The init() method of the hardware class does all the work here
          */
        // robot.init(hardwareMap);
-        CommonLibrary cl = new CommonLibrary();
+        cl = new CommonLibrary();
         //cl.declareRobot(robot);
-        TeleOpLibrary tol = new TeleOpLibrary();
-        tol.declareRobot(robot);
+        tol = new TeleOpLibrary();
+        tol.init(hardwareMap);
 
     }
 
@@ -48,8 +49,6 @@ public class TeleOpDriverTest extends OpMode {
      */
     @Override
     public void loop() {
-        TeleOpLibrary tol = new TeleOpLibrary();
-        tol.declareRobot(robot);
     }
 
     /*

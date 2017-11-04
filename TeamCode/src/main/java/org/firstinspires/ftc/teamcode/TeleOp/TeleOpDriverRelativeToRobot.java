@@ -14,6 +14,8 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 public class TeleOpDriverRelativeToRobot extends OpMode {
 
     RobotHardware robot   = new RobotHardware();
+    TeleOpLibrary tol;
+    CommonLibrary cl;
 
     @Override
     public void init() {
@@ -21,9 +23,9 @@ public class TeleOpDriverRelativeToRobot extends OpMode {
          * The init() method of the hardware class does all the work here
         */
         robot.init(hardwareMap);
-        CommonLibrary cl = new CommonLibrary();
+        cl = new CommonLibrary();
         cl.init(hardwareMap);
-        TeleOpLibrary tol = new TeleOpLibrary();
+        tol = new TeleOpLibrary();
         tol.init(hardwareMap);
     }
 
@@ -46,7 +48,7 @@ public class TeleOpDriverRelativeToRobot extends OpMode {
      */
     @Override
     public void loop() {
-        TeleOpLibrary tol = new TeleOpLibrary();
+        tol = new TeleOpLibrary();
         tol.init(hardwareMap);
 
         tol.translateLeftStickToRotation(gamepad1);
