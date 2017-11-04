@@ -28,12 +28,16 @@ public class TeleOpLibrary {
     boolean gamepad1AHasBeenPressed = false;
     boolean gamepad1BHasBeenPressed = false;
 
-    public void declareRobot(RobotHardware robotSent) {
 
-        robot = robotSent;
+    public enum motor {
+
+        FRONT_LEFT_MOTOR, FRONT_RIGHT_MOTOR, REAR_LEFT_MOTOR, REAR_RIGHT_MOTOR
     }
 
-    public void init() {
+    public void init(HardwareMap hardwareMapSent) {
+
+        hardwareMap = hardwareMapSent;
+        robot = new RobotHardware();
         robot.init(hardwareMap);
     }
 
@@ -49,7 +53,7 @@ public class TeleOpLibrary {
         robot.rearLeftMotor.setPower(counterClockwise);
     }
 
-    public void translateRightStickToSliding(Gamepad gamepad1) {
+    public void translateRightStickToSlidingRelativeToRobot(Gamepad gamepad1) {
 
         float modifiedYValue = -gamepad1.right_stick_y; //This is because the phone was receiving y values that were flipped from all controllers, resulting in backwards driving behavior
         double flPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1)); //may need switched

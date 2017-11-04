@@ -4,31 +4,28 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
+import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 
 /**
  * Created by Robotics on 8/27/2017.
  */
-@TeleOp(name = "Main TeleOp")
+@TeleOp(name = "TeleOp Relative to Field")
 //@Disabled
-public class TeleOpDriver extends OpMode {
+public class TeleOpDriverRelativeToField extends OpMode {
 
-    double five;
-
-    public double usPulseUpper = 2500;
-    double usFrame;
-    public double usPulseLower = 500;
-
-
+    RobotHardware robot   = new RobotHardware();
+    TeleOpLibrary tol;
     @Override
     public void init() {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
         */
+        robot.init(hardwareMap);
         CommonLibrary cl = new CommonLibrary();
         cl.init(hardwareMap);
-        TeleOpLibrary tol = new TeleOpLibrary();
+        tol = new TeleOpLibrary();
         tol.init(hardwareMap);
-   }
+    }
 
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
@@ -49,11 +46,12 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void loop() {
-        TeleOpLibrary tol = new TeleOpLibrary();
-        tol.init(hardwareMap);
+       // TeleOpLibrary tol = new TeleOpLibrary();
+      //  tol.init(robot);
+
         tol.translateLeftStickToRotation(gamepad1);
         tol.telemetry(gamepad1, telemetry);
-        tol.translateRightStickToSliding(gamepad1);
+     //   tol.translateRightStickToSlidingRelativeToField(gamepad1);
     }
 
     /*
