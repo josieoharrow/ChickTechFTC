@@ -54,6 +54,7 @@ public class AutonomousLibrary {
         robot.init(hardwareMap);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
         parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
     }
@@ -66,15 +67,18 @@ public class AutonomousLibrary {
         robot.rearRightMotor.setPower(1);
     }
 
-    public void pictoDecipher(Telemetry telemetry){
+    public void pictoDecipher(Telemetry telemetry, LinearOpMode caller){
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
         relicTrackables.activate();
+        int startTime = Thread.activeCount();
 
         while ("no".equals(vuMarkSeen)) { // While the vumark has not been seen
 
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+
+            if (startTime < Thread.activeCount() + 2000 || caller.isStopRequested()) {break;}
 
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) { //If the pictograph is found
 
@@ -84,7 +88,7 @@ public class AutonomousLibrary {
 
                     if ("left".equals(pictoKey)){ //See if it's been recorded that the pictograph is the left one
                         telemetry.addLine();
-                        telemetry.addData("left", pictoKey); //Write that it is the pictograph denoting left
+                        telemetry.addData("left", ""); //Write that it is the pictograph denoting left
                         telemetry.update();
                         break;
                     }
@@ -97,7 +101,7 @@ public class AutonomousLibrary {
 
                     if ("center".equals(pictoKey)){ //See if it's been recorded that the pictograph is the center one
                         telemetry.addLine();
-                        telemetry.addData("center",pictoKey); //Write that it is the pictograph denoting center
+                        telemetry.addData("center", ""); //Write that it is the pictograph denoting center
                         telemetry.update();
                         break;
                     }
@@ -110,7 +114,7 @@ public class AutonomousLibrary {
 
                     if ("right".equals(pictoKey)){ //See if it's been recorded that the pictograph is the right one
                         telemetry.addLine();
-                        telemetry.addData("right", pictoKey); //Write that it is the pictograph denoting right
+                        telemetry.addData("right", ""); //Write that it is the pictograph denoting right
                         telemetry.update();
                         break;
                     }
@@ -123,19 +127,19 @@ public class AutonomousLibrary {
                 telemetry.addData("VuMark", "is not visible"); //Show that the vumark hasn't been seen
                 if ("left".equals(pictoKey)){ //See if it's been recorded that the pictograph is the left one
                     telemetry.addLine();
-                    telemetry.addData("left", pictoKey); //Write that it is the pictograph denoting left
+                    telemetry.addData("left", ""); //Write that it is the pictograph denoting left
                     telemetry.update();
                     break;
                 }
                 if ("center".equals(pictoKey)){ //See if it's been recorded that the pictograph is the center one
                     telemetry.addLine();
-                    telemetry.addData("center", pictoKey); //Write that it is the pictograph denoting center
+                    telemetry.addData("center", ""); //Write that it is the pictograph denoting center
                     telemetry.update();
                     break;
                 }
                 if ("right".equals(pictoKey)){ //See if it's been recorded that the pictograph is the right one
                     telemetry.addLine();
-                    telemetry.addData("right", pictoKey); //Write that it is the pictograph denoting right
+                    telemetry.addData("right", ""); //Write that it is the pictograph denoting right
                     telemetry.update();
                     break;
                 }
@@ -245,7 +249,7 @@ public class AutonomousLibrary {
         }
     }
 
-    public void turnToAngle(int turnAngle, double speed){
+    public void turnToAngle(int turnAngle, double speed, Telemetry telemetry){
 
         angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float stopTarget;

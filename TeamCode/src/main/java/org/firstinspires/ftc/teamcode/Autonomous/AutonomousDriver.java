@@ -23,11 +23,18 @@ public class AutonomousDriver extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (runLinearCode) {
+                telemetry.addLine("First drive");
+                telemetry.update();
+                al.driveAtAngle(18, 45, telemetry, this);
 
+                telemetry.addLine("Vuforia");
+                telemetry.update();
+                al.pictoDecipher(telemetry, this);
+                telemetry.addLine("2nd drive");
+                telemetry.update();
+                al.driveAtAngle(12, 70, telemetry, this);
             }
 
-            al.modernRoboticsSensorTest(telemetry);
-            al.revRoboticsColorSensorTest(telemetry);
             runLinearCode = false;
         }
     }

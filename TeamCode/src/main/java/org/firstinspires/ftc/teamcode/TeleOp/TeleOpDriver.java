@@ -32,7 +32,7 @@ public class TeleOpDriver extends OpMode {
         telemetry.addLine("Initializing CommonLibrary. Please wait.");
         telemetry.update();
         cl.init(hardwareMap);
-        TeleOpLibrary tol = new TeleOpLibrary();
+        tol = new TeleOpLibrary();
         telemetry.addLine("Initializing TeleOpLibrary. Please wait.");
         telemetry.update();
         tol.init(hardwareMap);

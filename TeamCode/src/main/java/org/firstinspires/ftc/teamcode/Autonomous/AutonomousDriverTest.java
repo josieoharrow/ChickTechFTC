@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
@@ -14,32 +15,14 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 
 
 @Autonomous(name = "Test Autonomous")
-//@Disabled
+@Disabled
 public class AutonomousDriverTest extends LinearOpMode {
 
     boolean runLinearCode = true;
 
     @Override
-    public void runOpMode() {
-        AutonomousLibrary al = new AutonomousLibrary();
+    public void runOpMode () throws InterruptedException {
 
-        al.init(hardwareMap);
-        waitForStart();
-        while (opModeIsActive()) {
-
-            al.turnToAngle(45, 0.5);
-            al.turnToAngle(-45, 1);
-            al.turnToAngle(405, 1);
-            /* al.MotorEncoderTest(telemetry);
-
-        robot.init(hardwareMap);
-        CommonLibrary cl = new CommonLibrary();
-        cl.declareRobot(robot);
-        AutonomousLibrary al = new AutonomousLibrary();
-        al.declareRobot(robot);
-        al.init();
-        runLinearCode = false;
-        robot.explode.exe.activate();
         AutonomousLibrary al = new AutonomousLibrary();
         al.init(hardwareMap);
         waitForStart();
@@ -47,12 +30,24 @@ public class AutonomousDriverTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (runLinearCode) {
+                telemetry.addLine("First drive");
+                telemetry.update();
+                al.driveAtAngle(18, -45, telemetry, this);
 
+                telemetry.addLine("Vuforia");
+                telemetry.update();
+                al.pictoDecipher(telemetry, this);
+                telemetry.addLine("2nd drive");
+                telemetry.update();
+                al.driveAtAngle(12, -70, telemetry, this);
             }
 
-            al.modernRoboticsSensorTest(telemetry);
-            al.revRoboticsColorSensorTest(telemetry);
-            runLinearCode = false;*/
-         }
+            runLinearCode = false;
+        }
     }
+            /* al.MotorEncoderTest(telemetry);
+
+        robot.init(hardwareMap);
+        CommonLibrary cl = new CommonLibrary();
+        cl.declareRobot(robot);*/
 }

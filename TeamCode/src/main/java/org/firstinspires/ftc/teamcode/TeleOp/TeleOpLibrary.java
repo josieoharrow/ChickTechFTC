@@ -56,10 +56,10 @@ public class TeleOpLibrary {
     public void translateRightStickToSlidingRelativeToRobot(Gamepad gamepad1) {
 
         float modifiedYValue = -gamepad1.right_stick_y; //This is because the phone was receiving y values that were flipped from all controllers, resulting in backwards driving behavior
-        double flPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1)); //may need switched
-        double frPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
-        double rrPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
-        double rlPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
+        double flPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1)); //may need switched
+        double frPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
+        double rrPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
+        double rlPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
         robot.frontLeftMotor.setPower(flPower);
         robot.frontRightMotor.setPower(frPower);
         robot.rearRightMotor.setPower(rrPower);
@@ -74,10 +74,10 @@ public class TeleOpLibrary {
         double xOffset = Math.cos(Math.PI - (currentHeading * (Math.PI / 180)));
         double modifiedYValue = -gamepad1.right_stick_y - yOffSet; //This is because the phone was receiving y values that were flipped from all controllers, resulting in backwards driving behavior
         double modifiedXValue = gamepad1.right_stick_x - xOffset;
-        double flPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1)); //may need switched
-        double frPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1));
-        double rrPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1));
-        double rlPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1));
+        double flPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1)); //may need switched
+        double frPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1));
+        double rrPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1));
+        double rlPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1));
         robot.frontLeftMotor.setPower(flPower);
         robot.frontRightMotor.setPower(frPower);
         robot.rearRightMotor.setPower(rrPower);
