@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -47,23 +48,14 @@ public class AutonomousLibrary {
 
         robot = robotSent;
     }
-
-    public void init() {
-
+    public void init(HardwareMap hardwareMapSent) {
+        hardwareMap = hardwareMapSent;
+        robot = new RobotHardware();
         robot.init(hardwareMap);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-
-        /*BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        robot.imu = hardwareMap.get(BNO055IMU.class, "imu");
-        robot.imu.initialize(parameters);*/
     }
 
     public void motorsOn() {
@@ -282,6 +274,81 @@ public class AutonomousLibrary {
                 angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             }
         }
+    }
+
+    public void decipherJewelAndKnockOff() {
+        double BallHue;
+        float hsvValues[] = {0F, 0F, 0F};
+
+        // values is a reference to the hsvValues array.
+        final float values[] = hsvValues;
+
+        // sometimes it helps to multiply the raw RGB values with a scale factor
+        // to amplify/attentuate the measured values.
+        final double SCALE_FACTOR = 255;
+        Color.RGBToHSV((int) (robot.colorSensorREV.red() * SCALE_FACTOR),
+                (int) (robot.colorSensorREV.green() * SCALE_FACTOR),
+                (int) (robot.colorSensorREV.blue() * SCALE_FACTOR),
+                hsvValues);
+        BallHue = hsvValues[0];
+
+      //  if (BallHue >jfkdlsjfkljd)
+
+    }
+
+    public void setTeamColor() {
+        //if values of color sensor = blue, then team color = blue
+    }
+
+    public void modernRoboticsSensorTest(Telemetry telemetry) {
+        // hsvValues is an array that will hold the hue, saturation, and value information.
+        float hsvValues[] = {0F,0F,0F};
+
+        // values is a reference to the hsvValues array.
+        final float values[] = hsvValues;
+
+        boolean bLedOn = true;
+        robot.colorSensorMR.enableLed(bLedOn);
+
+        Color.RGBToHSV(robot.colorSensorMR.red() * 8, robot.colorSensorMR.green() * 8, robot.colorSensorMR.blue() * 8, hsvValues);
+
+        telemetry.addData("mr LED", bLedOn ? "On" : "Off");
+        telemetry.addData("mr Clear", robot.colorSensorMR.alpha());
+        telemetry.addData("mr Red  ", robot.colorSensorMR.red());
+        telemetry.addData("mr Green", robot.colorSensorMR.green());
+        telemetry.addData("mr Blue ", robot.colorSensorMR.blue());
+        telemetry.addData("mr Hue", hsvValues[0]);
+        telemetry.update();
+    }
+
+    public void revRoboticsColorSensorTest(Telemetry telemetry) {
+       //set up for color sensor
+        // hsvValues is an array that will hold the hue, saturation, and value information.
+        float hsvValues[] = {0F, 0F, 0F};
+
+        // values is a reference to the hsvValues array.
+        final float values[] = hsvValues;
+
+        // sometimes it helps to multiply the raw RGB values with a scale factor
+        // to amplify/attentuate the measured values.
+        final double SCALE_FACTOR = 255;
+
+        //Actual steps in order to get values from color sensor
+        // convert the RGB values to HSV values.
+        // multiply by the SCALE_FACTOR.
+        // then cast it back to int (SCALE_FACTOR is a double)
+        Color.RGBToHSV((int) (robot.colorSensorREV.red() * SCALE_FACTOR),
+                (int) (robot.colorSensorREV.green() * SCALE_FACTOR),
+                (int) (robot.colorSensorREV.blue() * SCALE_FACTOR),
+                hsvValues);
+
+        // send the info back to driver station using telemetry function.
+        telemetry.addData("rev Alpha", robot.colorSensorREV.alpha());
+        telemetry.addData( "rev Red  ", robot.colorSensorREV.red());
+        telemetry.addData("rev Green", robot.colorSensorREV.green());
+        telemetry.addData("rev Blue ", robot.colorSensorREV.blue());
+        telemetry.addData("rev Hue", hsvValues[0]);
+        telemetry.update();
     }
 
     public double determineMotorTargetPositionRatio(double angleHeading, motor m){
