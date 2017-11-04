@@ -20,16 +20,24 @@ public class TeleOpDriver extends OpMode {
     public double usPulseLower = 500;
     TeleOpLibrary tol;
     CommonLibrary cl;
-    
+
     @Override
     public void init() {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
         */
+        telemetry.addLine("Initializing. please wait.");
+        telemetry.update();
         cl = new CommonLibrary();
+        telemetry.addLine("Initializing CommonLibrary. Please wait.");
+        telemetry.update();
         cl.init(hardwareMap);
         TeleOpLibrary tol = new TeleOpLibrary();
+        telemetry.addLine("Initializing TeleOpLibrary. Please wait.");
+        telemetry.update();
         tol.init(hardwareMap);
+        telemetry.addLine("Initializing complete.");
+        telemetry.update();
    }
 
     /*
@@ -51,10 +59,9 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void loop() {
-        tol = new TeleOpLibrary();
-        tol.init(hardwareMap);
+
+        tol.generalTelemetry(gamepad1, telemetry);
         tol.translateLeftStickToRotation(gamepad1);
-        tol.telemetry(gamepad1, telemetry);
         tol.translateRightStickToSlidingRelativeToRobot(gamepad1);
     }
 
