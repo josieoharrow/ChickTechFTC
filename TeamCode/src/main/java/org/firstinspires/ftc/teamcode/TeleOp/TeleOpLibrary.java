@@ -64,7 +64,24 @@ public class TeleOpLibrary {
         robot.frontRightMotor.setPower(frPower);
         robot.rearRightMotor.setPower(rrPower);
         robot.rearLeftMotor.setPower(rlPower);
+    }
 
+    public void translateRightStickToSlidingRelativeToField(Gamepad gamepad1) {
+
+        angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double currentHeading = (double)angles.firstAngle;
+        double yOffSet = Math.sin(Math.PI - (currentHeading * (Math.PI/180)));
+        double xOffset = Math.cos(Math.PI - (currentHeading * (Math.PI / 180)));
+        double modifiedYValue = -gamepad1.right_stick_y - yOffSet; //This is because the phone was receiving y values that were flipped from all controllers, resulting in backwards driving behavior
+        double modifiedXValue = gamepad1.right_stick_x - xOffset;
+        double flPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1)); //may need switched
+        double frPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1));
+        double rrPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1));
+        double rlPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1));
+        robot.frontLeftMotor.setPower(flPower);
+        robot.frontRightMotor.setPower(frPower);
+        robot.rearRightMotor.setPower(rrPower);
+        robot.rearLeftMotor.setPower(rlPower);
     }
 
     public void telemetry(Gamepad gamepad1, Telemetry telemetry) {

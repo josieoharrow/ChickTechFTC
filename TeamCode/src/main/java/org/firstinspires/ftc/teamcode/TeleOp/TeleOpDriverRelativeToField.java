@@ -15,13 +15,15 @@ public class TeleOpDriverRelativeToField extends OpMode {
 
     RobotHardware robot   = new RobotHardware();
     TeleOpLibrary tol;
+    CommonLibrary cl;
+
     @Override
     public void init() {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
         */
         robot.init(hardwareMap);
-        CommonLibrary cl = new CommonLibrary();
+        cl = new CommonLibrary();
         cl.init(hardwareMap);
         tol = new TeleOpLibrary();
         tol.init(hardwareMap);
@@ -46,12 +48,10 @@ public class TeleOpDriverRelativeToField extends OpMode {
      */
     @Override
     public void loop() {
-       // TeleOpLibrary tol = new TeleOpLibrary();
-      //  tol.init(robot);
 
         tol.translateLeftStickToRotation(gamepad1);
         tol.telemetry(gamepad1, telemetry);
-     //   tol.translateRightStickToSlidingRelativeToField(gamepad1);
+        tol.translateRightStickToSlidingRelativeToField(gamepad1);
     }
 
     /*

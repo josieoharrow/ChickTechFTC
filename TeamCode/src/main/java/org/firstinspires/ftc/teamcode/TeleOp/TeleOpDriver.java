@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -9,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
  * Created by Robotics on 8/27/2017.
  */
 @TeleOp(name = "Main TeleOp")
-//@Disabled
+@Disabled
 public class TeleOpDriver extends OpMode {
 
     double five;
@@ -17,14 +18,15 @@ public class TeleOpDriver extends OpMode {
     public double usPulseUpper = 2500;
     double usFrame;
     public double usPulseLower = 500;
-
-
+    TeleOpLibrary tol;
+    CommonLibrary cl;
+    
     @Override
     public void init() {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
         */
-        CommonLibrary cl = new CommonLibrary();
+        cl = new CommonLibrary();
         cl.init(hardwareMap);
         TeleOpLibrary tol = new TeleOpLibrary();
         tol.init(hardwareMap);
@@ -49,11 +51,11 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void loop() {
-        TeleOpLibrary tol = new TeleOpLibrary();
+        tol = new TeleOpLibrary();
         tol.init(hardwareMap);
         tol.translateLeftStickToRotation(gamepad1);
         tol.telemetry(gamepad1, telemetry);
-        tol.translateRightStickToSliding(gamepad1);
+        tol.translateRightStickToSlidingRelativeToRobot(gamepad1);
     }
 
     /*
