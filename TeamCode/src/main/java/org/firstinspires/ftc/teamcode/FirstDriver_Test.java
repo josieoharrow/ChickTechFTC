@@ -35,11 +35,13 @@ public class FirstDriver_Test extends LinearOpMode {
         // Ramp motor speeds till stop pressed.
         while(opModeIsActive()) {
 
+
+
             leftMotor.setPower(power);
         }
 
         // Turn off motor and signal done;
-        leftMotor.setPower(0);
+        //leftMotor.setPower(0);
 
     }
 }
