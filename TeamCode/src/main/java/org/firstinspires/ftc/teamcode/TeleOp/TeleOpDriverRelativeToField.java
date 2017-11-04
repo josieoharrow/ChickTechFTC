@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
-import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -13,7 +12,6 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 //@Disabled
 public class TeleOpDriverRelativeToField extends OpMode {
 
-    RobotHardware robot   = new RobotHardware();
     TeleOpLibrary tol;
     CommonLibrary cl;
 
@@ -22,11 +20,18 @@ public class TeleOpDriverRelativeToField extends OpMode {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
         */
-        robot.init(hardwareMap);
+        telemetry.addLine("Initializing. please wait.");
+        telemetry.update();
         cl = new CommonLibrary();
+        telemetry.addLine("Initializing CommonLibrary. Please wait.");
+        telemetry.update();
         cl.init(hardwareMap);
-        tol = new TeleOpLibrary();
+        TeleOpLibrary tol = new TeleOpLibrary();
+        telemetry.addLine("Initializing TeleOpLibrary. Please wait.");
+        telemetry.update();
         tol.init(hardwareMap);
+        telemetry.addLine("Initializing complete.");
+        telemetry.update();
     }
 
     /*
@@ -50,7 +55,7 @@ public class TeleOpDriverRelativeToField extends OpMode {
     public void loop() {
 
         tol.translateLeftStickToRotation(gamepad1);
-        tol.telemetry(gamepad1, telemetry);
+        tol.generalTelemetry(gamepad1, telemetry);
         tol.translateRightStickToSlidingRelativeToField(gamepad1);
     }
 

@@ -84,7 +84,7 @@ public class TeleOpLibrary {
         robot.rearLeftMotor.setPower(rlPower);
     }
 
-    public void telemetry(Gamepad gamepad1, Telemetry telemetry) {
+    public void generalTelemetry(Gamepad gamepad1, Telemetry telemetry) {
 
         telemetry.clear();
         telemetry.addData("front right motor position ", robot.frontRightMotor.getCurrentPosition());
