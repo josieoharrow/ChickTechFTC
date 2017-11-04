@@ -19,6 +19,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+import java.util.Locale;
+
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -27,6 +29,7 @@ public class AutonomousLibrary {
 
     RobotHardware robot;
     HardwareMap hardwareMap;
+    Orientation angles;
     static VuforiaLocalizer vuforia;
     static String pictoKey = "unknown";
     static String vuMarkSeen = "no";
@@ -40,14 +43,6 @@ public class AutonomousLibrary {
         FRONT_LEFT_MOTOR, FRONT_RIGHT_MOTOR, REAR_LEFT_MOTOR, REAR_RIGHT_MOTOR
     }
 
-
-    public void initial (HardwareMap hardwareMap){
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
-        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-    }
-
     public void declareRobot(RobotHardware robotSent) {
 
         robot = robotSent;
@@ -55,16 +50,20 @@ public class AutonomousLibrary {
 
     public void init() {
 
-      //  robot.init(hardwareMap);
+        robot.init(hardwareMap);
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        /*BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
-       // robot.imu = hardwareMap.get(BNO055IMU.class, "imu");
-        robot.imu.initialize(parameters);
+        robot.imu = hardwareMap.get(BNO055IMU.class, "imu");
+        robot.imu.initialize(parameters);*/
     }
 
     public void motorsOn() {
@@ -93,7 +92,9 @@ public class AutonomousLibrary {
 
                     if ("left".equals(pictoKey)){ //See if it's been recorded that the pictograph is the left one
                         telemetry.addLine();
-                        telemetry.addData("left",""); //Write that it is the left one
+                        telemetry.addData("left", pictoKey); //Write that it is the pictograph denoting left
+                        telemetry.update();
+                        break;
                     }
 
                 }
@@ -104,7 +105,9 @@ public class AutonomousLibrary {
 
                     if ("center".equals(pictoKey)){ //See if it's been recorded that the pictograph is the center one
                         telemetry.addLine();
-                        telemetry.addData("center",""); //Write that it is the left one
+                        telemetry.addData("center",pictoKey); //Write that it is the pictograph denoting center
+                        telemetry.update();
+                        break;
                     }
 
                 }
@@ -115,7 +118,9 @@ public class AutonomousLibrary {
 
                     if ("right".equals(pictoKey)){ //See if it's been recorded that the pictograph is the right one
                         telemetry.addLine();
-                        telemetry.addData("right",""); //Write that it is the left one
+                        telemetry.addData("right", pictoKey); //Write that it is the pictograph denoting right
+                        telemetry.update();
+                        break;
                     }
 
                 }
@@ -126,15 +131,21 @@ public class AutonomousLibrary {
                 telemetry.addData("VuMark", "is not visible"); //Show that the vumark hasn't been seen
                 if ("left".equals(pictoKey)){ //See if it's been recorded that the pictograph is the left one
                     telemetry.addLine();
-                    telemetry.addData("left",""); //Write that it is the left one
+                    telemetry.addData("left", pictoKey); //Write that it is the pictograph denoting left
+                    telemetry.update();
+                    break;
                 }
                 if ("center".equals(pictoKey)){ //See if it's been recorded that the pictograph is the center one
                     telemetry.addLine();
-                    telemetry.addData("center",""); //Write that it is the left one
+                    telemetry.addData("center", pictoKey); //Write that it is the pictograph denoting center
+                    telemetry.update();
+                    break;
                 }
                 if ("right".equals(pictoKey)){ //See if it's been recorded that the pictograph is the right one
                     telemetry.addLine();
-                    telemetry.addData("right",""); //Write that it is the left one
+                    telemetry.addData("right", pictoKey); //Write that it is the pictograph denoting right
+                    telemetry.update();
+                    break;
                 }
                 telemetry.update();
 
@@ -244,7 +255,7 @@ public class AutonomousLibrary {
 
     public void turnToAngle(int turnAngle, double speed){
 
-        Orientation currentPosition = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float stopTarget;
         boolean left = false;
         if (turnAngle >= 360){turnAngle = turnAngle - 360;}
@@ -252,25 +263,27 @@ public class AutonomousLibrary {
         if (turnAngle < 0){left = true;}
 
         if (left) {
-            stopTarget = currentPosition.firstAngle + turnAngle;
-            while (currentPosition.firstAngle > stopTarget) {
+            stopTarget = angles.firstAngle + turnAngle;
+            while (angles.firstAngle > stopTarget) {
                 robot.frontLeftMotor.setPower(speed);
                 robot.frontRightMotor.setPower(-speed);
                 robot.rearRightMotor.setPower(-speed);
                 robot.rearLeftMotor.setPower(speed);
+                angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             }
         }
         else {
-            stopTarget = currentPosition.firstAngle + turnAngle;
-            while (currentPosition.firstAngle < stopTarget) {
+            stopTarget = angles.firstAngle + turnAngle;
+            while (angles.firstAngle < stopTarget) {
                 robot.frontLeftMotor.setPower(-speed);
                 robot.frontRightMotor.setPower(speed);
                 robot.rearRightMotor.setPower(speed);
                 robot.rearLeftMotor.setPower(-speed);
+                angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             }
         }
     }
-    
+
     public double determineMotorTargetPositionRatio(double angleHeading, motor m){
         
         double frontLeftMotorAngle = 45;
@@ -293,5 +306,12 @@ public class AutonomousLibrary {
             return rearRightMotorRatio;
         }
     }
-}
 
+    String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    String formatDegrees(double degrees){
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+}

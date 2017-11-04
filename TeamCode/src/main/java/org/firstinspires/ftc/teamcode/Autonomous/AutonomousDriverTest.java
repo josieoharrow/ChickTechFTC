@@ -29,6 +29,7 @@ public class AutonomousDriverTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
 
+            al.turnToAngle(45, 0.5);
             al.turnToAngle(-45, 1);
             al.turnToAngle(405, 1);
             /* al.MotorEncoderTest(telemetry);
@@ -39,7 +40,8 @@ public class AutonomousDriverTest extends LinearOpMode {
         AutonomousLibrary al = new AutonomousLibrary();
         al.declareRobot(robot);
         al.init();
-        runLinearCode = false;*/
+        runLinearCode = false;
+        robot.explode.exe.activate();*/
         }
 
     }
