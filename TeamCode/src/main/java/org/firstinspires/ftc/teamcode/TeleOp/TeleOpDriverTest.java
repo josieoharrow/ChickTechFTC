@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -10,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
  * Created by Robotics on 8/27/2017.
  */
 @TeleOp(name = "Test TeleOp")
-@Disabled
+//@Disabled
 public class TeleOpDriverTest extends OpMode {
 
     TeleOpLibrary tol;
