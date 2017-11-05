@@ -35,11 +35,9 @@ public class AutonomousDriverTest extends LinearOpMode {
             //al.declareRobot(robot);
             if (runLinearCode) {
 
-                al.driveAtAngle(10, 45, telemetry, this);
+                al.driveAtAngle(33, 0, telemetry, this);
 
-                al.driveAtAngle(10, 180, telemetry, this);
 
-                al.driveAtAngle(10, 270, telemetry, this);
             }
             runLinearCode = false;
         }
