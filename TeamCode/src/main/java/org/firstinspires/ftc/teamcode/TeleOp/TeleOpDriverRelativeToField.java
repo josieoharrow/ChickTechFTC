@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -9,15 +8,10 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 /**
  * Created by Robotics on 8/27/2017.
  */
-@TeleOp(name = "Main TeleOp")
-@Disabled
-public class TeleOpDriver extends OpMode {
+@TeleOp(name = "TeleOp Relative to Field")
+//@Disabled
+public class TeleOpDriverRelativeToField extends OpMode {
 
-    double five;
-
-    public double usPulseUpper = 2500;
-    double usFrame;
-    public double usPulseLower = 500;
     TeleOpLibrary tol;
     CommonLibrary cl;
 
@@ -38,7 +32,7 @@ public class TeleOpDriver extends OpMode {
         tol.init(hardwareMap);
         telemetry.addLine("Initializing complete.");
         telemetry.update();
-   }
+    }
 
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
@@ -60,9 +54,9 @@ public class TeleOpDriver extends OpMode {
     @Override
     public void loop() {
 
-        tol.generalTelemetry(gamepad1, telemetry);
         tol.translateLeftStickToRotation(gamepad1);
-        tol.translateRightStickToSlidingRelativeToRobot(gamepad1);
+        tol.generalTelemetry(gamepad1, telemetry);
+        tol.translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
     }
 
     /*

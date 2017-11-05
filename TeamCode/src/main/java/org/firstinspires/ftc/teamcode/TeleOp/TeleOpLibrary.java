@@ -22,48 +22,70 @@ public class TeleOpLibrary {
     HardwareMap hardwareMap;
     Orientation angles;
 
-    public static final double OPEN_ARMS = 0.5;
-    public static final double CLOSED_ARMS = 0;
+    public enum motor {
 
-    boolean gamepad1AHasBeenPressed = false;
-    boolean gamepad1BHasBeenPressed = false;
-
-    public void declareRobot(RobotHardware robotSent) {
-
-        robot = robotSent;
+        FRONT_LEFT_MOTOR, FRONT_RIGHT_MOTOR, REAR_LEFT_MOTOR, REAR_RIGHT_MOTOR
     }
 
-    public void init() {
+
+    public void init(HardwareMap hardwareMapSent) {
+
+        hardwareMap = hardwareMapSent;
+        robot = new RobotHardware();
         robot.init(hardwareMap);
     }
 
-    public void translateLeftStickToRotation(Gamepad gamepad1){
+
+    public void translateLeftStickToRotation(Gamepad gamepad1) {
         // Button: left joystick
+
         float HorizontalInput = Range.clip(gamepad1.left_stick_x, -1, 1);
         double clockwise = scaleInput(HorizontalInput) * .8;
         double counterClockwise = scaleInput(-HorizontalInput) * .8;
 
-        robot.frontLeftMotor.setPower(counterClockwise);
-        robot.frontRightMotor.setPower(clockwise);
-        robot.rearRightMotor.setPower(clockwise);
-        robot.rearLeftMotor.setPower(counterClockwise);
+        robot.frontLeftMotor.setPower(clockwise);
+        robot.frontRightMotor.setPower(counterClockwise);
+        robot.rearRightMotor.setPower(counterClockwise);
+        robot.rearLeftMotor.setPower(clockwise);
     }
 
-    public void translateRightStickToSliding(Gamepad gamepad1) {
+
+    public void translateRightStickToSlidingRelativeToRobot(Gamepad gamepad1) {
 
         float modifiedYValue = -gamepad1.right_stick_y; //This is because the phone was receiving y values that were flipped from all controllers, resulting in backwards driving behavior
-        double flPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1)); //may need switched
-        double frPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
-        double rrPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
-        double rlPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
+        double flPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1)); //may need switched
+        double frPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
+        double rrPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
+        double rlPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
         robot.frontLeftMotor.setPower(flPower);
         robot.frontRightMotor.setPower(frPower);
         robot.rearRightMotor.setPower(rrPower);
         robot.rearLeftMotor.setPower(rlPower);
-
     }
 
-    public void telemetry(Gamepad gamepad1, Telemetry telemetry) {
+
+    public void translateRightStickToSlidingRelativeToField(Gamepad gamepad1, Telemetry telemetry) {
+
+        angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double currentHeading = (double)angles.firstAngle;
+        double yOffSet = Math.sin(((90 - currentHeading) * (Math.PI/180)));
+        double xOffset = Math.cos(((90 - currentHeading) * (Math.PI / 180)));
+        double modifiedYValue = -gamepad1.right_stick_y - (Math.abs(yOffSet * gamepad1.right_stick_y)); //This is because the phone was receiving y values that were flipped from all controllers, resulting in backwards driving behavior
+        double modifiedXValue = gamepad1.right_stick_x - (Math.abs(xOffset * gamepad1.right_stick_x));//maybe needs adjusted
+        double flPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1));
+        double frPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1));
+        double rrPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1));
+        double rlPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1));
+
+        robot.frontLeftMotor.setPower(flPower);
+        robot.frontRightMotor.setPower(frPower);
+        robot.rearRightMotor.setPower(rrPower);
+        robot.rearLeftMotor.setPower(rlPower);
+    }
+
+
+    public void generalTelemetry(Gamepad gamepad1, Telemetry telemetry) {
 
         telemetry.clear();
         telemetry.addData("front right motor position ", robot.frontRightMotor.getCurrentPosition());
@@ -140,11 +162,15 @@ public class TeleOpLibrary {
         return dScale;
     }
 
+
     String formatAngle(AngleUnit angleUnit, double angle) {
+
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
 
-    String formatDegrees(double degrees){
+
+    String formatDegrees(double degrees) {
+
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 }

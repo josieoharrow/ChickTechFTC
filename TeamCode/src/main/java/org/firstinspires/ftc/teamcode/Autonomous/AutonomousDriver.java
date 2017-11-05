@@ -3,9 +3,6 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
-import org.firstinspires.ftc.teamcode.Common.RobotHardware;
-
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -14,23 +11,31 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 //@Disabled
 public class AutonomousDriver extends LinearOpMode {
 
-    RobotHardware robot   = new RobotHardware();
+    boolean runLinearCode = true;
 
     @Override
     public void runOpMode() {
 
-        robot.init(hardwareMap);
-        CommonLibrary cl = new CommonLibrary();
-        cl.declareRobot(robot);
         AutonomousLibrary al = new AutonomousLibrary();
-        al.declareRobot(robot);
-        
+        al.init(hardwareMap);
         waitForStart();
 
         while (opModeIsActive()) {
 
-            break;
-            //last step
+            if (runLinearCode) {
+                telemetry.addLine("First drive");
+                telemetry.update();
+                al.driveAtAngle(18, 45, telemetry, this);
+
+                telemetry.addLine("Vuforia");
+                telemetry.update();
+                al.pictoDecipher(telemetry, this);
+                telemetry.addLine("2nd drive");
+                telemetry.update();
+                al.driveAtAngle(12, 70, telemetry, this);
+            }
+
+            runLinearCode = false;
         }
     }
 }

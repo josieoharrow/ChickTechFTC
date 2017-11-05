@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
-import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -14,19 +12,27 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 //@Disabled
 public class TeleOpDriverTest extends OpMode {
 
-    RobotHardware robot   = new RobotHardware();
+    TeleOpLibrary tol;
+    CommonLibrary cl;
 
     @Override
     public void init() {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
-       // robot.init(hardwareMap);
-        CommonLibrary cl = new CommonLibrary();
-        //cl.declareRobot(robot);
-        TeleOpLibrary tol = new TeleOpLibrary();
-        tol.declareRobot(robot);
 
+        telemetry.addLine("Initializing. please wait.");
+        telemetry.update();
+        cl = new CommonLibrary();
+        telemetry.addLine("Initializing CommonLibrary. Please wait.");
+        telemetry.update();
+        cl.init(hardwareMap);
+        tol = new TeleOpLibrary();
+        telemetry.addLine("Initializing TeleOpLibrary. Please wait.");
+        telemetry.update();
+        tol.init(hardwareMap);
+        telemetry.addLine("Initializing complete.");
+        telemetry.update();
     }
 
     /*
@@ -48,8 +54,6 @@ public class TeleOpDriverTest extends OpMode {
      */
     @Override
     public void loop() {
-        TeleOpLibrary tol = new TeleOpLibrary();
-        tol.declareRobot(robot);
     }
 
     /*
