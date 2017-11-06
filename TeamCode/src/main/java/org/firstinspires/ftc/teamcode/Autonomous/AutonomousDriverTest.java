@@ -37,7 +37,6 @@ public class AutonomousDriverTest extends LinearOpMode {
                 al.pictoDecipher(telemetry, this);
                 telemetry.addLine("2nd drive");
                 telemetry.update();
-                al.driveAtAngle(12, -70, telemetry, this);*/
             }
 
             runLinearCode = false;
@@ -48,4 +47,7 @@ public class AutonomousDriverTest extends LinearOpMode {
         robot.init(hardwareMap);
         CommonLibrary cl = new CommonLibrary();
         cl.declareRobot(robot);*/
+            }
+        }
+    }
 }
