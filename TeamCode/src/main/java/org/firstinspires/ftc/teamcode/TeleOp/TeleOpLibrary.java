@@ -69,15 +69,19 @@ public class TeleOpLibrary {
         angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         double currentHeading = (double)angles.firstAngle;
-        double yOffSet = Math.sin(((90 - currentHeading) * (Math.PI/180)));
-        double xOffset = Math.cos(((90 - currentHeading) * (Math.PI / 180)));
-        double modifiedYValue = -gamepad1.right_stick_y - (Math.abs(yOffSet * gamepad1.right_stick_y)); //This is because the phone was receiving y values that were flipped from all controllers, resulting in backwards driving behavior
-        double modifiedXValue = gamepad1.right_stick_x - (Math.abs(xOffset * gamepad1.right_stick_x));//maybe needs adjusted
+        double yOffSet = Math.sin((90 - currentHeading) * (Math.PI / 180)) - 1;
+        double xOffset = -Math.cos(((90 - currentHeading) * (Math.PI / 180)));
+        double modifiedYValue = Math.abs(gamepad1.right_stick_y) * (-gamepad1.right_stick_y - yOffSet);
+        double modifiedXValue = Math.abs(gamepad1.right_stick_x) * (gamepad1.right_stick_x - xOffset);
+        telemetry.addData("y offset ", yOffSet);
+        telemetry.addData("x offset ", xOffset);
+        telemetry.addData("mod y ", modifiedYValue);
+        telemetry.addData("mod x ", modifiedXValue);
         double flPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1));
         double frPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1));
         double rrPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1));
         double rlPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1));
-
+        telemetry.update();
         robot.frontLeftMotor.setPower(flPower);
         robot.frontRightMotor.setPower(frPower);
         robot.rearRightMotor.setPower(rrPower);
@@ -92,7 +96,7 @@ public class TeleOpLibrary {
         telemetry.addData("front left motor position ", robot.frontLeftMotor.getCurrentPosition());
         telemetry.addData("rear right motor position ", robot.rearRightMotor.getCurrentPosition());
         telemetry.addData("rear left motor position ", robot.rearLeftMotor.getCurrentPosition());
-        telemetry.update();
+        //telemetry.update();
     }
 
 

@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoDecipher;
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.initial;
 
@@ -32,14 +30,14 @@ public class AutonomousDriverTest extends LinearOpMode {
             if (runLinearCode) {
                 telemetry.addLine("First drive");
                 telemetry.update();
-                al.driveAtAngle(18, -45, telemetry, this);
-
+                al.driveAtAngle(18, 315, telemetry, this);
+/*
                 telemetry.addLine("Vuforia");
                 telemetry.update();
                 al.pictoDecipher(telemetry, this);
                 telemetry.addLine("2nd drive");
                 telemetry.update();
-                al.driveAtAngle(12, -70, telemetry, this);
+                al.driveAtAngle(12, -70, telemetry, this);*/
             }
 
             runLinearCode = false;
