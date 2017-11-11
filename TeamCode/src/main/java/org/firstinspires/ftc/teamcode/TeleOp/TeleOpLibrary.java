@@ -67,20 +67,17 @@ public class TeleOpLibrary {
     public void translateRightStickToSlidingRelativeToField(Gamepad gamepad1, Telemetry telemetry) {
 
         angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double currentHeading = ((double)angles.firstAngle * Math.PI/180);
+        double thumbstickAngle = Math.atan2(-gamepad1.right_stick_y, gamepad1.right_stick_x);
+        double thumbstickHypotenuse = Math.sqrt((gamepad1.right_stick_y * gamepad1.right_stick_y) + (gamepad1.right_stick_x * gamepad1.right_stick_x));
+        double modifiedThumbstickAngle = thumbstickAngle - currentHeading;
 
-        double currentHeading = (double)angles.firstAngle;
-        double yOffSet = Math.sin((90 - currentHeading) * (Math.PI / 180)) - 1;
-        double xOffset = -Math.cos(((90 - currentHeading) * (Math.PI / 180)));
-        double modifiedYValue = Math.abs(gamepad1.right_stick_y) * (-gamepad1.right_stick_y - yOffSet);
-        double modifiedXValue = Math.abs(gamepad1.right_stick_x) * (gamepad1.right_stick_x - xOffset);
-        telemetry.addData("y offset ", yOffSet);
-        telemetry.addData("x offset ", xOffset);
-        telemetry.addData("mod y ", modifiedYValue);
-        telemetry.addData("mod x ", modifiedXValue);
-        double flPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1));
-        double frPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1));
-        double rrPower = scaleInput(Range.clip((modifiedYValue + modifiedXValue), -1, 1));
-        double rlPower = scaleInput(Range.clip((modifiedYValue - modifiedXValue), -1, 1));
+        double modifiedThumbstickY = thumbstickHypotenuse * Math.sin(modifiedThumbstickAngle);
+        double modifiedThumbstickX = thumbstickHypotenuse * Math.cos(modifiedThumbstickAngle);
+        double flPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
+        double frPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
+        double rrPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
+        double rlPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
         telemetry.update();
         robot.frontLeftMotor.setPower(flPower);
         robot.frontRightMotor.setPower(frPower);
@@ -97,45 +94,6 @@ public class TeleOpLibrary {
         telemetry.addData("rear right motor position ", robot.rearRightMotor.getCurrentPosition());
         telemetry.addData("rear left motor position ", robot.rearLeftMotor.getCurrentPosition());
         //telemetry.update();
-    }
-
-
-    public double returnAngleFromThrottleInput(Gamepad gamepad1) {
-
-        double angleInput = Math.atan2(gamepad1.right_stick_y, gamepad1.right_stick_x);
-        return angleInput;
-    }
-
-
-    public double returnMovementAngleFromThrottleInput(Gamepad gamepad1) {
-        //Returns an angle with field orientation based on view from driver station as the far wall being y = 1,
-        //the right wall as x = 1, the left as x = -1, and the closest wall as y = -1
-
-        angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        float currentHeading = Float.parseFloat(formatAngle(angles.angleUnit, angles.firstAngle)) + 90;
-
-
-        if (currentHeading > 360) {
-
-            currentHeading -= 360;
-        }
-        double angleInput = Math.atan(gamepad1.right_stick_y/ gamepad1.right_stick_x);
-
-        double angleDirectionRelativeToCurrent = currentHeading - angleInput;//
-
-        if (Math.abs(angleDirectionRelativeToCurrent) > 180) {
-
-            if (angleDirectionRelativeToCurrent > 180) {
-
-                angleDirectionRelativeToCurrent -= 360;
-            } else {
-
-                angleDirectionRelativeToCurrent += 360;
-            }
-        }
-
-        return angleDirectionRelativeToCurrent;
     }
 
 
@@ -171,7 +129,7 @@ public class TeleOpLibrary {
 
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
-
+    
 
     String formatDegrees(double degrees) {
 
