@@ -54,7 +54,7 @@ public class TeleOpDriverRelativeToField extends OpMode {
     @Override
     public void loop() {
 
-        tol.translateLeftStickToRotation(gamepad1);
+        //tol.translateLeftStickToRotation(gamepad1);
         tol.generalTelemetry(gamepad1, telemetry);
         tol.translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
     }

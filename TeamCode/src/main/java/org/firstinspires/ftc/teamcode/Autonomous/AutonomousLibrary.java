@@ -9,16 +9,15 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
 
@@ -160,10 +159,10 @@ public class AutonomousLibrary {
 
         double xInput = Math.cos(wheelPowerAngle);
         double yInput = Math.sin(wheelPowerAngle);
-        double flPower = Range.clip((yInput - xInput), -1, 1);
-        double frPower = Range.clip((yInput + xInput), -1, 1);
-        double rrPower = Range.clip((yInput - xInput), -1, 1);
-        double rlPower = Range.clip((yInput + xInput), -1, 1);
+        double flPower = Range.clip((yInput + xInput), -1, 1);
+        double frPower = Range.clip((yInput - xInput), -1, 1);
+        double rrPower = Range.clip((yInput + xInput), -1, 1);
+        double rlPower = Range.clip((yInput - xInput), -1, 1);
 
         robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() + (int)(Math.abs(distance) * INCHES_TO_ENCODER_TICKS * determineMotorTargetPositionRatio(wheelPowerAngle, motor.FRONT_LEFT_MOTOR)));
         robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() + (int)(Math.abs(distance) * INCHES_TO_ENCODER_TICKS * determineMotorTargetPositionRatio(wheelPowerAngle, motor.FRONT_RIGHT_MOTOR)));
