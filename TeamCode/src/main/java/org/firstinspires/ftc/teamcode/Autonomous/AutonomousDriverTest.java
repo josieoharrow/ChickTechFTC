@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
+
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoDecipher;
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.initial;
 
@@ -34,9 +35,27 @@ public class AutonomousDriverTest extends LinearOpMode {
                 telemetry.addData("team color = ", al.robot.isRed);
                 telemetry.update();
 
+                al.driveAtAngle(18, 315, telemetry, this);
+/*
+                telemetry.addLine("Vuforia");
+                telemetry.update();
+                al.pictoDecipher(telemetry, this);
+                telemetry.addLine("2nd drive");
+                telemetry.update();
+
             }
 
             runLinearCode = false;
         }
     }
+
+            /* al.MotorEncoderTest(telemetry);
+
+        robot.init(hardwareMap);
+        CommonLibrary cl = new CommonLibrary();
+        cl.declareRobot(robot);*/
+            }
+        }
+    }
 }
+
