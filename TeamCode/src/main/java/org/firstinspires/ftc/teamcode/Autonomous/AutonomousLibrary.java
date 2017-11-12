@@ -200,7 +200,7 @@ public class AutonomousLibrary {
         robot.rearLeftMotor.setPower(0);
         runUsingEncoders();
         resetMotorEncoders();
-}
+    }
 
     double convertEncoderValuesToLinearDrivingInches(double drivingAngle, double encoderValue) {
 
@@ -249,7 +249,7 @@ public class AutonomousLibrary {
         }
     }
 
-    public void turnToAngle(int turnAngle, double speed, Telemetry telemetry){
+    public void turnToAngleWithGyro(int turnAngle, double speed, Telemetry telemetry){
 
         angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float stopTarget;
@@ -257,6 +257,7 @@ public class AutonomousLibrary {
         if (turnAngle >= 360){turnAngle = turnAngle - 360;}
         if (turnAngle <= -360){turnAngle = turnAngle + 360;}
         if (turnAngle < 0){left = true;}
+        if (speed < 0){speed = Math.abs(speed);}
 
         if (left) {
             stopTarget = angles.firstAngle + turnAngle;
@@ -279,6 +280,93 @@ public class AutonomousLibrary {
             }
         }
     }
+
+    public void turnToAngleWithEncoderTicks(int turnAngle, double turnSpeed, Telemetry telemetry){
+
+        resetMotorEncoders();
+        boolean left = false;
+        if (turnAngle <= -360){ turnAngle = turnAngle + 360;}
+        if (turnAngle >= 360){turnAngle = turnAngle - 360;}
+        if (turnAngle < 0){left = true;}
+        if (turnSpeed < 0){turnSpeed = Math.abs(turnSpeed);}
+        float angleInInches = turnAngle * 0.314f;
+        double flPower = turnSpeed;
+        double frPower = turnSpeed;
+        double rrPower = turnSpeed;
+        double rlPower = turnSpeed;
+
+        if (left){
+
+            robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.rearRightMotor.setTargetPosition(robot.rearRightMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.rearLeftMotor.setTargetPosition(robot.rearLeftMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+
+            frPower = -turnSpeed;
+            rrPower = -turnSpeed;
+        }
+        else{
+            robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.rearRightMotor.setTargetPosition(robot.rearRightMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.rearLeftMotor.setTargetPosition(robot.rearLeftMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+
+            flPower = -turnSpeed;
+            rlPower = -turnSpeed;
+        }
+        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.frontLeftMotor.setPower(flPower);
+        robot.frontRightMotor.setPower(frPower);
+        robot.rearRightMotor.setPower(rrPower);
+        robot.rearLeftMotor.setPower(rlPower);
+    }
+
+    public void turnToAngleWithPID (int angle, int direction, double kp, double ki, double kd){
+
+        angles = robot.imu.getAngularOrientation();
+        if (angle >= 360) {angle = angle - 360;}
+        if (angle <= -360){angle = angle + 360;}
+        double targetAngle = angles.firstAngle + (direction * angle);
+        if (targetAngle > 180)  {targetAngle = targetAngle - 360;}
+        if (targetAngle <= -180){targetAngle = targetAngle + 360;}
+        double acceptableError = 0.5;
+        double currentError = 1;
+        double previousError = 0;
+        double integral = 0;
+        double power;
+        double previousTime = 0;
+        while (Math.abs(currentError) > acceptableError){
+
+            double timeChange = System.nanoTime() - previousTime;
+            previousTime = System.nanoTime();
+            angles = robot.imu.getAngularOrientation();
+            double anglesValue = angles.firstAngle ;
+            currentError = targetAngle - anglesValue;
+            if (currentError > 180) {currentError = currentError - 360;}
+            if (currentError <= 180){currentError = currentError + 360;}
+            integral = integral + currentError * kp;
+            double kpError = currentError * kp;
+            double kiIntegral = integral * ki * timeChange;
+            double derivative = (currentError - previousError) / timeChange;
+            double kdDerivative = derivative * kd;
+            power = kpError * kiIntegral * kdDerivative;
+            if (Math.abs(power) > 1) {power = power / power;}
+            robot.frontLeftMotor.setPower(power);
+            robot.frontRightMotor.setPower(-power);
+            robot.rearRightMotor.setPower(-power);
+            robot.rearLeftMotor.setPower(power);
+            previousError = currentError;
+        }
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower(0);
+        robot.rearRightMotor.setPower(0);
+        robot.rearLeftMotor.setPower(0);
+    }
+
 
     public void decipherJewelAndKnockOff() {
         double BallHue;
