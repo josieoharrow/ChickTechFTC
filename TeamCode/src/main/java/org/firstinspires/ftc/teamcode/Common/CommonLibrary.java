@@ -10,10 +10,22 @@ public class CommonLibrary {
     RobotHardware robot;
     HardwareMap hardwareMap;
 
+
     public void init(HardwareMap hardwareMapSent) {
 
         hardwareMap = hardwareMapSent;
         robot = new RobotHardware();
+        setTeamColor();
         robot.init(hardwareMap);
+    }
+
+    public void setTeamColor() {
+
+        if (robot.colorSensorMR.red() > robot.colorSensorMR.blue()){
+            robot.isRed = 1;
+        }
+        else {
+            robot.isRed = 0;
+        }
     }
 }
