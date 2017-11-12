@@ -353,7 +353,8 @@ public class AutonomousLibrary {
             double derivative = (currentError - previousError) / timeChange;
             double kdDerivative = derivative * kd;
             power = kpError * kiIntegral * kdDerivative;
-            if (Math.abs(power) > 1) {power = power / power;}
+            if (power > 1) {power = 1;}
+            if (power < 1) {power = -1;}
             robot.frontLeftMotor.setPower(power);
             robot.frontRightMotor.setPower(-power);
             robot.rearRightMotor.setPower(-power);
