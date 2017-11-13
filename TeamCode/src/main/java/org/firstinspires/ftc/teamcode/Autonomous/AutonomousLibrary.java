@@ -356,10 +356,10 @@ public class AutonomousLibrary {
 
     public double determineMotorTargetPositionRatio(double angleHeading, motor m){
         
-        double frontLeftMotorAngle = 45;
-        double frontRightMotorAngle = -45;
-        double rearLeftMotorAngle = -45;
-        double rearRightMotorAngle = 45;
+        double frontLeftMotorAngle = Math.PI/4;
+        double frontRightMotorAngle = -Math.PI/4;
+        double rearLeftMotorAngle = -Math.PI/4;
+        double rearRightMotorAngle = Math.PI/4;
 
         double frontLeftMotorRatio = Math.sin(frontLeftMotorAngle + angleHeading);
         double frontRightMotorRatio = Math.sin(frontRightMotorAngle + angleHeading);
