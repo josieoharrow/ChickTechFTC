@@ -3,6 +3,10 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import org.firstinspires.ftc.teamcode.Common.RobotHardware;
+
+import org.firstinspires.ftc.teamcode.Common.RobotHardware;
+
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoDecipher;
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.initial;
 
@@ -13,7 +17,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 @Autonomous(name = "Test Autonomous")
-@Disabled
+//@Disabled
 public class AutonomousDriverTest extends LinearOpMode {
 
     boolean runLinearCode = true;
@@ -28,8 +32,9 @@ public class AutonomousDriverTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (runLinearCode) {
-                telemetry.addLine("First drive");
+                telemetry.addData("team color = ", al.robot.isRed);
                 telemetry.update();
+
                 al.driveAtAngle(18, 315, telemetry, this);
 /*
                 telemetry.addLine("Vuforia");
@@ -37,11 +42,13 @@ public class AutonomousDriverTest extends LinearOpMode {
                 al.pictoDecipher(telemetry, this);
                 telemetry.addLine("2nd drive");
                 telemetry.update();
+
             }
 
             runLinearCode = false;
         }
     }
+
             /* al.MotorEncoderTest(telemetry);
 
         robot.init(hardwareMap);
@@ -51,3 +58,4 @@ public class AutonomousDriverTest extends LinearOpMode {
         }
     }
 }
+

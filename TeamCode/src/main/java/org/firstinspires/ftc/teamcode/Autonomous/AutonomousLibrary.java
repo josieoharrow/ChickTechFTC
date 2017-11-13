@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
@@ -37,6 +38,7 @@ public class AutonomousLibrary {
     static double DRIVING_POWER_SLOW_MODIFIER = 0.5;
     static double ENCODER_TICKS_TO_INCHES = 4/1130;
     static double INCHES_TO_ENCODER_TICKS = 1130/4;
+    public ColorSensor colorSensorREV;
 
     public enum motor {
 
@@ -55,6 +57,7 @@ public class AutonomousLibrary {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
         parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
+        colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
     }
 
@@ -199,7 +202,7 @@ public class AutonomousLibrary {
         robot.rearLeftMotor.setPower(0);
         runUsingEncoders();
         resetMotorEncoders();
-}
+    }
 
     double convertEncoderValuesToLinearDrivingInches(double drivingAngle, double encoderValue) {
 
@@ -248,7 +251,7 @@ public class AutonomousLibrary {
         }
     }
 
-    public void turnToAngle(int turnAngle, double speed, Telemetry telemetry){
+    public void turnToAngleWithGyro(int turnAngle, double speed, Telemetry telemetry){
 
         angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float stopTarget;
@@ -256,6 +259,7 @@ public class AutonomousLibrary {
         if (turnAngle >= 360){turnAngle = turnAngle - 360;}
         if (turnAngle <= -360){turnAngle = turnAngle + 360;}
         if (turnAngle < 0){left = true;}
+        if (speed < 0){speed = Math.abs(speed);}
 
         if (left) {
             stopTarget = angles.firstAngle + turnAngle;
@@ -278,6 +282,94 @@ public class AutonomousLibrary {
             }
         }
     }
+
+    public void turnToAngleWithEncoderTicks(int turnAngle, double turnSpeed, Telemetry telemetry){
+
+        resetMotorEncoders();
+        boolean left = false;
+        if (turnAngle <= -360){ turnAngle = turnAngle + 360;}
+        if (turnAngle >= 360){turnAngle = turnAngle - 360;}
+        if (turnAngle < 0){left = true;}
+        if (turnSpeed < 0){turnSpeed = Math.abs(turnSpeed);}
+        float angleInInches = turnAngle * 0.314f;
+        double flPower = turnSpeed;
+        double frPower = turnSpeed;
+        double rrPower = turnSpeed;
+        double rlPower = turnSpeed;
+
+        if (left){
+
+            robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.rearRightMotor.setTargetPosition(robot.rearRightMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.rearLeftMotor.setTargetPosition(robot.rearLeftMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+
+            frPower = -turnSpeed;
+            rrPower = -turnSpeed;
+        }
+        else{
+            robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.rearRightMotor.setTargetPosition(robot.rearRightMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+            robot.rearLeftMotor.setTargetPosition(robot.rearLeftMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
+
+            flPower = -turnSpeed;
+            rlPower = -turnSpeed;
+        }
+        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.frontLeftMotor.setPower(flPower);
+        robot.frontRightMotor.setPower(frPower);
+        robot.rearRightMotor.setPower(rrPower);
+        robot.rearLeftMotor.setPower(rlPower);
+    }
+
+    public void turnToAngleWithPID (int angle, int direction, double kp, double ki, double kd){
+
+        angles = robot.imu.getAngularOrientation();
+        if (angle >= 360) {angle = angle - 360;}
+        if (angle <= -360){angle = angle + 360;}
+        double targetAngle = angles.firstAngle + (direction * angle);
+        if (targetAngle > 180)  {targetAngle = targetAngle - 360;}
+        if (targetAngle <= -180){targetAngle = targetAngle + 360;}
+        double acceptableError = 0.5;
+        double currentError = 1;
+        double previousError = 0;
+        double integral = 0;
+        double power;
+        double previousTime = 0;
+        while (Math.abs(currentError) > acceptableError){
+
+            double timeChange = System.nanoTime() - previousTime;
+            previousTime = System.nanoTime();
+            angles = robot.imu.getAngularOrientation();
+            double anglesValue = angles.firstAngle ;
+            currentError = targetAngle - anglesValue;
+            if (currentError > 180) {currentError = currentError - 360;}
+            if (currentError <= 180){currentError = currentError + 360;}
+            integral = integral + currentError * kp;
+            double kpError = currentError * kp;
+            double kiIntegral = integral * ki * timeChange;
+            double derivative = (currentError - previousError) / timeChange;
+            double kdDerivative = derivative * kd;
+            power = kpError * kiIntegral * kdDerivative;
+            if (power > 1) {power = 1;}
+            if (power < 1) {power = -1;}
+            robot.frontLeftMotor.setPower(power);
+            robot.frontRightMotor.setPower(-power);
+            robot.rearRightMotor.setPower(-power);
+            robot.rearLeftMotor.setPower(power);
+            previousError = currentError;
+        }
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower(0);
+        robot.rearRightMotor.setPower(0);
+        robot.rearLeftMotor.setPower(0);
+    }
+
 
     public void decipherJewelAndKnockOff() {
         double BallHue;
@@ -305,7 +397,7 @@ public class AutonomousLibrary {
 
     public void modernRoboticsSensorTest(Telemetry telemetry) {
         // hsvValues is an array that will hold the hue, saturation, and value information.
-        float hsvValues[] = {0F,0F,0F};
+        float hsvValues[] = {0F, 0F, 0F};
 
         // values is a reference to the hsvValues array.
         final float values[] = hsvValues;
@@ -314,44 +406,32 @@ public class AutonomousLibrary {
         robot.colorSensorMR.enableLed(bLedOn);
 
         Color.RGBToHSV(robot.colorSensorMR.red() * 8, robot.colorSensorMR.green() * 8, robot.colorSensorMR.blue() * 8, hsvValues);
-
-        telemetry.addData("mr LED", bLedOn ? "On" : "Off");
-        telemetry.addData("mr Clear", robot.colorSensorMR.alpha());
-        telemetry.addData("mr Red  ", robot.colorSensorMR.red());
-        telemetry.addData("mr Green", robot.colorSensorMR.green());
-        telemetry.addData("mr Blue ", robot.colorSensorMR.blue());
-        telemetry.addData("mr Hue", hsvValues[0]);
-        telemetry.update();
     }
 
-    public void revRoboticsColorSensorTest(Telemetry telemetry) {
-       //set up for color sensor
-        // hsvValues is an array that will hold the hue, saturation, and value information.
-        float hsvValues[] = {0F, 0F, 0F};
+    public void decipherJewelAndKnockOff(Telemetry telemetry) {
+        if (robot.colorSensorREV.blue() > robot.colorSensorREV.red()){
+            if (robot.isRed == 1){
+                //drive opposite side of color sensor
+                telemetry.addLine("I see the blue jewel and I am on red team");
+                telemetry.update();
 
-        // values is a reference to the hsvValues array.
-        final float values[] = hsvValues;
+            } else {
+                //drive side of color sensor
+                telemetry.addLine("I see the blue jewel and I am on blue team");
+                telemetry.update();
+            }
+        } else {
+            if (robot.isRed == 1){
+                //drive side of color sensor
+                telemetry.addLine("I see the red jewel and I am on red team");
+                telemetry.update();
+            } else {
+                //drive opposite side of color sensor
+                telemetry.addLine("I see the red jewel and I am on blue team");
+                telemetry.update();
+            }
+        }
 
-        // sometimes it helps to multiply the raw RGB values with a scale factor
-        // to amplify/attentuate the measured values.
-        final double SCALE_FACTOR = 255;
-
-        //Actual steps in order to get values from color sensor
-        // convert the RGB values to HSV values.
-        // multiply by the SCALE_FACTOR.
-        // then cast it back to int (SCALE_FACTOR is a double)
-        Color.RGBToHSV((int) (robot.colorSensorREV.red() * SCALE_FACTOR),
-                (int) (robot.colorSensorREV.green() * SCALE_FACTOR),
-                (int) (robot.colorSensorREV.blue() * SCALE_FACTOR),
-                hsvValues);
-
-        // send the info back to driver station using telemetry function.
-        telemetry.addData("rev Alpha", robot.colorSensorREV.alpha());
-        telemetry.addData( "rev Red  ", robot.colorSensorREV.red());
-        telemetry.addData("rev Green", robot.colorSensorREV.green());
-        telemetry.addData("rev Blue ", robot.colorSensorREV.blue());
-        telemetry.addData("rev Hue", hsvValues[0]);
-        telemetry.update();
     }
 
     public double determineMotorTargetPositionRatio(double angleHeading, motor m){

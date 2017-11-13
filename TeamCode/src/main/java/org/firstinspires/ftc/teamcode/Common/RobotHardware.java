@@ -33,6 +33,8 @@ public class RobotHardware {
     /* local OpMode members. */
     HardwareMap hardwareMap;
 
+    public int isRed = 3;
+
     /* Constructor
     public RobotHardware() {
     }
