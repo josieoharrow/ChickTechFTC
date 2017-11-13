@@ -54,6 +54,9 @@ public class TeleOpDriverTest extends OpMode {
      */
     @Override
     public void loop() {
+
+        tol.toggleArmMechanism(gamepad2, telemetry);
+        tol.testArmServos(gamepad1, telemetry);
     }
 
     /*
