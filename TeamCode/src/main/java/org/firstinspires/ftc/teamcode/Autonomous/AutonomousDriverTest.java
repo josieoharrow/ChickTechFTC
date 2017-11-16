@@ -22,6 +22,7 @@ public class AutonomousDriverTest extends LinearOpMode {
 
     boolean runLinearCode = true;
 
+
     @Override
     public void runOpMode () throws InterruptedException {
 
@@ -32,6 +33,7 @@ public class AutonomousDriverTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (runLinearCode) {
+
 
                 al.turnToAngleWithPID(90, 0.0042,  0.0002, 0, telemetry, this);
                 /*Thread.sleep(100);
@@ -45,6 +47,10 @@ public class AutonomousDriverTest extends LinearOpMode {
                 telemetry.update();
 
                 al.driveAtAngle(18, 315, telemetry, this);
+
+                telemetry.addData("team color = ", al.robot.isRed);
+                al.setPosition(telemetry);
+                //al.driveAtAngle(18, 315, telemetry, this);
                 telemetry.addLine("Vuforia");
                 telemetry.update();
                 al.pictoDecipher(telemetry, this);

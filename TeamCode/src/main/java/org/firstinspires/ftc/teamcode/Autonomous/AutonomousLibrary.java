@@ -19,6 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
+import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 
 import java.util.Locale;
 
@@ -52,6 +53,7 @@ public class AutonomousLibrary {
     public void init(HardwareMap hardwareMapSent) {
         hardwareMap = hardwareMapSent;
         robot = new RobotHardware();
+        CommonLibrary cl = new CommonLibrary();
         robot.init(hardwareMap);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
@@ -59,6 +61,26 @@ public class AutonomousLibrary {
         parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        setTeamColor();
+
+    }
+    public void setTeamColor() {
+
+        if (robot.colorSensorMR.red() > robot.colorSensorMR.blue()){
+            robot.isRed = 1;
+        }
+        else {
+            robot.isRed = 0;
+        }
+    }
+    public void setPosition(Telemetry telemetry){
+        if (robot.positionTouchSensor.getState() == true) {
+            telemetry.addData("Digital Touch", "Is Not Pressed");
+            telemetry.update();
+        } else {
+            telemetry.addData("Digital Touch", "Is Pressed");
+            telemetry.update();
+        }
     }
 
     public void motorsOn() {
@@ -398,9 +420,6 @@ public class AutonomousLibrary {
 
     }
 
-    public void setTeamColor() {
-        //if values of color sensor = blue, then team color = blue
-    }
 
     public void modernRoboticsSensorTest(Telemetry telemetry) {
         // hsvValues is an array that will hold the hue, saturation, and value information.
@@ -422,9 +441,13 @@ public class AutonomousLibrary {
                 telemetry.addLine("I see the blue jewel and I am on red team");
                 telemetry.update();
 
-            } else {
+            } else if (robot.isRed == 0) {
                 //drive side of color sensor
                 telemetry.addLine("I see the blue jewel and I am on blue team");
+                telemetry.update();
+            } else {
+                //For case when you don't know what team you are on- error with ground color sensor
+                telemetry.addLine("IDK what team I'm on but I see the blue jewel");
                 telemetry.update();
             }
         } else {
@@ -432,9 +455,13 @@ public class AutonomousLibrary {
                 //drive side of color sensor
                 telemetry.addLine("I see the red jewel and I am on red team");
                 telemetry.update();
-            } else {
+            } else if (robot.isRed == 0){
                 //drive opposite side of color sensor
                 telemetry.addLine("I see the red jewel and I am on blue team");
+                telemetry.update();
+            } else {
+                //For case when you don't know what team you are on- error with ground color sensor
+                telemetry.addLine("IDK what team I'm on but I see the red jewel");
                 telemetry.update();
             }
         }
@@ -443,10 +470,10 @@ public class AutonomousLibrary {
 
     public double determineMotorTargetPositionRatio(double angleHeading, motor m){
         
-        double frontLeftMotorAngle = 45;
-        double frontRightMotorAngle = -45;
-        double rearLeftMotorAngle = -45;
-        double rearRightMotorAngle = 45;
+        double frontLeftMotorAngle = Math.PI/4;
+        double frontRightMotorAngle = -Math.PI/4;
+        double rearLeftMotorAngle = -Math.PI/4;
+        double rearRightMotorAngle = Math.PI/4;
 
         double frontLeftMotorRatio = Math.sin(frontLeftMotorAngle + angleHeading);
         double frontRightMotorRatio = Math.sin(frontRightMotorAngle + angleHeading);

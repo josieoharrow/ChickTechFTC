@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
@@ -22,6 +23,22 @@ public class TeleOpLibrary {
     HardwareMap hardwareMap;
     Orientation angles;
 
+    boolean gamepad2AHasBeenPressed = false;
+    boolean gamepad1RightBumperHasBeenPressed = false;
+    boolean armsopen = false;
+    boolean rampdown= false;
+
+    static final double LEFT_ARM_CLOSED = 0.9;
+    static final double RIGHT_ARM_CLOSED = 0.1;
+    static final double LEFT_ARM_OPEN = 0.5;
+    static final double RIGHT_ARM_OPEN = 0.5;
+    static final double RAMP_SERVO_DOWN = 0.0;
+    static final double RAMP_SERVO_UP = 1.0;
+
+    final int ENCODER_TICKS_PER_ROTATION = 1152;
+    final int LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;
+    final int LIFT_MOTOR_MINIMUM_POSITION = 0;
+
     public enum motor {
 
         FRONT_LEFT_MOTOR, FRONT_RIGHT_MOTOR, REAR_LEFT_MOTOR, REAR_RIGHT_MOTOR
@@ -33,6 +50,7 @@ public class TeleOpLibrary {
         hardwareMap = hardwareMapSent;
         robot = new RobotHardware();
         robot.init(hardwareMap);
+        //resetLiftMotorEncoder();
     }
 
 
@@ -78,7 +96,7 @@ public class TeleOpLibrary {
         double frPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
         double rrPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
         double rlPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
-        telemetry.update();
+
         robot.frontLeftMotor.setPower(flPower);
         robot.frontRightMotor.setPower(frPower);
         robot.rearRightMotor.setPower(rrPower);
@@ -93,7 +111,85 @@ public class TeleOpLibrary {
         telemetry.addData("front left motor position ", robot.frontLeftMotor.getCurrentPosition());
         telemetry.addData("rear right motor position ", robot.rearRightMotor.getCurrentPosition());
         telemetry.addData("rear left motor position ", robot.rearLeftMotor.getCurrentPosition());
-        //telemetry.update();
+        telemetry.update();
+    }
+
+
+    public void testArmServos(Gamepad gamepad1, Telemetry telemetry) {
+
+        if (gamepad1.a) {
+
+            telemetry.addLine("Opening");
+            telemetry.update();
+            robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
+            robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
+        }
+        if (gamepad1.b) {
+
+            telemetry.addLine("Closing");
+            telemetry.update();
+            robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
+            robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
+        }
+    }
+
+    public void toggleArmMechanism(Gamepad gamepad2, Telemetry telemetry) {
+
+        if(gamepad2.a) {
+
+            gamepad2AHasBeenPressed = true;
+        } else if(gamepad2AHasBeenPressed) {
+
+            if (!armsopen) {
+                telemetry.addLine("Opening");
+                telemetry.update();
+                robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
+                robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
+                armsopen = true;
+            } else {
+                telemetry.addLine("Closing");
+                telemetry.update();
+                robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
+                robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
+                armsopen = false;
+            }
+
+            gamepad2AHasBeenPressed = false;
+        }
+    }
+
+
+    public void setLiftMotorPower(Gamepad gamepad2, Telemetry telemetry) {
+
+        if(!(robot.liftMotor.getCurrentPosition() > LIFT_MOTOR_MAXIMUM_POSITION) && !(robot.liftMotor.getCurrentPosition() < LIFT_MOTOR_MINIMUM_POSITION)) {
+
+            robot.liftMotor.setPower(Range.clip(scaleInput(gamepad2.right_trigger - gamepad2.left_trigger), -1, 1));
+        } else {
+
+            robot.liftMotor.setPower(0);
+        }
+    }
+
+
+    public void toggleRampServo(Gamepad gamepad1, Telemetry telemetry) {
+
+        if(gamepad1.right_bumper) {
+
+            gamepad1RightBumperHasBeenPressed = true;
+        } else if(gamepad1RightBumperHasBeenPressed) {
+
+            if (!rampdown) {
+
+                robot.rampServo.setPosition(RAMP_SERVO_DOWN);
+                rampdown = true;
+            } else {
+
+                robot.rampServo.setPosition(RAMP_SERVO_UP);
+                rampdown = false;
+            }
+
+            gamepad1RightBumperHasBeenPressed = false;
+        }
     }
 
 
@@ -129,10 +225,17 @@ public class TeleOpLibrary {
 
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
-    
+
 
     String formatDegrees(double degrees) {
 
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+    public void resetLiftMotorEncoder() {
+
+        robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        while (robot.liftMotor.isBusy()) {
+        }
     }
 }
