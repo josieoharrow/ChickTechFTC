@@ -19,12 +19,12 @@ public class RobotHardware {
     public DcMotor rearRightMotor;
     public DcMotor frontRightMotor;
     public DcMotor rearLeftMotor;
-    public Servo    leftClaw    = null;
-    public Servo    rightClaw    = null;
-    public Servo    middleClaw    = null;
+    public DcMotor liftMotor;
+    public Servo leftArmServo;
+    public Servo rightArmServo;
+    public Servo rampServo;
 
-    public Servo leftArm;
-    public Servo jewelActuator;
+    public Servo jewelActuatorServo;
 
     public ColorSensor colorSensorMR;
     public ColorSensor colorSensorREV;
@@ -52,16 +52,20 @@ public class RobotHardware {
         rearRightMotor = hardwareMap.dcMotor.get("rear right motor");
         frontRightMotor = hardwareMap.dcMotor.get("front right motor");
         rearLeftMotor = hardwareMap.dcMotor.get("rear left motor");
+        //liftMotor = hardwareMap.dcMotor.get("lift motor");
         colorSensorMR = hardwareMap.get(ColorSensor.class, "ground color sensor");
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         positionTouchSensor = hardwareMap.get(DigitalChannel.class, "position touch sensor");
         positionTouchSensor.setMode(DigitalChannel.Mode.INPUT);
-        jewelActuator = hardwareMap.servo.get("jewel actuator");
+        jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
+        leftArmServo = hardwareMap.servo.get("left arm");
+        rightArmServo = hardwareMap.servo.get("right arm");
+        rampServo = hardwareMap.servo.get("ramp servo");
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rearLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        jewelActuator.setPosition(1);
+        jewelActuatorServo.setPosition(1);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
