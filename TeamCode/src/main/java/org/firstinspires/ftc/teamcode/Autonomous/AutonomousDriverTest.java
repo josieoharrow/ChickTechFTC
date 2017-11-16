@@ -32,16 +32,24 @@ public class AutonomousDriverTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (runLinearCode) {
-                telemetry.addData("team color = ", al.robot.isRed);
+
+                al.turnToAngleWithPID(90, 0.0042,  0.0002, 0, telemetry, this);
+                /*Thread.sleep(100);
+                al.turnToAngleWithPID(-45, 0.0042, 0.0002, 0, telemetry, this);
+                Thread.sleep(100);
+                al.turnToAngleWithPID(180, 0.0042, 0.0002, 0, telemetry, this);
+                Thread.sleep(100);
+                al.turnToAngleWithPID(315, 0.0042, 0.0002, 0, telemetry, this);
+                al.turnToAngleWithPID(-90, 0.0005, 0.0002, 0, telemetry, this);
+                /*telemetry.addData("team color = ", al.robot.isRed);
                 telemetry.update();
 
                 al.driveAtAngle(18, 315, telemetry, this);
-/*
                 telemetry.addLine("Vuforia");
                 telemetry.update();
                 al.pictoDecipher(telemetry, this);
                 telemetry.addLine("2nd drive");
-                telemetry.update();
+                telemetry.update();*/
 
             }
 
@@ -54,8 +62,5 @@ public class AutonomousDriverTest extends LinearOpMode {
         robot.init(hardwareMap);
         CommonLibrary cl = new CommonLibrary();
         cl.declareRobot(robot);*/
-            }
-        }
-    }
 }
 

@@ -327,12 +327,12 @@ public class AutonomousLibrary {
         robot.rearLeftMotor.setPower(rlPower);
     }
 
-    public void turnToAngleWithPID (int angle, int direction, double kp, double ki, double kd){
+    public void turnToAngleWithPID(int angle, double kp, double ki, double kd, Telemetry telemetry, LinearOpMode caller){
 
         angles = robot.imu.getAngularOrientation();
         if (angle >= 360) {angle = angle - 360;}
         if (angle <= -360){angle = angle + 360;}
-        double targetAngle = angles.firstAngle + (direction * angle);
+        double targetAngle = angles.firstAngle + (angle);
         if (targetAngle > 180)  {targetAngle = targetAngle - 360;}
         if (targetAngle <= -180){targetAngle = targetAngle + 360;}
         double acceptableError = 0.5;
@@ -341,33 +341,40 @@ public class AutonomousLibrary {
         double integral = 0;
         double power;
         double previousTime = 0;
+
         while (Math.abs(currentError) > acceptableError){
 
             double timeChange = System.nanoTime() - previousTime;
             previousTime = System.nanoTime();
+            timeChange = timeChange / 1e9;
             angles = robot.imu.getAngularOrientation();
             double anglesValue = angles.firstAngle ;
             currentError = targetAngle - anglesValue;
-            if (currentError > 180) {currentError = currentError - 360;}
-            if (currentError <= 180){currentError = currentError + 360;}
-            integral = integral + currentError * kp;
+            if (currentError > 180)  {currentError = currentError - 360;}
+            if (currentError <= -180){currentError = currentError + 360;}
+            telemetry.addData("Current error", currentError);
             double kpError = currentError * kp;
             double kiIntegral = integral * ki * timeChange;
             double derivative = (currentError - previousError) / timeChange;
             double kdDerivative = derivative * kd;
-            power = kpError * kiIntegral * kdDerivative;
+            power = kpError + kiIntegral + kdDerivative;
             if (power > 1) {power = 1;}
-            if (power < 1) {power = -1;}
-            robot.frontLeftMotor.setPower(power);
-            robot.frontRightMotor.setPower(-power);
-            robot.rearRightMotor.setPower(-power);
-            robot.rearLeftMotor.setPower(power);
-            previousError = currentError;
+            if (power < -1){power = -1;}
+            telemetry.addLine("");
+            telemetry.addData("Power", power);
+            telemetry.update();
+            robot.frontLeftMotor.setPower(-power);
+            robot.frontRightMotor.setPower(power);
+            robot.rearRightMotor.setPower(power);
+            robot.rearLeftMotor.setPower(-power);
+            if (caller.isStopRequested()){break;}
         }
         robot.frontLeftMotor.setPower(0);
         robot.frontRightMotor.setPower(0);
         robot.rearRightMotor.setPower(0);
         robot.rearLeftMotor.setPower(0);
+        telemetry.clearAll();
+        telemetry.update();
     }
 
 
