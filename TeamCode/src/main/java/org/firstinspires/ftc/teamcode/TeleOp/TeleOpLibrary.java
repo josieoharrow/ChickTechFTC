@@ -68,7 +68,7 @@ public class TeleOpLibrary {
 
         robot.frontLeftMotor.setPower(Range.clip((clockwise + positionalMovementFLPower), -1, 1)); //move power settings independent for clarity temporary fix
         robot.frontRightMotor.setPower(Range.clip((counterClockwise + positionalMovementFRPower), -1, 1));
-        robot.rearRightMotor.setPower(Range.clip((counterClockwise + positionalMovementRLPower), -1, 1));
+        robot.rearRightMotor.setPower(Range.clip((counterClockwise + positionalMovementRRPower), -1, 1));
         robot.rearLeftMotor.setPower(Range.clip((clockwise + positionalMovementRLPower), -1, 1));
     }
 
@@ -97,10 +97,11 @@ public class TeleOpLibrary {
 
         double modifiedThumbstickY = thumbstickHypotenuse * Math.sin(modifiedThumbstickAngle);
         double modifiedThumbstickX = thumbstickHypotenuse * Math.cos(modifiedThumbstickAngle);
-       /* positionalMovementFLPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
+        positionalMovementFLPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
         positionalMovementFRPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
-        positionalMovementRLPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
-        positionalMovementRRPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));//was+*/
+        positionalMovementRRPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
+        positionalMovementRLPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
+        /*
         double flPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
         double frPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
         double rrPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
@@ -109,7 +110,7 @@ public class TeleOpLibrary {
         robot.frontLeftMotor.setPower(flPower);
         robot.frontRightMotor.setPower(frPower);
         robot.rearRightMotor.setPower(rrPower);
-        robot.rearLeftMotor.setPower(rlPower);
+        robot.rearLeftMotor.setPower(rlPower);*/
     }
 
 
