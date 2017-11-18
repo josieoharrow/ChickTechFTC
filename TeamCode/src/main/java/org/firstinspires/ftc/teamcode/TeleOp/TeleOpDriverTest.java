@@ -55,8 +55,15 @@ public class TeleOpDriverTest extends OpMode {
     @Override
     public void loop() {
 
-        tol.toggleArmMechanism(gamepad2, telemetry);
-        tol.testArmServos(gamepad1, telemetry);
+       // tol.translateRightStickToSlidingRelativeToRobot(gamepad1);
+        //tol.toggleArmMechanism(gamepad2, telemetry);
+        //tol.testArmServos(gamepad1, telemetry);
+        tol.translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
+        tol.translateLeftStickToRotation(gamepad1);
+       // tol.translateLeftStickToRotation(gamepad1);
+        tol.toggleArmMechanism(gamepad2,telemetry);
+        tol.setLiftMotorPower(gamepad2, telemetry);
+        tol.generalTelemetry(gamepad2, telemetry);
     }
 
     /*

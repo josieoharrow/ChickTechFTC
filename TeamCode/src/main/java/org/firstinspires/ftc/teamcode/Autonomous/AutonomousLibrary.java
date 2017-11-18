@@ -37,8 +37,10 @@ public class AutonomousLibrary {
     static String vuMarkSeen = "no";
     static double SLOWING_INCHES_THRESHOLD = 10;
     static double DRIVING_POWER_SLOW_MODIFIER = 0.5;
+    static float JEWEL_ACTUATOR_DOWN = 0.9f;
+    static float JEWEL_ACTUATOR_UP = 0.3f;
     static double ENCODER_TICKS_TO_INCHES = 4/1130;
-    static double INCHES_TO_ENCODER_TICKS = 1130/4;
+    static double INCHES_TO_ENCODER_TICKS = 288/4 * .31;
     public ColorSensor colorSensorREV;
 
     public enum motor {
@@ -73,7 +75,7 @@ public class AutonomousLibrary {
             robot.isRed = 0;
         }
     }
-    public void setPosition(Telemetry telemetry){
+   /* public void setPosition(Telemetry telemetry){
         if (robot.positionTouchSensor.getState() == true) {
             telemetry.addData("Digital Touch", "Is Not Pressed");
             telemetry.update();
@@ -81,7 +83,7 @@ public class AutonomousLibrary {
             telemetry.addData("Digital Touch", "Is Pressed");
             telemetry.update();
         }
-    }
+    }*/
 
     public void motorsOn() {
 
@@ -180,7 +182,7 @@ public class AutonomousLibrary {
         resetMotorEncoders();
 
         double wheelPowerAngle = angle * Math.PI /180;
-        wheelPowerAngle = (Math.PI/2) - wheelPowerAngle;
+       // wheelPowerAngle = (Math.PI/2) - wheelPowerAngle;
 
         double xInput = Math.cos(wheelPowerAngle);
         double yInput = Math.sin(wheelPowerAngle);
@@ -189,10 +191,15 @@ public class AutonomousLibrary {
         double rrPower = Range.clip((yInput + xInput), -1, 1);
         double rlPower = Range.clip((yInput - xInput), -1, 1);
 
-        robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() + (int)(Math.abs(distance) * INCHES_TO_ENCODER_TICKS * determineMotorTargetPositionRatio(wheelPowerAngle, motor.FRONT_LEFT_MOTOR)));
-        robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() + (int)(Math.abs(distance) * INCHES_TO_ENCODER_TICKS * determineMotorTargetPositionRatio(wheelPowerAngle, motor.FRONT_RIGHT_MOTOR)));
-        robot.rearLeftMotor.setTargetPosition(robot.rearLeftMotor.getCurrentPosition() + (int)(Math.abs(distance) * INCHES_TO_ENCODER_TICKS * determineMotorTargetPositionRatio(wheelPowerAngle, motor.REAR_LEFT_MOTOR)));
-        robot.rearRightMotor.setTargetPosition(robot.rearRightMotor.getCurrentPosition() + (int)(Math.abs(distance) * INCHES_TO_ENCODER_TICKS * determineMotorTargetPositionRatio(wheelPowerAngle, motor.REAR_RIGHT_MOTOR)));
+        double flMotorRatio = determineMotorTargetPositionRatio(wheelPowerAngle, motor.FRONT_LEFT_MOTOR);
+        double frMotorRatio = determineMotorTargetPositionRatio(wheelPowerAngle, motor.FRONT_RIGHT_MOTOR);
+        double rlMotorRatio = determineMotorTargetPositionRatio(wheelPowerAngle, motor.REAR_LEFT_MOTOR);
+        double rrMotorRatio = determineMotorTargetPositionRatio(wheelPowerAngle, motor.REAR_RIGHT_MOTOR);
+
+        robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() + (int) (Math.abs(distance) * INCHES_TO_ENCODER_TICKS * flMotorRatio));
+        robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() + (int) (Math.abs(distance) * INCHES_TO_ENCODER_TICKS * frMotorRatio));
+        robot.rearLeftMotor.setTargetPosition(robot.rearLeftMotor.getCurrentPosition() + (int) (Math.abs(distance) * INCHES_TO_ENCODER_TICKS * rlMotorRatio));
+        robot.rearRightMotor.setTargetPosition(robot.rearRightMotor.getCurrentPosition() + (int) (Math.abs(distance) * INCHES_TO_ENCODER_TICKS * rrMotorRatio));
 
         robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -206,14 +213,6 @@ public class AutonomousLibrary {
 
         //below should be && eventually and include all motors
         while ((robot.frontLeftMotor.isBusy() && robot.frontRightMotor.isBusy() && robot.rearLeftMotor.isBusy() && robot.rearRightMotor.isBusy()) && !caller.isStopRequested()) {
-
-            telemetry.addData("front left", robot.frontLeftMotor.getCurrentPosition());
-            telemetry.addData("left power ", robot.frontLeftMotor.getPower());
-            telemetry.addData("front right", robot.frontRightMotor.getCurrentPosition());
-            telemetry.addData("right power", robot.frontRightMotor.getPower());
-            telemetry.addData("rear right", robot.rearRightMotor.getCurrentPosition());
-            telemetry.addData("rear left", robot.rearLeftMotor.getCurrentPosition());
-            telemetry.update();
         }
 
         telemetry.addLine("done");
@@ -392,28 +391,6 @@ public class AutonomousLibrary {
         robot.rearLeftMotor.setPower(0);
     }
 
-
-    public void decipherJewelAndKnockOff() {
-        double BallHue;
-        float hsvValues[] = {0F, 0F, 0F};
-
-        // values is a reference to the hsvValues array.
-        final float values[] = hsvValues;
-
-        // sometimes it helps to multiply the raw RGB values with a scale factor
-        // to amplify/attentuate the measured values.
-        final double SCALE_FACTOR = 255;
-        Color.RGBToHSV((int) (robot.colorSensorREV.red() * SCALE_FACTOR),
-                (int) (robot.colorSensorREV.green() * SCALE_FACTOR),
-                (int) (robot.colorSensorREV.blue() * SCALE_FACTOR),
-                hsvValues);
-        BallHue = hsvValues[0];
-
-      //  if (BallHue >jfkdlsjfkljd)
-
-    }
-
-
     public void modernRoboticsSensorTest(Telemetry telemetry) {
         // hsvValues is an array that will hold the hue, saturation, and value information.
         float hsvValues[] = {0F, 0F, 0F};
@@ -427,15 +404,21 @@ public class AutonomousLibrary {
         Color.RGBToHSV(robot.colorSensorMR.red() * 8, robot.colorSensorMR.green() * 8, robot.colorSensorMR.blue() * 8, hsvValues);
     }
 
-    public void decipherJewelAndKnockOff(Telemetry telemetry) {
+    public void decipherJewelAndKnockOff(Telemetry telemetry, LinearOpMode caller) {
+
+        robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_DOWN);    //change this I have no idea what the servo should be at when it is down
+        //should we add a wait here to give the sensor time to get into position?
         if (robot.colorSensorREV.blue() > robot.colorSensorREV.red()){
             if (robot.isRed == 1){
                 //drive opposite side of color sensor
+                //turnToAngleWithPID(3, 1, 0.0042, 0.0002, 0);    //put in correct angle and distance Josie I have no idea what the angle is to drive at
+                driveAtAngle(2, 0, telemetry, caller);
                 telemetry.addLine("I see the blue jewel and I am on red team");
                 telemetry.update();
-
             } else if (robot.isRed == 0) {
                 //drive side of color sensor
+                //turnToAngleWithPID(3, -1, 0.0042, 0.0002, 0);    //put in correct angle and distance Josie I have no idea what the angle is to drive at
+                driveAtAngle(2, 180, telemetry, caller);
                 telemetry.addLine("I see the blue jewel and I am on blue team");
                 telemetry.update();
             } else {
@@ -446,10 +429,14 @@ public class AutonomousLibrary {
         } else {
             if (robot.isRed == 1){
                 //drive side of color sensor
+                //turnToAngleWithPID(3, -1, 0.0042, 0.0002, 0);
+                driveAtAngle(2, 180, telemetry, caller);
                 telemetry.addLine("I see the red jewel and I am on red team");
                 telemetry.update();
             } else if (robot.isRed == 0){
                 //drive opposite side of color sensor
+                //turnToAngleWithPID(3, 1, 0.0042, 0.0002, 0);
+                driveAtAngle(2, 0, telemetry, caller);
                 telemetry.addLine("I see the red jewel and I am on blue team");
                 telemetry.update();
             } else {
@@ -458,7 +445,7 @@ public class AutonomousLibrary {
                 telemetry.update();
             }
         }
-
+        robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
     }
 
     public double determineMotorTargetPositionRatio(double angleHeading, motor m){
@@ -468,10 +455,10 @@ public class AutonomousLibrary {
         double rearLeftMotorAngle = -Math.PI/4;
         double rearRightMotorAngle = Math.PI/4;
 
-        double frontLeftMotorRatio = Math.sin(frontLeftMotorAngle + angleHeading);
-        double frontRightMotorRatio = Math.sin(frontRightMotorAngle + angleHeading);
-        double rearLeftMotorRatio = Math.sin(rearLeftMotorAngle + angleHeading);
-        double rearRightMotorRatio = Math.sin(rearRightMotorAngle + angleHeading);
+        double frontLeftMotorRatio = 1 / Math.sin(frontLeftMotorAngle + angleHeading);
+        double frontRightMotorRatio = 1 / Math.sin(frontRightMotorAngle + angleHeading);
+        double rearLeftMotorRatio = 1 / Math.sin(rearLeftMotorAngle + angleHeading);
+        double rearRightMotorRatio = 1 / Math.sin(rearRightMotorAngle + angleHeading);
 
         if (m == motor.FRONT_LEFT_MOTOR) {
             return  frontLeftMotorRatio;
