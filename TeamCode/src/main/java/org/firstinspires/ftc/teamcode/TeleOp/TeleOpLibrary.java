@@ -28,12 +28,17 @@ public class TeleOpLibrary {
     boolean armsopen = false;
     boolean rampdown= false;
 
-    static final double LEFT_ARM_CLOSED = 0.9;
-    static final double RIGHT_ARM_CLOSED = 0.1;
+    static final double LEFT_ARM_CLOSED = 0.1;
+    static final double RIGHT_ARM_CLOSED = 0.9;
     static final double LEFT_ARM_OPEN = 0.5;
     static final double RIGHT_ARM_OPEN = 0.5;
     static final double RAMP_SERVO_DOWN = 0.0;
     static final double RAMP_SERVO_UP = 1.0;
+
+    public double positionalMovementFLPower = 0;
+    public double positionalMovementFRPower = 0;
+    public double positionalMovementRRPower = 0;
+    public double positionalMovementRLPower = 0;
 
     final int ENCODER_TICKS_PER_ROTATION = 1152;
     final int LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;
@@ -58,28 +63,28 @@ public class TeleOpLibrary {
         // Button: left joystick
 
         float HorizontalInput = Range.clip(gamepad1.left_stick_x, -1, 1);
-        double clockwise = scaleInput(HorizontalInput) * .8;
-        double counterClockwise = scaleInput(-HorizontalInput) * .8;
+        double clockwise = scaleInput(HorizontalInput);
+        double counterClockwise = scaleInput(-HorizontalInput);
 
-        robot.frontLeftMotor.setPower(clockwise);
-        robot.frontRightMotor.setPower(counterClockwise);
-        robot.rearRightMotor.setPower(counterClockwise);
-        robot.rearLeftMotor.setPower(clockwise);
+        robot.frontLeftMotor.setPower(Range.clip((clockwise + positionalMovementFLPower), -1, 1)); //move power settings independent for clarity temporary fix
+        robot.frontRightMotor.setPower(Range.clip((counterClockwise + positionalMovementFRPower), -1, 1));
+        robot.rearRightMotor.setPower(Range.clip((counterClockwise + positionalMovementRLPower), -1, 1));
+        robot.rearLeftMotor.setPower(Range.clip((clockwise + positionalMovementRLPower), -1, 1));
     }
 
 
     public void translateRightStickToSlidingRelativeToRobot(Gamepad gamepad1) {
 
         float modifiedYValue = -gamepad1.right_stick_y; //This is because the phone was receiving y values that were flipped from all controllers, resulting in backwards driving behavior
-        double flPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1)); //may need switched
-        double frPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
-        double rrPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
-        double rlPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
-        robot.frontLeftMotor.setPower(flPower);
-        robot.frontRightMotor.setPower(frPower);
-        robot.rearRightMotor.setPower(rrPower);
-        robot.rearLeftMotor.setPower(rlPower);
-    }
+        positionalMovementFLPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1)); //may need switched
+        positionalMovementFRPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
+        positionalMovementRLPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
+        positionalMovementRRPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
+       // robot.frontLeftMotor.setPower(flPower);
+       // robot.frontRightMotor.setPower(frPower);
+       // robot.rearRightMotor.setPower(rrPower);
+       // robot.rearLeftMotor.setPower(rlPower);
+    }//
 
 
     public void translateRightStickToSlidingRelativeToField(Gamepad gamepad1, Telemetry telemetry) {
@@ -92,6 +97,10 @@ public class TeleOpLibrary {
 
         double modifiedThumbstickY = thumbstickHypotenuse * Math.sin(modifiedThumbstickAngle);
         double modifiedThumbstickX = thumbstickHypotenuse * Math.cos(modifiedThumbstickAngle);
+       /* positionalMovementFLPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
+        positionalMovementFRPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
+        positionalMovementRLPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
+        positionalMovementRRPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));//was+*/
         double flPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
         double frPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
         double rrPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
@@ -107,10 +116,14 @@ public class TeleOpLibrary {
     public void generalTelemetry(Gamepad gamepad1, Telemetry telemetry) {
 
         telemetry.clear();
-        telemetry.addData("front right motor position ", robot.frontRightMotor.getCurrentPosition());
-        telemetry.addData("front left motor position ", robot.frontLeftMotor.getCurrentPosition());
-        telemetry.addData("rear right motor position ", robot.rearRightMotor.getCurrentPosition());
-        telemetry.addData("rear left motor position ", robot.rearLeftMotor.getCurrentPosition());
+        telemetry.addData("front right motor power ", robot.frontRightMotor.getPower());
+        telemetry.addData("fr motor pos", robot.frontRightMotor.getCurrentPosition());
+        telemetry.addData("front left motor power ", robot.frontLeftMotor.getPower());
+        telemetry.addData("fl motor pos", robot.frontLeftMotor.getCurrentPosition());
+        telemetry.addData("rear right motor power ", robot.rearRightMotor.getPower());
+        telemetry.addData("rr motor pos", robot.rearRightMotor.getCurrentPosition());
+        telemetry.addData("rear left motor power ", robot.rearLeftMotor.getPower());
+        telemetry.addData("rl motor pos", robot.rearLeftMotor.getCurrentPosition());
         telemetry.update();
     }
 
