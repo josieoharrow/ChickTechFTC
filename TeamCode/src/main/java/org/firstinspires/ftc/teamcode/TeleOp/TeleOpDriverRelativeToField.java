@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -9,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
  * Created by Robotics on 8/27/2017.
  */
 @TeleOp(name = "TeleOp Relative to Field")
-//@Disabled
+@Disabled
 public class TeleOpDriverRelativeToField extends OpMode {
 
     TeleOpLibrary tol;
@@ -54,9 +55,12 @@ public class TeleOpDriverRelativeToField extends OpMode {
     @Override
     public void loop() {
 
-        //tol.translateLeftStickToRotation(gamepad1);
-        tol.generalTelemetry(gamepad1, telemetry);
         tol.translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
+        tol.translateLeftStickToRotation(gamepad1);
+        tol.setDrivingMotorPowers();
+        tol.toggleArmMechanism(gamepad2,telemetry);
+        tol.setLiftMotorPower(gamepad2, telemetry);
+        tol.generalTelemetry(gamepad1, gamepad2, telemetry);
     }
 
     /*
