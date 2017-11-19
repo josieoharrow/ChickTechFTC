@@ -29,9 +29,9 @@ public class TeleOpLibrary {
     boolean rampdown= false;
 
     static final double LEFT_ARM_CLOSED = 0.9;
-    static final double RIGHT_ARM_CLOSED = 0.1;
+    static final double RIGHT_ARM_CLOSED = 0.2;
     static final double LEFT_ARM_OPEN = 0.5;
-    static final double RIGHT_ARM_OPEN = 0.5;
+    static final double RIGHT_ARM_OPEN = 1;
     static final double RAMP_SERVO_DOWN = 0.0;
     static final double RAMP_SERVO_UP = 1.0;
 
