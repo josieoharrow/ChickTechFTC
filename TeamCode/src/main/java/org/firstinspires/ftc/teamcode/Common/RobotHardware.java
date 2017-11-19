@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -38,10 +37,6 @@ public class RobotHardware {
 
     public int isRed = 3;
 
-    /* Constructor
-    public RobotHardware() {
-    }
-
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap hwMap) {
 
@@ -52,20 +47,22 @@ public class RobotHardware {
         rearRightMotor = hardwareMap.dcMotor.get("rear right motor");
         frontRightMotor = hardwareMap.dcMotor.get("front right motor");
         rearLeftMotor = hardwareMap.dcMotor.get("rear left motor");
-        //liftMotor = hardwareMap.dcMotor.get("lift motor");
+        liftMotor = hardwareMap.dcMotor.get("lift motor");
         colorSensorMR = hardwareMap.get(ColorSensor.class, "ground color sensor");
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
-        positionTouchSensor = hardwareMap.get(DigitalChannel.class, "position touch sensor");
-        positionTouchSensor.setMode(DigitalChannel.Mode.INPUT);
+        //positionTouchSensor = hardwareMap.get(DigitalChannel.class, "position touch sensor");
+        //positionTouchSensor.setMode(DigitalChannel.Mode.INPUT);
         jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
         leftArmServo = hardwareMap.servo.get("left arm");
         rightArmServo = hardwareMap.servo.get("right arm");
-        rampServo = hardwareMap.servo.get("ramp servo");
+        //rampServo = hardwareMap.servo.get("ramp servo");
+        jewelActuatorServo.setPosition(0.3);
+        leftArmServo.setPosition(0.07);
+        rightArmServo.setPosition(0.93);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rearLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        jewelActuatorServo.setPosition(1);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;

@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import org.firstinspires.ftc.teamcode.Common.RobotHardware;
+import android.graphics.Color;
 
-import org.firstinspires.ftc.teamcode.Common.RobotHardware;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoDecipher;
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.initial;
@@ -21,52 +19,46 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 public class AutonomousDriverTest extends LinearOpMode {
 
     boolean runLinearCode = true;
-
+    int teamColor = 0;
+    String vuforiaPosition = "unknown";
 
     @Override
     public void runOpMode () throws InterruptedException {
 
         AutonomousLibrary al = new AutonomousLibrary();
         al.init(hardwareMap);
+        double SCALE_FACTOR = 255;
+        // hsvValues is an array that will hold the hue, saturation, and value information.
+        float hsvValues[] = {0F, 0F, 0F};
+        // values is a reference to the hsvValues array.
+        final float values[] = hsvValues;
         waitForStart();
 
         while (opModeIsActive()) {
+            Color.RGBToHSV((int) (al.robot.colorSensorREV.red() * SCALE_FACTOR),
+                    (int) (al.robot.colorSensorREV.green() * SCALE_FACTOR),
+                    (int) (al.robot.colorSensorREV.blue() * SCALE_FACTOR),
+                    hsvValues);
 
             if (runLinearCode) {
 
-
-                al.turnToAngleWithPID(90, telemetry, this);
-                /*Thread.sleep(100);
-                al.turnToAngleWithPID(-45, 0.0042, 0.0002, 0, telemetry, this);
-                Thread.sleep(100);
-                al.turnToAngleWithPID(180, 0.0042, 0.0002, 0, telemetry, this);
-                Thread.sleep(100);
-                al.turnToAngleWithPID(315, 0.0042, 0.0002, 0, telemetry, this);
-                al.turnToAngleWithPID(-90, 0.0005, 0.0002, 0, telemetry, this);
-                /*telemetry.addData("team color = ", al.robot.isRed);
-                telemetry.update();
-
-                al.driveAtAngle(18, 315, telemetry, this);
-
-                telemetry.addData("team color = ", al.robot.isRed);
-                al.setPosition(telemetry);
-                //al.driveAtAngle(18, 315, telemetry, this);
-                telemetry.addLine("Vuforia");
-                telemetry.update();
-                al.pictoDecipher(telemetry, this);
-                telemetry.addLine("2nd drive");
-                telemetry.update();*/
-
+                teamColor = al.setTeamColor();
+                al.decipherJewelAndKnockOff(telemetry, this);
+                al.robot.jewelActuatorServo.setPosition(0.3);
+                vuforiaPosition = al.pictoDecipher(telemetry, this);
+                // al.driveAtAngle(18, 135, telemetry, this);// switch to unit circle
+                al.closeArms();
+                if (teamColor == 1) {
+                    al.driveAtAngle(25, 90, telemetry, this);
+                } else {
+                    al.driveAtAngle(25, 30, telemetry, this);
+                }
+                al.driveToVuforiaPositionFromTheLeft(telemetry, this, vuforiaPosition);
+                al.driveAtAngle(4, 90, telemetry, this);
+                al.openArms();
             }
 
             runLinearCode = false;
         }
     }
-
-            /* al.MotorEncoderTest(telemetry);
-
-        robot.init(hardwareMap);
-        CommonLibrary cl = new CommonLibrary();
-        cl.declareRobot(robot);*/
-}
-
+    }
