@@ -42,8 +42,6 @@ public class AutonomousDriverTest extends LinearOpMode {
 
             if (runLinearCode) {
 
-
-
                 teamColor = al.setTeamColor();
                 al.decipherJewelAndKnockOff(telemetry, this);
                 al.robot.jewelActuatorServo.setPosition(0.3);
@@ -61,16 +59,6 @@ public class AutonomousDriverTest extends LinearOpMode {
             }
 
             runLinearCode = false;
-       /* }
-    }
-
-            /* al.MotorEncoderTest(telemetry);
-
-        robot.init(hardwareMap);
-        CommonLibrary cl = new CommonLibrary();
-        cl.declareRobot(robot);
-            }*/
         }
     }
-}
-
+    }
