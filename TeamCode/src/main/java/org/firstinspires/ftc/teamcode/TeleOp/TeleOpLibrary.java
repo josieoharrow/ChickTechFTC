@@ -28,10 +28,10 @@ public class TeleOpLibrary {
     boolean armsopen = false;
     boolean rampdown= false;
 
-    static final double LEFT_ARM_CLOSED = 0.5;
-    static final double RIGHT_ARM_CLOSED = 0.5;
-    static final double LEFT_ARM_OPEN = 0;
-    static final double RIGHT_ARM_OPEN = 1;
+    static final double LEFT_ARM_CLOSED = 0.72;
+    static final double RIGHT_ARM_CLOSED = 0.28;
+    static final double LEFT_ARM_OPEN = 0.07;
+    static final double RIGHT_ARM_OPEN = 0.93;
     static final double RAMP_SERVO_DOWN = 0.0;
     static final double RAMP_SERVO_UP = 1.0;
 
@@ -39,10 +39,12 @@ public class TeleOpLibrary {
     public double positionalMovementFRPower = 0;
     public double positionalMovementRRPower = 0;
     public double positionalMovementRLPower = 0;
+    public double clockwiseRotation = 0;
+    public double counterclockwiseRotation = 0;
 
-    final int ENCODER_TICKS_PER_ROTATION = 1152;
-    final int LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;
-    final int LIFT_MOTOR_MINIMUM_POSITION = 0;
+    final float ENCODER_TICKS_PER_ROTATION = 1152;
+    final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;
+    final float LIFT_MOTOR_MINIMUM_POSITION = -10;
 
     public enum motor {
 
@@ -55,7 +57,7 @@ public class TeleOpLibrary {
         hardwareMap = hardwareMapSent;
         robot = new RobotHardware();
         robot.init(hardwareMap);
-        //resetLiftMotorEncoder();
+        resetLiftMotorEncoder();
     }
 
 
@@ -63,13 +65,22 @@ public class TeleOpLibrary {
         // Button: left joystick
 
         float HorizontalInput = Range.clip(gamepad1.left_stick_x, -1, 1);
-        double clockwise = scaleInput(HorizontalInput);
-        double counterClockwise = scaleInput(-HorizontalInput);
-
-        robot.frontLeftMotor.setPower(Range.clip((clockwise + positionalMovementFLPower), -1, 1)); //move power settings independent for clarity temporary fix
+       // double clockwise = scaleInput(HorizontalInput);
+       // double counterClockwise = scaleInput(-HorizontalInput);
+        clockwiseRotation = scaleInput(HorizontalInput);
+        counterclockwiseRotation = scaleInput(-HorizontalInput);
+      /*  robot.frontLeftMotor.setPower(Range.clip((clockwise + positionalMovementFLPower), -1, 1)); //move power settings independent for clarity temporary fix
         robot.frontRightMotor.setPower(Range.clip((counterClockwise + positionalMovementFRPower), -1, 1));
         robot.rearRightMotor.setPower(Range.clip((counterClockwise + positionalMovementRRPower), -1, 1));
-        robot.rearLeftMotor.setPower(Range.clip((clockwise + positionalMovementRLPower), -1, 1));
+        robot.rearLeftMotor.setPower(Range.clip((clockwise + positionalMovementRLPower), -1, 1));*/
+    }
+
+    public void setDrivingMotorPowers() {
+
+        robot.frontLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementFLPower), -1, 1)); //move power settings independent for clarity temporary fix
+        robot.frontRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementFRPower), -1, 1));
+        robot.rearRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementRRPower), -1, 1));
+        robot.rearLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementRLPower), -1, 1));
     }
 
 
@@ -78,13 +89,13 @@ public class TeleOpLibrary {
         float modifiedYValue = -gamepad1.right_stick_y; //This is because the phone was receiving y values that were flipped from all controllers, resulting in backwards driving behavior
         positionalMovementFLPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1)); //may need switched
         positionalMovementFRPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
-        positionalMovementRLPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
         positionalMovementRRPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
-       // robot.frontLeftMotor.setPower(flPower);
+        positionalMovementRLPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
+        // robot.frontLeftMotor.setPower(flPower);
        // robot.frontRightMotor.setPower(frPower);
        // robot.rearRightMotor.setPower(rrPower);
        // robot.rearLeftMotor.setPower(rlPower);
-    }//
+    }
 
 
     public void translateRightStickToSlidingRelativeToField(Gamepad gamepad1, Telemetry telemetry) {
@@ -114,7 +125,7 @@ public class TeleOpLibrary {
     }
 
 
-    public void generalTelemetry(Gamepad gamepad1, Telemetry telemetry) {
+    public void generalTelemetry(Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
 
         telemetry.clear();
         telemetry.addData("front right motor power ", robot.frontRightMotor.getPower());
@@ -174,14 +185,34 @@ public class TeleOpLibrary {
 
 
     public void setLiftMotorPower(Gamepad gamepad2, Telemetry telemetry) {
+      /*  float directionMultiplier = 0;
+        if ((gamepad2.right_trigger - gamepad2.left_trigger) != 0) {
+            directionMultiplier = Math.abs(gamepad2.right_trigger - gamepad2.left_trigger) / (gamepad2.right_trigger - gamepad2.left_trigger);
+        }
 
-        if(!(robot.liftMotor.getCurrentPosition() > LIFT_MOTOR_MAXIMUM_POSITION) && !(robot.liftMotor.getCurrentPosition() < LIFT_MOTOR_MINIMUM_POSITION)) {
+        if(((float) robot.liftMotor.getCurrentPosition() * directionMultiplier < LIFT_MOTOR_MAXIMUM_POSITION) && ((float)robot.liftMotor.getCurrentPosition() * directionMultiplier < LIFT_MOTOR_MINIMUM_POSITION)) {
 
-            robot.liftMotor.setPower(Range.clip(scaleInput(gamepad2.right_trigger - gamepad2.left_trigger), -1, 1));
+            telemetry.addData("Lift Motor encoder", robot.liftMotor.getCurrentPosition());
+            telemetry.addData("Direction multiplier", directionMultiplier);
+            telemetry.addData("Power", gamepad2.right_trigger - gamepad2.left_trigger);
+            telemetry.update();
+            robot.liftMotor.setPower(Range.clip(scaleInput((double)(gamepad2.right_trigger - gamepad2.left_trigger)), -1, 1));
         } else {
 
-            robot.liftMotor.setPower(0);
-        }
+            telemetry.addLine("WARNING: LIMIT HAS BEEN DETECTED");
+            telemetry.addData("Lift Motor encoder", robot.liftMotor.getCurrentPosition());
+            telemetry.addData("Direction multiplier", directionMultiplier);
+            telemetry.addData("Power", gamepad2.right_trigger - gamepad2.left_trigger);
+            telemetry.update();
+            robot.liftMotor.setPower(Range.clip(scaleInput((double)(gamepad2.right_trigger - gamepad2.left_trigger)), -1, 1));
+            //robot.liftMotor.setPower(0);
+        }*/
+        double rightPower = gamepad2.right_trigger;
+        double leftPower = gamepad2.left_trigger;
+        double netPower = rightPower - leftPower;
+        robot.liftMotor.setPower(Range.clip(netPower, -1, 1));
+        telemetry.addData("lift motor power", robot.liftMotor.getPower());
+        telemetry.update();
     }
 
 

@@ -57,8 +57,8 @@ public class RobotHardware {
         rightArmServo = hardwareMap.servo.get("right arm");
         //rampServo = hardwareMap.servo.get("ramp servo");
         jewelActuatorServo.setPosition(0.3);
-        leftArmServo.setPosition(0);
-        rightArmServo.setPosition(1);
+        leftArmServo.setPosition(0.07);
+        rightArmServo.setPosition(0.93);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
