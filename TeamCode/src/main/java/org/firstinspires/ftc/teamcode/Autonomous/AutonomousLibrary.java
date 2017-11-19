@@ -349,7 +349,7 @@ public class AutonomousLibrary {
         robot.rearLeftMotor.setPower(rlPower);
     }
 
-    public void turnToAngleWithPID(int angle, double kp, double ki, double kd, Telemetry telemetry, LinearOpMode caller){
+    public void turnToAngleWithPID(int angle, Telemetry telemetry, LinearOpMode caller){
 
         angles = robot.imu.getAngularOrientation();
         if (angle >= 360) {angle = angle - 360;}
@@ -359,7 +359,6 @@ public class AutonomousLibrary {
         if (targetAngle <= -180){targetAngle = targetAngle + 360;}
         double acceptableError = 0.5;
         double currentError = 1;
-        double previousError = 0;
         double integral = 0;
         double power;
         double previousTime = 0;
@@ -370,16 +369,14 @@ public class AutonomousLibrary {
             previousTime = System.nanoTime();
             timeChange = timeChange / 1e9;
             angles = robot.imu.getAngularOrientation();
-            double anglesValue = angles.firstAngle ;
-            currentError = targetAngle - anglesValue;
+            double currentAngle = angles.firstAngle ;
+            currentError = targetAngle - currentAngle;
             if (currentError > 180)  {currentError = currentError - 360;}
             if (currentError <= -180){currentError = currentError + 360;}
             telemetry.addData("Current error", currentError);
-            double kpError = currentError * kp;
-            double kiIntegral = integral * ki * timeChange;
-            double derivative = (currentError - previousError) / timeChange;
-            double kdDerivative = derivative * kd;
-            power = kpError + kiIntegral + kdDerivative;
+            double kpError = currentError * 0.0042;
+            double kiIntegral = integral * 0.0002 * timeChange;
+            power = kpError + kiIntegral;
             if (power > 1) {power = 1;}
             if (power < -1){power = -1;}
             telemetry.addLine("");
