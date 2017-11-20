@@ -23,16 +23,14 @@ public class TeleOpLibrary {
     HardwareMap hardwareMap;
     Orientation angles;
 
-    boolean gamepad2AHasBeenPressed = false;
-    boolean gamepad1RightBumperHasBeenPressed = false;
-    boolean armsopen = false;
-    boolean rampdown= false;
-
 
     static final double LEFT_ARM_CLOSED = 0.72;
     static final double RIGHT_ARM_CLOSED = 0.28;
     static final double LEFT_ARM_OPEN = 0.07;
     static final double RIGHT_ARM_OPEN = 0.93;
+    static final double RIGHT_ARM_MID = 0.4;
+    static final double LEFT_ARM_MID = 0.6;
+
     static final double RAMP_SERVO_DOWN = 0.0;
     static final double RAMP_SERVO_UP = 1.0;
 
@@ -141,16 +139,25 @@ public class TeleOpLibrary {
     }
 
 
-    public void testArmServos(Gamepad gamepad1, Telemetry telemetry) {
+    public void ArmServos(Gamepad gamepad2, Telemetry telemetry) {
 
-        if (gamepad1.a) {
-
+        if (gamepad2.x) {
             telemetry.addLine("Opening");
             telemetry.update();
             robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
             robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
         }
-        if (gamepad1.b) {
+
+
+
+        if (gamepad2.a) {
+
+            telemetry.addLine("Mid Way");
+            telemetry.update();
+            robot.leftArmServo.setPosition(LEFT_ARM_MID);
+            robot.rightArmServo.setPosition(RIGHT_ARM_MID);
+        }
+        if (gamepad2.b) {
 
             telemetry.addLine("Closing");
             telemetry.update();
@@ -159,30 +166,6 @@ public class TeleOpLibrary {
         }
     }
 
-    public void toggleArmMechanism(Gamepad gamepad2, Telemetry telemetry) {
-
-        if(gamepad2.a) {
-
-            gamepad2AHasBeenPressed = true;
-        } else if(gamepad2AHasBeenPressed) {
-
-            if (!armsopen) {
-                telemetry.addLine("Opening");
-                telemetry.update();
-                robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
-                robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
-                armsopen = true;
-            } else {
-                telemetry.addLine("Closing");
-                telemetry.update();
-                robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
-                robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
-                armsopen = false;
-            }
-
-            gamepad2AHasBeenPressed = false;
-        }
-    }
 
 
     public void setLiftMotorPower(Gamepad gamepad2, Telemetry telemetry) {
@@ -216,27 +199,6 @@ public class TeleOpLibrary {
         telemetry.update();
     }
 
-
-    public void toggleRampServo(Gamepad gamepad1, Telemetry telemetry) {
-
-        if(gamepad1.right_bumper) {
-
-            gamepad1RightBumperHasBeenPressed = true;
-        } else if(gamepad1RightBumperHasBeenPressed) {
-
-            if (!rampdown) {
-
-                robot.rampServo.setPosition(RAMP_SERVO_DOWN);
-                rampdown = true;
-            } else {
-
-                robot.rampServo.setPosition(RAMP_SERVO_UP);
-                rampdown = false;
-            }
-
-            gamepad1RightBumperHasBeenPressed = false;
-        }
-    }
 
 
     private static double scaleInput(double dVal)  {

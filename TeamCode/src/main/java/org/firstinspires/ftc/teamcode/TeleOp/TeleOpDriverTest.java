@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
  * Created by Robotics on 8/27/2017.
  */
 @TeleOp(name = "Test TeleOp")
-@Disabled
+//@Disabled
 public class TeleOpDriverTest extends OpMode {
 
     TeleOpLibrary tol;
@@ -59,7 +59,7 @@ public class TeleOpDriverTest extends OpMode {
         tol.translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
         tol.translateLeftStickToRotation(gamepad1);
         tol.setDrivingMotorPowers();
-        tol.toggleArmMechanism(gamepad2, telemetry);
+        tol.ArmServos(gamepad2, telemetry);
         tol.setLiftMotorPower(gamepad2, telemetry);
         //tol.generalTelemetry(gamepad1, gamepad2, telemetry);
     }
