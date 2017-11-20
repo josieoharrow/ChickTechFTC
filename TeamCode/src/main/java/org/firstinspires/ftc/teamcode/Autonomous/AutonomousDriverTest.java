@@ -26,7 +26,7 @@ public class AutonomousDriverTest extends LinearOpMode {
     public void runOpMode () throws InterruptedException {
 
         AutonomousLibrary al = new AutonomousLibrary();
-        al.init(hardwareMap);
+        al.init(hardwareMap, telemetry);
         double SCALE_FACTOR = 255;
         // hsvValues is an array that will hold the hue, saturation, and value information.
         float hsvValues[] = {0F, 0F, 0F};
@@ -42,7 +42,7 @@ public class AutonomousDriverTest extends LinearOpMode {
 
             if (runLinearCode) {
 
-                teamColor = al.setTeamColor();
+              //  teamColor = al.setTeamColor(telemetry);
                 al.decipherJewelAndKnockOff(telemetry, this);
                 al.robot.jewelActuatorServo.setPosition(0.3);
                 vuforiaPosition = al.pictoDecipher(telemetry, this);

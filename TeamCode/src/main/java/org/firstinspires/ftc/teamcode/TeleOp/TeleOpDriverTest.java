@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 
 /**
@@ -56,10 +56,15 @@ public class TeleOpDriverTest extends OpMode {
     @Override
     public void loop() {
 
+
         tol.translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
         tol.translateLeftStickToRotation(gamepad1);
-        tol.setDrivingMotorPowers();
+        tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.ArmServos(gamepad2, telemetry);
+
+        tol.setDrivingMotorPowers(gamepad1, telemetry);
+        //tol.toggleArmMechanism(gamepad2, telemetry);
+
         tol.setLiftMotorPower(gamepad2, telemetry);
         //tol.generalTelemetry(gamepad1, gamepad2, telemetry);
     }

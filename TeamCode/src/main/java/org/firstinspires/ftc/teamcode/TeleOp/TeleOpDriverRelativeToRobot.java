@@ -55,12 +55,16 @@ public class TeleOpDriverRelativeToRobot extends OpMode {
     @Override
     public void loop() {
 
+
         tol.translateRightStickToSlidingRelativeToRobot(gamepad1);
         tol.translateLeftStickToRotation(gamepad1);
-        tol.setDrivingMotorPowers();
+        tol.setDrivingMotorPowers(gamepad1, telemetry);
+
+        tol.setDrivingMotorPowers(gamepad1, telemetry);
+        //tol.toggleArmMechanism(gamepad2,telemetry);
 
         tol.setLiftMotorPower(gamepad2, telemetry);
-     //   tol.generalTelemetry(gamepad1, gamepad2, telemetry);
+        tol.generalTelemetry(gamepad1, gamepad2, telemetry);
     }
 
     /*
