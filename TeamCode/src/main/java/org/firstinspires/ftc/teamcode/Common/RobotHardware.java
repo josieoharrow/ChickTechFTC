@@ -69,9 +69,11 @@ public class RobotHardware {
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
+        try {
         imu.initialize(parameters);
         while(!imu.isGyroCalibrated()){
 
+        } } catch (Exception e) {
         }
     }
 }

@@ -43,8 +43,8 @@ public class TeleOpLibrary {
     public double counterclockwiseRotation = 0;
 
     final float ENCODER_TICKS_PER_ROTATION = 1152;
-    final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;
-    final float LIFT_MOTOR_MINIMUM_POSITION = -10;
+    final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 7;
+    final float LIFT_MOTOR_MINIMUM_POSITION = 200;
 
     public enum motor {
 
@@ -58,6 +58,7 @@ public class TeleOpLibrary {
         robot = new RobotHardware();
         robot.init(hardwareMap);
         resetLiftMotorEncoder();
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 
@@ -75,12 +76,26 @@ public class TeleOpLibrary {
         robot.rearLeftMotor.setPower(Range.clip((clockwise + positionalMovementRLPower), -1, 1));*/
     }
 
-    public void setDrivingMotorPowers() {
+    public void setDrivingMotorPowers(Gamepad gamepad1, Telemetry telemetry) {
 
-        robot.frontLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementFLPower), -1, 1)); //move power settings independent for clarity temporary fix
-        robot.frontRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementFRPower), -1, 1));
-        robot.rearRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementRRPower), -1, 1));
-        robot.rearLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementRLPower), -1, 1));
+        double speedCoefficient = 1;
+
+        if (gamepad1.right_bumper) {
+            speedCoefficient = .8;
+        }
+
+        translateLeftStickToRotation(gamepad1);
+
+        //if (gamepad1.left_bumper) {
+        //    translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
+        //} else {
+            translateRightStickToSlidingRelativeToRobot(gamepad1);
+        //}
+
+        robot.frontLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementFLPower) * speedCoefficient, -1, 1));
+        robot.frontRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementFRPower) * speedCoefficient, -1, 1));
+        robot.rearRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementRRPower) * speedCoefficient, -1, 1));
+        robot.rearLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementRLPower) * speedCoefficient, -1, 1));
     }
 
 
@@ -185,18 +200,35 @@ public class TeleOpLibrary {
 
 
     public void setLiftMotorPower(Gamepad gamepad2, Telemetry telemetry) {
-      /*  float directionMultiplier = 0;
-        if ((gamepad2.right_trigger - gamepad2.left_trigger) != 0) {
-            directionMultiplier = Math.abs(gamepad2.right_trigger - gamepad2.left_trigger) / (gamepad2.right_trigger - gamepad2.left_trigger);
+
+        float directionMultiplier = 0;
+        float rightPower = gamepad2.right_trigger;
+        float leftPower = gamepad2.left_trigger;
+        float netPower = rightPower - leftPower;
+        boolean ExceedingEncoderLimit = false;
+        if (netPower != 0) {
+            directionMultiplier = Math.abs(netPower) / netPower;
         }
 
-        if(((float) robot.liftMotor.getCurrentPosition() * directionMultiplier < LIFT_MOTOR_MAXIMUM_POSITION) && ((float)robot.liftMotor.getCurrentPosition() * directionMultiplier < LIFT_MOTOR_MINIMUM_POSITION)) {
+        if (robot.liftMotor.getCurrentPosition() >= 0) {
+
+            if (directionMultiplier == 1 && robot.liftMotor.getCurrentPosition() > LIFT_MOTOR_MAXIMUM_POSITION) {
+                ExceedingEncoderLimit = true;
+            }
+        } else {
+
+            if (directionMultiplier == -1 && robot.liftMotor.getCurrentPosition() < LIFT_MOTOR_MINIMUM_POSITION) {
+                ExceedingEncoderLimit = true;
+            }
+        }
+
+        if(!ExceedingEncoderLimit) {
 
             telemetry.addData("Lift Motor encoder", robot.liftMotor.getCurrentPosition());
             telemetry.addData("Direction multiplier", directionMultiplier);
             telemetry.addData("Power", gamepad2.right_trigger - gamepad2.left_trigger);
             telemetry.update();
-            robot.liftMotor.setPower(Range.clip(scaleInput((double)(gamepad2.right_trigger - gamepad2.left_trigger)), -1, 1));
+            robot.liftMotor.setPower(Range.clip(scaleInput((double)(netPower)), -1, 1));
         } else {
 
             telemetry.addLine("WARNING: LIMIT HAS BEEN DETECTED");
@@ -204,15 +236,8 @@ public class TeleOpLibrary {
             telemetry.addData("Direction multiplier", directionMultiplier);
             telemetry.addData("Power", gamepad2.right_trigger - gamepad2.left_trigger);
             telemetry.update();
-            robot.liftMotor.setPower(Range.clip(scaleInput((double)(gamepad2.right_trigger - gamepad2.left_trigger)), -1, 1));
-            //robot.liftMotor.setPower(0);
-        }*/
-        double rightPower = gamepad2.right_trigger;
-        double leftPower = gamepad2.left_trigger;
-        double netPower = rightPower - leftPower;
-        robot.liftMotor.setPower(Range.clip(netPower, -1, 1));
-        telemetry.addData("lift motor power", robot.liftMotor.getPower());
-        telemetry.update();
+            robot.liftMotor.setPower(0);
+        }
     }
 
 
