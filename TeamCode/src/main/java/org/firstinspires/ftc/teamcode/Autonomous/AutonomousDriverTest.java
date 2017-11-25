@@ -35,14 +35,21 @@ public class AutonomousDriverTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            Color.RGBToHSV((int) (al.robot.colorSensorREV.red() * SCALE_FACTOR),
+            /*Color.RGBToHSV((int) (al.robot.colorSensorREV.red() * SCALE_FACTOR),
                     (int) (al.robot.colorSensorREV.green() * SCALE_FACTOR),
                     (int) (al.robot.colorSensorREV.blue() * SCALE_FACTOR),
-                    hsvValues);
+                    hsvValues);*/
 
             if (runLinearCode) {
 
-                teamColor = al.setTeamColor();
+                al.turnToAngleWithPID(90, telemetry, this);
+                Thread.sleep(1000);
+                al.turnToAngleWithPID(-405, telemetry, this);
+                Thread.sleep(1000);
+                al.turnToAngleWithPID(3, telemetry, this);
+                Thread.sleep(1000);
+                al.turnToAngleWithPID(180, telemetry, this);
+                /*teamColor = al.setTeamColor();
                 al.decipherJewelAndKnockOff(telemetry, this);
                 al.robot.jewelActuatorServo.setPosition(0.3);
                 vuforiaPosition = al.pictoDecipher(telemetry, this);
@@ -55,7 +62,7 @@ public class AutonomousDriverTest extends LinearOpMode {
                 }
                 al.driveToVuforiaPositionFromTheLeft(telemetry, this, vuforiaPosition);
                 al.driveAtAngle(4, 90, telemetry, this);
-                al.openArms();
+                al.openArms();**/
             }
 
             runLinearCode = false;
