@@ -40,6 +40,18 @@ public class AutonomousDriverTest extends LinearOpMode {
 
                 /*telemetry.addLine("I am here");
                 telemetry.update();
+
+            if (runLinearCode) {
+
+                al.turnToAngleWithPID(90, telemetry, this);
+                Thread.sleep(1000);
+                al.turnToAngleWithPID(-405, telemetry, this);
+                Thread.sleep(1000);
+                al.turnToAngleWithPID(3, telemetry, this);
+                Thread.sleep(1000);
+                al.turnToAngleWithPID(180, telemetry, this);
+                /*teamColor = al.setTeamColor();
+              //  teamColor = al.setTeamColor(telemetry);
                 al.decipherJewelAndKnockOff(telemetry, this);
                 al.robot.jewelActuatorServo.setPosition(0.3);
                 vuforiaPosition = al.pictoDecipher(telemetry, this);
@@ -80,6 +92,8 @@ public class AutonomousDriverTest extends LinearOpMode {
 
                 al.driveAtAngle(4, 90, telemetry, this);
                 al.openArms();*/
+
+                al.openArms();
             }
 
             runLinearCode = false;

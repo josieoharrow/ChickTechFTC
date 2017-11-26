@@ -71,8 +71,15 @@ public class TeleOpDriver extends OpMode {
             gyroInitialized = true;
         }
 
+
+        tol.translateRightStickToSlidingRelativeToRobot(gamepad1);
+        tol.translateLeftStickToRotation(gamepad1);
         tol.setDrivingMotorPowers(gamepad1, telemetry);
-        tol.toggleArmMechanism(gamepad2,telemetry);
+
+
+        tol.setDrivingMotorPowers(gamepad1, telemetry);
+        //tol.toggleArmMechanism(gamepad2,telemetry);
+
         tol.setLiftMotorPower(gamepad2, telemetry);
         tol.generalTelemetry(gamepad1, gamepad2, telemetry);
     }
