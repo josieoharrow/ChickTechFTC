@@ -5,6 +5,7 @@ import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -49,6 +50,10 @@ public class AutonomousLibrary {
     static final double RAMP_SERVO_DOWN = 0.0;
     static final double RAMP_SERVO_UP = 1.0;
     public ColorSensor colorSensorREV;
+    static int teamColorAndPosition = 0;
+    boolean XHasBeenPressed = false;
+    boolean LeftBumperHasBeenPressed = false;
+    boolean BHasBeenPressed = false;
 
     public enum motor {
 
@@ -59,7 +64,7 @@ public class AutonomousLibrary {
 
         robot = robotSent;
     }
-    public void init(HardwareMap hardwareMapSent) {
+    public void init(HardwareMap hardwareMapSent, Telemetry telemetry) {
         hardwareMap = hardwareMapSent;
         robot = new RobotHardware();
         CommonLibrary cl = new CommonLibrary();
@@ -70,21 +75,68 @@ public class AutonomousLibrary {
         parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-        setTeamColor();
-
     }
-    public int setTeamColor() {
 
+    public int setTeamColorAndPosition (Gamepad gamepad1, Telemetry telemetry) {
+        if (gamepad1.x){
+            XHasBeenPressed = true;
+            teamColorAndPosition = 3;
+            telemetry.addLine("Blue team, balance board 1");
+            telemetry.update();
+            if (gamepad1.left_bumper){
+                LeftBumperHasBeenPressed = true;
+                teamColorAndPosition = 4;
+                telemetry.addLine("Blue team, balance board 2");
+                telemetry.update();
+            }
+        } else if (gamepad1.b){
+            BHasBeenPressed = true;
+            teamColorAndPosition = 1;
+            telemetry.addLine("Red team, balance board 1");
+            telemetry.update();
+            if (gamepad1.left_bumper){
+                LeftBumperHasBeenPressed = true;
+                teamColorAndPosition = 2;
+                telemetry.addLine("Red team, balance board 2");
+                telemetry.update();
+            }
+        }
+        return teamColorAndPosition;
+    }
+    /*public int setTeamColor(Telemetry telemetry) {
+            //robot.colorSensorMR.enableLed(false);
         if (robot.colorSensorMR.red() > robot.colorSensorMR.blue()){
+            telemetry.addLine("I'm on the Red team");
+            telemetry.addData("Ground Color Sensor Red Values ", robot.colorSensorMR.red());
+            telemetry.addData("Ground Color Sensor Blue Values ", robot.colorSensorMR.blue());
+            telemetry.addData("Ground Color Sensor Green Values ", robot.colorSensorMR.green());
+            telemetry.addData("Ground Color Sensor Clear Values ", robot.colorSensorMR.alpha());
+            telemetry.update();
+            telemetry.update();
             robot.isRed = 1;
         }
-        else {
+        else if (robot.colorSensorMR.red() < robot.colorSensorMR.blue()) {
+            telemetry.addLine("I'm on the Blue team");
+            telemetry.addData("Ground Color Sensor Red Values ", robot.colorSensorMR.red());
+            telemetry.addData("Ground Color Sensor Blue Values ", robot.colorSensorMR.blue());
+            telemetry.addData("Ground Color Sensor Green Values ", robot.colorSensorMR.green());
+            telemetry.addData("Ground Color Sensor Clear Values ", robot.colorSensorMR.alpha());
+            telemetry.update();
+            telemetry.update();
             robot.isRed = 0;
+        } else {
+            telemetry.addLine("ERROR: I don't know what team I am on");
+            telemetry.addData("Ground Color Sensor Red Values ", robot.colorSensorMR.red());
+            telemetry.addData("Ground Color Sensor Blue Values ", robot.colorSensorMR.blue());
+            telemetry.addData("Ground Color Sensor Green Values ", robot.colorSensorMR.green());
+            telemetry.addData("Ground Color Sensor Clear Values ", robot.colorSensorMR.alpha());
+            telemetry.update();
+            robot.isRed = 3;
         }
 
         return robot.isRed;
     }
-   /* public void setPosition(Telemetry telemetry){
+    public void setPosition(Telemetry telemetry){
         if (robot.positionTouchSensor.getState() == true) {
             telemetry.addData("Digital Touch", "Is Not Pressed");
             telemetry.update();
@@ -447,13 +499,13 @@ public class AutonomousLibrary {
                 telemetry.addLine("I see the blue jewel and I am on red team");
                 telemetry.update();
                 //turnToAngleWithPID(3, 1, 0.0042, 0.0002, 0);    //put in correct angle and distance Josie I have no idea what the angle is to drive at
-                driveAtAngle(2, 270, telemetry, caller);
+                //driveAtAngle(2, 270, telemetry, caller);
             } else if (robot.isRed == 0) {
                 //drive side of color sensor
                 telemetry.addLine("I see the blue jewel and I am on blue team");
                 telemetry.update();
                 //turnToAngleWithPID(3, -1, 0.0042, 0.0002, 0);    //put in correct angle and distance Josie I have no idea what the angle is to drive at
-                driveAtAngle(2, 90, telemetry, caller);
+                //driveAtAngle(2, 90, telemetry, caller);
             } else {
                 //For case when you don't know what team you are on- error with ground color sensor
                 telemetry.addLine("IDK what team I'm on but I see the blue jewel");
@@ -465,13 +517,13 @@ public class AutonomousLibrary {
                 telemetry.addLine("I see the red jewel and I am on red team");
                 telemetry.update();
                 //turnToAngleWithPID(3, -1, 0.0042, 0.0002, 0);
-                driveAtAngle(2, 90, telemetry, caller);
+                //driveAtAngle(2, 90, telemetry, caller);
             } else if (robot.isRed == 0){
                 //drive opposite side of color sensor
                 telemetry.addLine("I see the red jewel and I am on blue team");
                 telemetry.update();
                 //turnToAngleWithPID(3, 1, 0.0042, 0.0002, 0);
-                driveAtAngle(2, 270, telemetry, caller);
+                //driveAtAngle(2, 270, telemetry, caller);
             } else {
                 //For case when you don't know what team you are on- error with ground color sensor
                 telemetry.addLine("IDK what team I'm on but I see the red jewel");
@@ -499,10 +551,10 @@ public class AutonomousLibrary {
         if (vuforiaPosition == "left") {
 
         } else if (vuforiaPosition == "center") {
-            driveAtAngle(8, 0, telemetry, caller);//value of inches idk
+            driveAtAngle(7.5, 0, telemetry, caller);//value of inches idk
         } else {
             //if right or unknown
-            driveAtAngle(16, 0, telemetry, caller);
+            driveAtAngle(15, 0, telemetry, caller);
         }
     }
     public double determineMotorTargetPositionRatio(double angleHeading, motor m){
