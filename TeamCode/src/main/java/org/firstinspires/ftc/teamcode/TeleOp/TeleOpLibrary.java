@@ -28,8 +28,8 @@ public class TeleOpLibrary {
     static final double RIGHT_ARM_CLOSED = 0.28;
     static final double LEFT_ARM_OPEN = 0.07;
     static final double RIGHT_ARM_OPEN = 0.93;
-    static final double RIGHT_ARM_MID = 0.4;
-    static final double LEFT_ARM_MID = 0.6;
+    static final double RIGHT_ARM_MID = 0.57;
+    static final double LEFT_ARM_MID = 0.45;
 
     static final double RAMP_SERVO_DOWN = 0.0;
     static final double RAMP_SERVO_UP = 1.0;
