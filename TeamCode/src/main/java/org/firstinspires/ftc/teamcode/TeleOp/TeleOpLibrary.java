@@ -45,6 +45,7 @@ public class TeleOpLibrary {
     final float ENCODER_TICKS_PER_ROTATION = 1152;
     final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 7;
     final float LIFT_MOTOR_MINIMUM_POSITION = 200;
+    final float SPEED_REDUCTION_COEFFICIENT = .7f;
 
     public enum motor {
 
@@ -61,6 +62,10 @@ public class TeleOpLibrary {
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public void initGyro() {
+
+        robot.initGyro();
+    }
 
     public void translateLeftStickToRotation(Gamepad gamepad1) {
         // Button: left joystick
@@ -81,7 +86,7 @@ public class TeleOpLibrary {
         double speedCoefficient = 1;
 
         if (gamepad1.right_bumper) {
-            speedCoefficient = .8;
+            speedCoefficient = SPEED_REDUCTION_COEFFICIENT;
         }
 
         translateLeftStickToRotation(gamepad1);
@@ -143,14 +148,11 @@ public class TeleOpLibrary {
     public void generalTelemetry(Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
 
         telemetry.clear();
+        telemetry.addData("heading: ", robot.imu.getAngularOrientation().firstAngle);
         telemetry.addData("front right motor power ", robot.frontRightMotor.getPower());
-        telemetry.addData("fr motor pos", robot.frontRightMotor.getCurrentPosition());
         telemetry.addData("front left motor power ", robot.frontLeftMotor.getPower());
-        telemetry.addData("fl motor pos", robot.frontLeftMotor.getCurrentPosition());
         telemetry.addData("rear right motor power ", robot.rearRightMotor.getPower());
-        telemetry.addData("rr motor pos", robot.rearRightMotor.getCurrentPosition());
         telemetry.addData("rear left motor power ", robot.rearLeftMotor.getPower());
-        telemetry.addData("rl motor pos", robot.rearLeftMotor.getCurrentPosition());
         telemetry.update();
     }
 

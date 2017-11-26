@@ -14,7 +14,7 @@ public class TeleOpDriverTest extends OpMode {
 
     TeleOpLibrary tol;
     CommonLibrary cl;
-
+    Boolean gyroInitialized = false;
     @Override
     public void init() {
         /* Initialize the hardware variables.
@@ -54,11 +54,22 @@ public class TeleOpDriverTest extends OpMode {
      */
     @Override
     public void loop() {
+        if (!gyroInitialized) {
+            Thread t1 = new Thread(new Runnable() {
+                public void run() {
+                    tol.initGyro();
+                }
+            });
+            t1.start();
+            gyroInitialized = true;
+        }
 
         tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.toggleArmMechanism(gamepad2, telemetry);
         tol.setLiftMotorPower(gamepad2, telemetry);
-        //tol.generalTelemetry(gamepad1, gamepad2, telemetry);
+        tol.generalTelemetry(gamepad1, gamepad2, telemetry);
+
+
     }
 
     /*

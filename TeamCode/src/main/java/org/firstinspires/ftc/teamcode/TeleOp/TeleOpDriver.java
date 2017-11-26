@@ -8,12 +8,13 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 /**
  * Created by Robotics on 8/27/2017.
  */
-@TeleOp(name = "TeleOp Relative to Robot")
+@TeleOp(name = "TeleOp")
 //@Disabled
-public class TeleOpDriverRelativeToRobot extends OpMode {
+public class TeleOpDriver extends OpMode {
 
     TeleOpLibrary tol;
     CommonLibrary cl;
+    Boolean gyroInitialized = false;
 
     @Override
     public void init() {
@@ -54,6 +55,21 @@ public class TeleOpDriverRelativeToRobot extends OpMode {
      */
     @Override
     public void loop() {
+
+        if (!gyroInitialized) {
+            //Starts gyro initialization on a separate thread the first loop through during active TeleOp to shorten initialization time
+
+            Thread t1 = new Thread(new Runnable() {
+
+                public void run() {
+
+                    tol.initGyro();
+                }
+            });
+
+            t1.start();
+            gyroInitialized = true;
+        }
 
         tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.toggleArmMechanism(gamepad2,telemetry);

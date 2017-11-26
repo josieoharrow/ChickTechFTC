@@ -19,7 +19,7 @@ public class AutonomousDriver extends LinearOpMode {
     public void runOpMode() {
 
         AutonomousLibrary al = new AutonomousLibrary();
-        al.init(hardwareMap, telemetry);
+        al.init(hardwareMap, telemetry, gamepad1, this);
         waitForStart();
 
         while (opModeIsActive()) {
@@ -30,10 +30,6 @@ public class AutonomousDriver extends LinearOpMode {
                 al.decipherJewelAndKnockOff(telemetry, this);
                 al.robot.jewelActuatorServo.setPosition(0.3);
                 // al.driveAtAngle(18, 135, telemetry, this);// switch to unit circle
-                telemetry.addData("team color = ", al.robot.isRed);
-                telemetry.addData("Rev Blue", al.robot.colorSensorREV.blue());
-                telemetry.addData("Rev Red", al.robot.colorSensorREV.red());
-                telemetry.update();
                /* if (teamColor == 1) {
                     al.driveAtAngle(25, 120, telemetry, this);
                 } else {
