@@ -54,7 +54,9 @@ public class TeleOpDriverTest extends OpMode {
      */
     @Override
     public void loop() {
+
         if (!gyroInitialized) {
+
             Thread t1 = new Thread(new Runnable() {
                 public void run() {
                     tol.initGyro();
@@ -64,19 +66,15 @@ public class TeleOpDriverTest extends OpMode {
             gyroInitialized = true;
         }
 
-
         tol.translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
         tol.translateLeftStickToRotation(gamepad1);
         tol.setDrivingMotorPowers(gamepad1, telemetry);
-        tol.ArmServos(gamepad2, telemetry);
-
+        tol.armServos(gamepad1, gamepad2, telemetry);
+        tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
         tol.setDrivingMotorPowers(gamepad1, telemetry);
-        //tol.toggleArmMechanism(gamepad2, telemetry);
-
         tol.setLiftMotorPower(gamepad2, telemetry);
+        tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
         tol.generalTelemetry(gamepad1, gamepad2, telemetry);
-
-
     }
 
     /*

@@ -60,9 +60,11 @@ public class AutonomousLibrary {
         robot = robotSent;
     }
     public void init(HardwareMap hardwareMapSent, Telemetry telemetry, Gamepad gamepad1, LinearOpMode caller) {
+        setTeamColorAndPosition(gamepad1, telemetry, caller);
         hardwareMap = hardwareMapSent;
         robot = new RobotHardware();
         CommonLibrary cl = new CommonLibrary();
+        cl.init(hardwareMapSent);
         robot.init(hardwareMap);
         robot.initGyro();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -71,7 +73,8 @@ public class AutonomousLibrary {
         parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-        setTeamColorAndPosition(gamepad1, telemetry, caller);
+        cl.resetLiftMotorEncoder();
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public int setTeamColorAndPosition (Gamepad gamepad1, Telemetry telemetry, LinearOpMode caller) {
@@ -87,7 +90,7 @@ public class AutonomousLibrary {
                 telemetry.addLine("     Press B for Red Team");
                 telemetry.addLine("     Press Right Bumper for Center Balance Board");
                 telemetry.addLine("     Press Left Bumper for Corner Balance Board");
-                telemetry.addLine("     Press Right Stick to Leave");
+                telemetry.addLine("     Press Right Stick to Save and Leave");
                 telemetry.addLine("");
                 telemetry.addLine(teamColorText + " | " + positionText);
                 telemetry.update();
@@ -97,7 +100,7 @@ public class AutonomousLibrary {
                 teamColorText = "Blue Team";
                 telemetry.addLine(teamColorText + " | " + positionText);
                 telemetry.addLine("For Menu, Press Left Stick");
-                telemetry.addLine("To Leave, Press Right Stick");
+                telemetry.addLine("To Save and Leave, Press Right Stick");
                 telemetry.update();
             }
             if (gamepad1.b) {
@@ -105,7 +108,7 @@ public class AutonomousLibrary {
                 teamColorText = "Red Team";
                 telemetry.addLine(teamColorText + " | " + positionText);
                 telemetry.addLine("For Menu, Press Left Stick");
-                telemetry.addLine("To Leave, Press Right Stick");
+                telemetry.addLine("To Save and Leave, Press Right Stick");
                 telemetry.update();
             }
             if (gamepad1.right_bumper) {
@@ -113,7 +116,7 @@ public class AutonomousLibrary {
                 positionText = "Center Balance Board";
                 telemetry.addLine(teamColorText + " | " + positionText);
                 telemetry.addLine("For Menu, Press Left Stick");
-                telemetry.addLine("To Leave, Press Right Stick");
+                telemetry.addLine("To Save and Leave, Press Right Stick");
                 telemetry.update();
             }
             if (gamepad1.left_bumper) {
@@ -121,13 +124,14 @@ public class AutonomousLibrary {
                 positionText = "Corner Balance Board";
                 telemetry.addLine(teamColorText + " | " + positionText);
                 telemetry.addLine("For Menu, Press Left Stick");
-                telemetry.addLine("To Leave, Press Right Stick");
+                telemetry.addLine("To Save and Leave, Press Right Stick");
                 telemetry.update();
             }
 
             if (gamepad1.right_stick_button)  {
                 teamColorAndPosition = teamColor + position;
                 telemetry.addData("team color", teamColorAndPosition);
+                telemetry.addLine(teamColorText + " | " + positionText);
                 telemetry.addLine("1 = Red Team, Corner Balance Board");
                 telemetry.addLine("2 = Red Team, Center Balance Board");
                 telemetry.addLine("3 = Blue Team, Corner Balance Board");
@@ -222,6 +226,7 @@ public class AutonomousLibrary {
                     break;
                 }
                 telemetry.update();
+                if (startTime < Thread.activeCount() + 2000 || caller.isStopRequested()) {break;}
 
             }
 
@@ -402,6 +407,7 @@ public class AutonomousLibrary {
 
     public void turnToAngleWithPID(int angle, Telemetry telemetry, LinearOpMode caller){
 
+        runWithoutEncoders();
         angles = robot.imu.getAngularOrientation();
         if (angle >= 360) {angle = angle - 360;}
         if (angle <= -360){angle = angle + 360;}
@@ -455,20 +461,12 @@ public class AutonomousLibrary {
 
 
     public void decipherJewelAndKnockOff(Telemetry telemetry, LinearOpMode caller) {
-
+        telemetry.addLine("I have arrived to Jewel knock off");
+        telemetry.update();
         robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_DOWN);
-        int threadCount = Thread.activeCount();
-        while (!caller.isStopRequested()) {
-            if (Thread.activeCount() < (threadCount + 5000)) {
-                break;
-            }
-            telemetry.addData("Thread active count", Thread.activeCount());
-            telemetry.addData("Thread count", threadCount);
-            telemetry.update();
-        }
         try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
+            Thread.sleep(200);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         telemetry.addLine("I am here");
@@ -479,14 +477,18 @@ public class AutonomousLibrary {
                 //drive opposite side of color sensor
                 telemetry.addLine("I see the blue jewel and I am on red team");
                 telemetry.update();
-                //turnToAngleWithPID(3, 1, 0.0042, 0.0002, 0);    //put in correct angle and distance Josie I have no idea what the angle is to drive at
-                driveAtAngle(.5, 270, telemetry, caller);
+                turnToAngleWithPID(10, telemetry, caller);
+                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+                turnToAngleWithPID(-10, telemetry, caller);
+
             } else if (teamColorAndPosition == 3 || teamColorAndPosition == 4) {
                 //drive side of color sensor
                 telemetry.addLine("I see the blue jewel and I am on blue team");
                 telemetry.update();
-                //turnToAngleWithPID(3, -1, 0.0042, 0.0002, 0);    //put in correct angle and distance Josie I have no idea what the angle is to drive at
-                driveAtAngle(.5, 90, telemetry, caller);
+                turnToAngleWithPID(-10, telemetry, caller);
+                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+                turnToAngleWithPID(10, telemetry, caller);
+
             } else {
                 //For case when you don't know what team you are on- error with ground color sensor
                 telemetry.addLine("IDK what team I'm on but I see the blue jewel");
@@ -497,21 +499,26 @@ public class AutonomousLibrary {
                 //drive side of color sensor
                 telemetry.addLine("I see the red jewel and I am on red team");
                 telemetry.update();
-                //turnToAngleWithPID(3, -1, 0.0042, 0.0002, 0);
-                driveAtAngle(.5, 90, telemetry, caller);
+                turnToAngleWithPID(-10, telemetry, caller);
+                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+                turnToAngleWithPID(10, telemetry, caller);
+
             } else if (teamColorAndPosition == 3 || teamColorAndPosition == 4){
                 //drive opposite side of color sensor
                 telemetry.addLine("I see the red jewel and I am on blue team");
                 telemetry.update();
-                //turnToAngleWithPID(3, 1, 0.0042, 0.0002, 0);
-                driveAtAngle(.5, 270, telemetry, caller);
+                turnToAngleWithPID(10, telemetry, caller);
+                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+                turnToAngleWithPID(-10, telemetry, caller);
+
             } else {
                 //For case when you don't know what team you are on- error with ground color sensor
                 telemetry.addLine("IDK what team I'm on but I see the red jewel");
                 telemetry.update();
             }
         }
-        robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+        telemetry.addLine("Ending Jewel knock off");
+        telemetry.update();
     }
 
 
@@ -519,6 +526,18 @@ public class AutonomousLibrary {
 
         robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
         robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        robot.liftMotor.setPower(1);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        robot.liftMotor.setPower(0);
     }
 
     public void openArms() {
@@ -530,24 +549,24 @@ public class AutonomousLibrary {
     public void driveToVuforiaPositionFromTheLeft(Telemetry telemetry, LinearOpMode caller, String vuforiaPosition) {
 
         if (vuforiaPosition == "left") {
-
+            driveAtAngle(2, 0, telemetry, caller);
         } else if (vuforiaPosition == "center") {
-            driveAtAngle(7.5, 0, telemetry, caller);
+            driveAtAngle(9.5, 0, telemetry, caller);
         } else {
             //if right or unknown
-            driveAtAngle(15, 0, telemetry, caller);
+            driveAtAngle(17.5, 0, telemetry, caller);
         }
     }
 
     public void driveToVuforiaPositionFromTheRight(Telemetry telemetry, LinearOpMode caller, String vuforiaPosition) {
 
         if (vuforiaPosition == "right") {
-
+            driveAtAngle(2, 180, telemetry, caller);
         } else if (vuforiaPosition == "center") {
-            driveAtAngle(7.5, 180, telemetry, caller);
+            driveAtAngle(9.5, 180, telemetry, caller);
         } else {
             //if left or unknown
-            driveAtAngle(15, 180, telemetry, caller);
+            driveAtAngle(17.5, 180, telemetry, caller);
         }
     }
 

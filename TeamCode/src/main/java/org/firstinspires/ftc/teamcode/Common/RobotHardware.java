@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -22,6 +23,8 @@ public class RobotHardware {
     public Servo rightArmServo;
     public Servo rampServo;
     public Servo jewelActuatorServo;
+    public Servo relicActuatorServo;
+    public DigitalChannel liftMotorTouchSensor;
 
     //public ColorSensor colorSensorMR;
     public ColorSensor colorSensorREV;
@@ -47,6 +50,8 @@ public class RobotHardware {
         jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
         leftArmServo = hardwareMap.servo.get("left arm");
         rightArmServo = hardwareMap.servo.get("right arm");
+        liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
+        liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
         //rampServo = hardwareMap.servo.get("ramp servo");
         jewelActuatorServo.setPosition(0.3);
         leftArmServo.setPosition(0.07);

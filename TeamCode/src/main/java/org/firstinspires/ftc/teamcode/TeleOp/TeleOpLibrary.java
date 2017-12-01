@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 
 import java.util.Locale;
@@ -22,6 +23,7 @@ public class TeleOpLibrary {
     RobotHardware robot;
     HardwareMap hardwareMap;
     Orientation angles;
+    CommonLibrary cl;
 
 
     static final double LEFT_ARM_CLOSED = 0.72;
@@ -33,6 +35,8 @@ public class TeleOpLibrary {
 
     static final double RAMP_SERVO_DOWN = 0.0;
     static final double RAMP_SERVO_UP = 1.0;
+    static final double RELIC_ACTUATOR_DOWN = 1.0;
+    static final double RELIC_ACTUATOR_UP = 0.0;
 
     public double positionalMovementFLPower = 0;
     public double positionalMovementFRPower = 0;
@@ -42,9 +46,15 @@ public class TeleOpLibrary {
     public double counterclockwiseRotation = 0;
 
     final float ENCODER_TICKS_PER_ROTATION = 1152;
-    final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 7;
-    final float LIFT_MOTOR_MINIMUM_POSITION = 200;
+    final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;
+    final float LIFT_MOTOR_MINIMUM_POSITION = -10;
     final float SPEED_REDUCTION_COEFFICIENT = .7f;
+
+    boolean liftMotorResetButtonPressed = false;
+
+    float liftMotorFluidMinimum = LIFT_MOTOR_MINIMUM_POSITION;
+    float liftMotorFluidMaximum = LIFT_MOTOR_MINIMUM_POSITION;
+    int liftMotorEncoderPositon = 0;
 
     public enum motor {
 
@@ -56,9 +66,11 @@ public class TeleOpLibrary {
 
         hardwareMap = hardwareMapSent;
         robot = new RobotHardware();
+        cl = new CommonLibrary();
+        cl.init(hardwareMapSent);
         robot.init(hardwareMap);
-        resetLiftMotorEncoder();
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotorEncoderPositon = robot.liftMotor.getCurrentPosition();
     }
 
     public void initGyro() {
@@ -79,6 +91,7 @@ public class TeleOpLibrary {
         robot.rearRightMotor.setPower(Range.clip((counterClockwise + positionalMovementRRPower), -1, 1));
         robot.rearLeftMotor.setPower(Range.clip((clockwise + positionalMovementRLPower), -1, 1));*/
     }
+
 
     public void setDrivingMotorPowers(Gamepad gamepad1, Telemetry telemetry) {
 
@@ -147,16 +160,23 @@ public class TeleOpLibrary {
     public void generalTelemetry(Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
 
         telemetry.clear();
-        telemetry.addData("heading: ", robot.imu.getAngularOrientation().firstAngle);
+    /*    telemetry.addData("heading: ", robot.imu.getAngularOrientation().firstAngle);
         telemetry.addData("front right motor power ", robot.frontRightMotor.getPower());
         telemetry.addData("front left motor power ", robot.frontLeftMotor.getPower());
         telemetry.addData("rear right motor power ", robot.rearRightMotor.getPower());
-        telemetry.addData("rear left motor power ", robot.rearLeftMotor.getPower());
+        telemetry.addData("rear left motor power ", robot.rearLeftMotor.getPower());*/
+        if (robot.liftMotorTouchSensor.getState() == true) {
+            telemetry.addData("Digital Touch", "Is Not Pressed");
+        } else {
+            telemetry.addData("Digital Touch", "Is Pressed");
+        }
+
         telemetry.update();
     }
 
 
-    public void ArmServos(Gamepad gamepad2, Telemetry telemetry) {
+
+    public void armServos(Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
 
         if (gamepad2.x) {
             telemetry.addLine("Opening");
@@ -164,8 +184,6 @@ public class TeleOpLibrary {
             robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
             robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
         }
-
-
 
         if (gamepad2.a) {
 
@@ -181,9 +199,31 @@ public class TeleOpLibrary {
             robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
             robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
         }
+
+        if (gamepad1.dpad_up) {
+
+            telemetry.addLine("Opening");
+            telemetry.update();
+            robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
+            robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
+        }
     }
 
 
+    public void resetLiftMotorEncoderBasedOnTouchSensorActivation(Telemetry telemetry) {
+
+        if (!robot.liftMotorTouchSensor.getState() == true) {
+
+            liftMotorResetButtonPressed = true;
+        } else if (liftMotorResetButtonPressed) {
+
+            telemetry.addLine("Resetting Lift Motor Encoder Limits");
+            telemetry.update();
+            liftMotorFluidMaximum = robot.liftMotor.getCurrentPosition() + LIFT_MOTOR_MAXIMUM_POSITION;
+            liftMotorFluidMinimum = robot.liftMotor.getCurrentPosition() + LIFT_MOTOR_MINIMUM_POSITION;
+            liftMotorResetButtonPressed = false;
+        }
+    }
 
     public void setLiftMotorPower(Gamepad gamepad2, Telemetry telemetry) {
 
@@ -198,12 +238,12 @@ public class TeleOpLibrary {
 
         if (robot.liftMotor.getCurrentPosition() >= 0) {
 
-            if (directionMultiplier == 1 && robot.liftMotor.getCurrentPosition() > LIFT_MOTOR_MAXIMUM_POSITION) {
+            if (directionMultiplier == 1 && robot.liftMotor.getCurrentPosition() > liftMotorFluidMaximum) {
                 ExceedingEncoderLimit = true;
             }
         } else {
 
-            if (directionMultiplier == -1 && robot.liftMotor.getCurrentPosition() < LIFT_MOTOR_MINIMUM_POSITION) {
+            if (directionMultiplier == -1 && robot.liftMotor.getCurrentPosition() < liftMotorFluidMinimum) {
                 ExceedingEncoderLimit = true;
             }
         }
@@ -211,6 +251,8 @@ public class TeleOpLibrary {
         if(!ExceedingEncoderLimit) {
 
             telemetry.addData("Lift Motor encoder", robot.liftMotor.getCurrentPosition());
+            telemetry.addData("Upper limit", liftMotorFluidMaximum);
+            telemetry.addData("Lower limit",liftMotorFluidMinimum);
             telemetry.addData("Direction multiplier", directionMultiplier);
             telemetry.addData("Power", gamepad2.right_trigger - gamepad2.left_trigger);
             telemetry.update();
@@ -222,7 +264,11 @@ public class TeleOpLibrary {
             telemetry.addData("Direction multiplier", directionMultiplier);
             telemetry.addData("Power", gamepad2.right_trigger - gamepad2.left_trigger);
             telemetry.update();
-            robot.liftMotor.setPower(0);
+            if (!gamepad2.left_bumper) {
+                robot.liftMotor.setPower(0);
+            } else {
+                robot.liftMotor.setPower(Range.clip(scaleInput((double)(netPower)), -1, 1));
+            }
         }
     }
 
@@ -267,10 +313,4 @@ public class TeleOpLibrary {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 
-    public void resetLiftMotorEncoder() {
-
-        robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        while (robot.liftMotor.isBusy()) {
-        }
-    }
 }

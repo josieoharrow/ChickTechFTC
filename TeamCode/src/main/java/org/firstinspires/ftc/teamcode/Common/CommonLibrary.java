@@ -1,10 +1,7 @@
 package org.firstinspires.ftc.teamcode.Common;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -22,5 +19,10 @@ public class CommonLibrary {
         robot = new RobotHardware();
         robot.init(hardwareMap);
     }
+    public void resetLiftMotorEncoder() {
 
+        robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        while (robot.liftMotor.isBusy()) {
+        }
+    }
 }
