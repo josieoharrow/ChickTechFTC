@@ -48,7 +48,7 @@ public class TeleOpLibrary {
     final float ENCODER_TICKS_PER_ROTATION = 1152;
     final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;
     final float LIFT_MOTOR_MINIMUM_POSITION = -10;
-    final float SPEED_REDUCTION_COEFFICIENT = .7f;
+    final float SPEED_REDUCTION_COEFFICIENT = .6f;
 
     boolean liftMotorResetButtonPressed = false;
 
@@ -82,14 +82,8 @@ public class TeleOpLibrary {
         // Button: left joystick
 
         float HorizontalInput = Range.clip(gamepad1.left_stick_x, -1, 1);
-       // double clockwise = scaleInput(HorizontalInput);
-       // double counterClockwise = scaleInput(-HorizontalInput);
         clockwiseRotation = scaleInput(HorizontalInput);
         counterclockwiseRotation = scaleInput(-HorizontalInput);
-      /*  robot.frontLeftMotor.setPower(Range.clip((clockwise + positionalMovementFLPower), -1, 1)); //move power settings independent for clarity temporary fix
-        robot.frontRightMotor.setPower(Range.clip((counterClockwise + positionalMovementFRPower), -1, 1));
-        robot.rearRightMotor.setPower(Range.clip((counterClockwise + positionalMovementRRPower), -1, 1));
-        robot.rearLeftMotor.setPower(Range.clip((clockwise + positionalMovementRLPower), -1, 1));*/
     }
 
 
@@ -123,10 +117,6 @@ public class TeleOpLibrary {
         positionalMovementFRPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
         positionalMovementRRPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
         positionalMovementRLPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
-        // robot.frontLeftMotor.setPower(flPower);
-       // robot.frontRightMotor.setPower(frPower);
-       // robot.rearRightMotor.setPower(rrPower);
-       // robot.rearLeftMotor.setPower(rlPower);
     }
 
 
@@ -144,16 +134,6 @@ public class TeleOpLibrary {
         positionalMovementFRPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
         positionalMovementRRPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
         positionalMovementRLPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
-        /*
-        double flPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
-        double frPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
-        double rrPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
-        double rlPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
-
-        robot.frontLeftMotor.setPower(flPower);
-        robot.frontRightMotor.setPower(frPower);
-        robot.rearRightMotor.setPower(rrPower);
-        robot.rearLeftMotor.setPower(rlPower);*/
     }
 
 

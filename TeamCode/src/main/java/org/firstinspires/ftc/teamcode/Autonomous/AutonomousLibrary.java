@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -160,11 +162,14 @@ public class AutonomousLibrary {
         while ("no".equals(vuMarkSeen)) { // While the vumark has not been seen
 
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-
-            if (startTime < Thread.activeCount() + 2000 || caller.isStopRequested()) {break;}
+            telemetry.addData("vumark", vuMark);
+            telemetry.update();
+           // if (startTime < Thread.activeCount() + 2000 || caller.isStopRequested()) {break;}
+            if (startTime + 8000 < Thread.activeCount() || caller.isStopRequested()) {break;}
 
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) { //If the pictograph is found
-
+                telemetry.addData("I see something", 0);
+                telemetry.update();
                 if (vuMark == RelicRecoveryVuMark.LEFT) { //If the pictograph is the left pictograph
                     pictoKey = "left"; //Record that the pictograph is the left one
                     telemetry.addData("VuMark", "%s visible", vuMark); //Display which vumark has been seen
@@ -187,7 +192,6 @@ public class AutonomousLibrary {
                         telemetry.update();
                         break;
                     }
-
                 }
 
                 if (vuMark == RelicRecoveryVuMark.RIGHT) { //If the pictograph is the right pictograph
@@ -207,6 +211,7 @@ public class AutonomousLibrary {
             }
             else { //If the vumark isn't being seen
                 telemetry.addData("VuMark", "is not visible"); //Show that the vumark hasn't been seen
+                telemetry.update();
                 if ("left".equals(pictoKey)){ //See if it's been recorded that the pictograph is the left one
                     telemetry.addLine();
                     telemetry.addData("left", ""); //Write that it is the pictograph denoting left
@@ -226,11 +231,14 @@ public class AutonomousLibrary {
                     break;
                 }
                 telemetry.update();
-                if (startTime < Thread.activeCount() + 2000 || caller.isStopRequested()) {break;}
+//                if (startTime < Thread.activeCount() + 2000 || caller.isStopRequested()) {break;}
+                if (startTime + 8000 < Thread.activeCount()|| caller.isStopRequested()) {break;}
 
             }
 
         }
+        telemetry.addData("Vuforia ", pictoKey);
+        telemetry.update();
         return pictoKey;
     }
 
@@ -405,6 +413,37 @@ public class AutonomousLibrary {
         robot.rearLeftMotor.setPower(rlPower);
     }
 
+    public void colorSensorTelemetry(Telemetry telemetry) {
+
+        // hsvValues is an array that will hold the hue, saturation, and value information.
+        float hsvValues[] = {0F, 0F, 0F};
+
+        // values is a reference to the hsvValues array.
+        final float values[] = hsvValues;
+
+        // sometimes it helps to multiply the raw RGB values with a scale factor
+        // to amplify/attentuate the measured values.
+        final double SCALE_FACTOR = 255;
+
+        // get a reference to the RelativeLayout so we can change the background
+        // color of the Robot Controller app to match the hue detected by the RGB sensor.
+        int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
+            // convert the RGB values to HSV values.
+            // multiply by the SCALE_FACTOR.
+            // then cast it back to int (SCALE_FACTOR is a double)
+            Color.RGBToHSV((int) (robot.colorSensorREV.red() * SCALE_FACTOR),
+                    (int) (robot.colorSensorREV.green() * SCALE_FACTOR),
+                    (int) (robot.colorSensorREV.blue() * SCALE_FACTOR),
+                    hsvValues);
+
+            telemetry.addData("Hue", hsvValues[0]);
+
+            telemetry.addData("Blue ", robot.colorSensorREV.blue());
+        telemetry.addData("Red ", robot.colorSensorREV.red());
+        telemetry.addData("Green ", robot.colorSensorREV.green());
+        telemetry.update();
+    }
+
     public void turnToAngleWithPID(int angle, Telemetry telemetry, LinearOpMode caller){
 
         runWithoutEncoders();
@@ -477,15 +516,15 @@ public class AutonomousLibrary {
                 //drive opposite side of color sensor
                 telemetry.addLine("I see the blue jewel and I am on red team");
                 telemetry.update();
-                turnToAngleWithPID(10, telemetry, caller);
-                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
                 turnToAngleWithPID(-10, telemetry, caller);
+                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+                turnToAngleWithPID(10, telemetry, caller);
 
             } else if (teamColorAndPosition == 3 || teamColorAndPosition == 4) {
                 //drive side of color sensor
                 telemetry.addLine("I see the blue jewel and I am on blue team");
                 telemetry.update();
-                turnToAngleWithPID(-10, telemetry, caller);
+                turnToAngleWithPID(10, telemetry, caller);
                 robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
                 turnToAngleWithPID(10, telemetry, caller);
 
@@ -499,9 +538,9 @@ public class AutonomousLibrary {
                 //drive side of color sensor
                 telemetry.addLine("I see the red jewel and I am on red team");
                 telemetry.update();
-                turnToAngleWithPID(-10, telemetry, caller);
-                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
                 turnToAngleWithPID(10, telemetry, caller);
+                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+                turnToAngleWithPID(-10, telemetry, caller);
 
             } else if (teamColorAndPosition == 3 || teamColorAndPosition == 4){
                 //drive opposite side of color sensor
@@ -554,8 +593,10 @@ public class AutonomousLibrary {
             driveAtAngle(9.5, 0, telemetry, caller);
         } else {
             //if right or unknown
-            driveAtAngle(17.5, 0, telemetry, caller);
+            driveAtAngle(17, 0, telemetry, caller);
         }
+        telemetry.addData("Position", vuforiaPosition);
+        telemetry.update();
     }
 
     public void driveToVuforiaPositionFromTheRight(Telemetry telemetry, LinearOpMode caller, String vuforiaPosition) {

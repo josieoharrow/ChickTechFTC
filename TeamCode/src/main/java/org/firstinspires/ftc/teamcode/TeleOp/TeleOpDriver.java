@@ -56,17 +56,14 @@ public class TeleOpDriver extends OpMode {
     @Override
     public void loop() {
 
+
         if (!gyroInitialized) {
-            //Starts gyro initialization on a separate thread the first loop through during active TeleOp to shorten initialization time
 
             Thread t1 = new Thread(new Runnable() {
-
                 public void run() {
-
                     tol.initGyro();
                 }
             });
-
             t1.start();
             gyroInitialized = true;
         }
@@ -75,9 +72,10 @@ public class TeleOpDriver extends OpMode {
         tol.translateLeftStickToRotation(gamepad1);
         tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.armServos(gamepad1, gamepad2, telemetry);
-        //tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
+        tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
         tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.setLiftMotorPower(gamepad2, telemetry);
+        tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
         tol.generalTelemetry(gamepad1, gamepad2, telemetry);
     }
 
