@@ -14,7 +14,9 @@ public class TeleOpDriver extends OpMode {
 
     TeleOpLibrary tol;
     CommonLibrary cl;
+    OpMode op;
     Boolean gyroInitialized = false;
+    Boolean liftLowered = false;
 
     @Override
     public void init() {
@@ -55,7 +57,7 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void loop() {
-
+        op = this;
 
         if (!gyroInitialized) {
 
@@ -68,6 +70,16 @@ public class TeleOpDriver extends OpMode {
             gyroInitialized = true;
         }
 
+        if (!liftLowered) {
+            Thread t2 = new Thread(new Runnable() {
+                public void run() {
+                    tol.lowerLift(op);
+                }
+            });
+            t2.start();
+            liftLowered = true;
+        }
+
         tol.translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
         tol.translateLeftStickToRotation(gamepad1);
         tol.setDrivingMotorPowers(gamepad1, telemetry);
@@ -75,7 +87,6 @@ public class TeleOpDriver extends OpMode {
         tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
         tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.setLiftMotorPower(gamepad2, telemetry);
-        tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
         tol.generalTelemetry(gamepad1, gamepad2, telemetry);
     }
 

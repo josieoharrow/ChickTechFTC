@@ -39,7 +39,7 @@ public class AutonomousLibrary {
     static double SLOWING_INCHES_THRESHOLD = 10;
     static double DRIVING_POWER_SLOW_MODIFIER = 0.5;
     static float JEWEL_ACTUATOR_DOWN = 0.9f;
-    static float JEWEL_ACTUATOR_UP = 0.3f;
+    static float JEWEL_ACTUATOR_UP = 0.2f;
     static double ENCODER_TICKS_TO_INCHES = 4/1130;
     static double INCHES_TO_ENCODER_TICKS = 288/4 * 0.1666666666; // * .31;
 
@@ -157,15 +157,18 @@ public class AutonomousLibrary {
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
         relicTrackables.activate();
-        int startTime = Thread.activeCount();
+        long startTime =  System.currentTimeMillis();
+        pictoKey = "unknown";
 
         while ("no".equals(vuMarkSeen)) { // While the vumark has not been seen
 
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
             telemetry.addData("vumark", vuMark);
             telemetry.update();
+            long currentTime = System.currentTimeMillis();
+            double timeChange = (currentTime - startTime);
            // if (startTime < Thread.activeCount() + 2000 || caller.isStopRequested()) {break;}
-            if (startTime + 8000 < Thread.activeCount() || caller.isStopRequested()) {break;}
+            if (timeChange > 1000 || caller.isStopRequested()) {break;}
 
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) { //If the pictograph is found
                 telemetry.addData("I see something", 0);
@@ -232,7 +235,7 @@ public class AutonomousLibrary {
                 }
                 telemetry.update();
 //                if (startTime < Thread.activeCount() + 2000 || caller.isStopRequested()) {break;}
-                if (startTime + 8000 < Thread.activeCount()|| caller.isStopRequested()) {break;}
+                if (timeChange > 1000 || caller.isStopRequested()) {break;}
 
             }
 
@@ -288,6 +291,26 @@ public class AutonomousLibrary {
         robot.rearLeftMotor.setPower(0);
         runUsingEncoders();
         resetMotorEncoders();
+    }
+
+
+    public void blockFollow(LinearOpMode caller) {
+
+        double power = 1;
+
+        while (robot.leftODS.getRawLightDetected() < 0.7 && robot.rightODS.getRawLightDetected() < 0.7) {
+
+            caller.telemetry.addData("Right ODS ", robot.rightODS.getRawLightDetected());
+            caller.telemetry.addData("Left ODS ", robot.leftODS.getRawLightDetected());
+            caller.telemetry.update();
+
+            double powerModifierLeft = Range.clip(1 + (robot.leftODS.getRawLightDetected() - robot.rightODS.getRawLightDetected()), -1, 1);
+            double powerModifierRight = Range.clip(1 + (robot.rightODS.getRawLightDetected() - robot.leftODS.getRawLightDetected()), -1, 1);
+            robot.frontLeftMotor.setPower(power * powerModifierLeft);
+            robot.frontRightMotor.setPower(power * powerModifierRight);
+            robot.rearRightMotor.setPower(power * powerModifierLeft);
+            robot.rearLeftMotor.setPower(power * powerModifierRight);
+        }
     }
 
     double convertEncoderValuesToLinearDrivingInches(double drivingAngle, double encoderValue) {
@@ -470,11 +493,13 @@ public class AutonomousLibrary {
             if (currentError > 180)  {currentError = currentError - 360;}
             if (currentError <= -180){currentError = currentError + 360;}
             telemetry.addData("Current error", currentError);
+            telemetry.addLine();
+            telemetry.addData("Target angle", targetAngle);
             //integral = integral + currentError;
             double kpError = currentError * 0.008; //0.0042
             double kiIntegral = integral * 0.0002 * timeChange;
             double derivative = (currentError - previousError) / timeChange;
-            double kdDerivative = derivative * 0;
+            double kdDerivative = derivative * 0;//WHAT IS THIS
             power = kpError + kiIntegral + kdDerivative;
             if (power > 1) {power = 1;}
             if (power < 0.13 && power > 0) {power = 0.13;}
@@ -499,32 +524,36 @@ public class AutonomousLibrary {
     }
 
 
-    public void decipherJewelAndKnockOff(Telemetry telemetry, LinearOpMode caller) {
+    public void decipherJewelAndKnockOff(Telemetry telemetry, LinearOpMode caller, CommonLibrary cl) {
+
         telemetry.addLine("I have arrived to Jewel knock off");
         telemetry.update();
+
         robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_DOWN);
-        try {
-            Thread.sleep(200);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        cl.wait(1000, caller);
+
         telemetry.addLine("I am here");
         telemetry.update();
-        //should we add a wait here to give the sensor time to get into position?
-        if (robot.colorSensorREV.blue() > robot.colorSensorREV.red()){
+
+        if (Math.abs(robot.colorSensorREV.blue() - robot.colorSensorREV.red()) < 5) {
+                telemetry.addLine("I have no idea what jewel I see");
+                telemetry.update();
+
+        } else if (robot.colorSensorREV.blue() > robot.colorSensorREV.red()){
             if (teamColorAndPosition == 1 || teamColorAndPosition == 2){
                 //drive opposite side of color sensor
                 telemetry.addLine("I see the blue jewel and I am on red team");
                 telemetry.update();
-                turnToAngleWithPID(-10, telemetry, caller);
-                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
                 turnToAngleWithPID(10, telemetry, caller);
+                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+                turnToAngleWithPID(-10, telemetry, caller);
 
             } else if (teamColorAndPosition == 3 || teamColorAndPosition == 4) {
                 //drive side of color sensor
                 telemetry.addLine("I see the blue jewel and I am on blue team");
                 telemetry.update();
-                turnToAngleWithPID(10, telemetry, caller);
+                turnToAngleWithPID(-10, telemetry, caller);
                 robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
                 turnToAngleWithPID(10, telemetry, caller);
 
@@ -533,14 +562,14 @@ public class AutonomousLibrary {
                 telemetry.addLine("IDK what team I'm on but I see the blue jewel");
                 telemetry.update();
             }
-        } else {
+        } else if (robot.colorSensorREV.blue() < robot.colorSensorREV.red()) {
             if (teamColorAndPosition == 1 || teamColorAndPosition == 2){
                 //drive side of color sensor
                 telemetry.addLine("I see the red jewel and I am on red team");
                 telemetry.update();
-                turnToAngleWithPID(10, telemetry, caller);
-                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
                 turnToAngleWithPID(-10, telemetry, caller);
+                robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+                turnToAngleWithPID(10, telemetry, caller);
 
             } else if (teamColorAndPosition == 3 || teamColorAndPosition == 4){
                 //drive opposite side of color sensor
@@ -561,21 +590,13 @@ public class AutonomousLibrary {
     }
 
 
-    public void closeArms() {
+    public void closeArms(CommonLibrary cl, LinearOpMode caller) {
 
         robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
         robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        cl.wait(200,caller);
         robot.liftMotor.setPower(1);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        cl.wait(200,caller);
         robot.liftMotor.setPower(0);
     }
 
@@ -588,12 +609,14 @@ public class AutonomousLibrary {
     public void driveToVuforiaPositionFromTheLeft(Telemetry telemetry, LinearOpMode caller, String vuforiaPosition) {
 
         if (vuforiaPosition == "left") {
-            driveAtAngle(2, 0, telemetry, caller);
-        } else if (vuforiaPosition == "center") {
-            driveAtAngle(9.5, 0, telemetry, caller);
+            driveAtAngle(4, 0, telemetry, caller);
+        } else if (vuforiaPosition == "right") {
+            driveAtAngle(15, 0, telemetry, caller);
+
         } else {
-            //if right or unknown
-            driveAtAngle(17, 0, telemetry, caller);
+            //if center or unknown
+            driveAtAngle(9.5, 0, telemetry, caller);
+
         }
         telemetry.addData("Position", vuforiaPosition);
         telemetry.update();
@@ -602,12 +625,14 @@ public class AutonomousLibrary {
     public void driveToVuforiaPositionFromTheRight(Telemetry telemetry, LinearOpMode caller, String vuforiaPosition) {
 
         if (vuforiaPosition == "right") {
-            driveAtAngle(2, 180, telemetry, caller);
-        } else if (vuforiaPosition == "center") {
-            driveAtAngle(9.5, 180, telemetry, caller);
+            driveAtAngle(4, 180, telemetry, caller);
+        } else if (vuforiaPosition == "left") {
+            driveAtAngle(15, 180, telemetry, caller);
+
         } else {
-            //if left or unknown
-            driveAtAngle(17.5, 180, telemetry, caller);
+            //if center or unknown
+            driveAtAngle(9.5, 180, telemetry, caller);
+
         }
     }
 

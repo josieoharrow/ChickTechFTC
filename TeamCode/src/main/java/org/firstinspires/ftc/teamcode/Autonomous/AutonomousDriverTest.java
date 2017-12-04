@@ -28,13 +28,21 @@ public class AutonomousDriverTest extends LinearOpMode {
         AutonomousLibrary al = new AutonomousLibrary();
         al.init(hardwareMap, telemetry, gamepad1, this);
         robot = new RobotHardware();
+        Boolean ran = false;
         robot.init(hardwareMap);
         waitForStart();
 
 
         while (opModeIsActive()) {
-            if (runLinearCode) {
-                telemetry.update();
+
+            if (!ran) {
+                al.blockFollow(this);
+                ran = true;
+            }
+
+        }
+
+                /*telemetry.update();
                 al.closeArms();
                // telemetry.addLine("Endng close arms");
              //   al.decipherJewelAndKnockOff(telemetry, this);
@@ -108,9 +116,8 @@ public class AutonomousDriverTest extends LinearOpMode {
                 al.openArms();
                 al.driveAtAngle(14, 90, telemetry, this);//push block in more
                 al.driveAtAngle(6, 270, telemetry, this);
-            }
+            }*/
 
             runLinearCode = false;
         }
-    }
     }

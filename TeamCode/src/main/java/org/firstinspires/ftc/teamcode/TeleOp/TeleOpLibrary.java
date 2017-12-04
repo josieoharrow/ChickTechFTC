@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -84,6 +85,20 @@ public class TeleOpLibrary {
         float HorizontalInput = Range.clip(gamepad1.left_stick_x, -1, 1);
         clockwiseRotation = scaleInput(HorizontalInput);
         counterclockwiseRotation = scaleInput(-HorizontalInput);
+    }
+
+    public void lowerLift(OpMode caller) {
+        while(robot.liftMotorTouchSensor.getState() == true) {
+            robot.liftMotor.setPower(-.5);
+
+            translateRightStickToSlidingRelativeToField(caller.gamepad1, caller.telemetry);
+            translateLeftStickToRotation(caller.gamepad1);
+            setDrivingMotorPowers(caller.gamepad1, caller.telemetry);
+            armServos(caller.gamepad1, caller.gamepad2, caller.telemetry);
+            setDrivingMotorPowers(caller.gamepad1, caller.telemetry);
+            generalTelemetry(caller.gamepad1, caller.gamepad2, caller.telemetry);
+        }
+        robot.liftMotor.setPower(0);
     }
 
 

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -25,11 +26,16 @@ public class RobotHardware {
     public Servo jewelActuatorServo;
     public Servo relicActuatorServo;
     public DigitalChannel liftMotorTouchSensor;
+    public OpticalDistanceSensor leftODS;
+    public OpticalDistanceSensor rightODS;
 
     //public ColorSensor colorSensorMR;
     public ColorSensor colorSensorREV;
-
+    //public OpticalDistanceSensor odsSensorLeft;
+    //public OpticalDistanceSensor odsSensorRight;
     public BNO055IMU imu;
+
+    static float JEWEL_ACTUATOR_UP = 0.2f;
 
     /* local OpMode members. */
     HardwareMap hardwareMap;
@@ -40,6 +46,8 @@ public class RobotHardware {
         // Define and Initialize
         hardwareMap = hwMap;
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+        //odsSensorLeft = hardwareMap.get(OpticalDistanceSensor.class, "left ods sensor");
+        //odsSensorRight = hardwareMap.get(OpticalDistanceSensor.class, "right ods sensor");
         frontLeftMotor = hardwareMap.dcMotor.get("front left motor");
         rearRightMotor = hardwareMap.dcMotor.get("rear right motor");
         frontRightMotor = hardwareMap.dcMotor.get("front right motor");
@@ -51,9 +59,12 @@ public class RobotHardware {
         leftArmServo = hardwareMap.servo.get("left arm");
         rightArmServo = hardwareMap.servo.get("right arm");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
+        leftODS = hardwareMap.opticalDistanceSensor.get("left ods");
+        rightODS = hardwareMap.opticalDistanceSensor.get("right ods");
         liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
         //rampServo = hardwareMap.servo.get("ramp servo");
-        jewelActuatorServo.setPosition(0.3);
+        jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+
         leftArmServo.setPosition(0.07);
         rightArmServo.setPosition(0.93);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
