@@ -20,19 +20,20 @@ public class RobotHardware {
     public DcMotor frontRightMotor;
     public DcMotor rearLeftMotor;
     public DcMotor liftMotor;
+    public DcMotor relicLiftMotor;
     public Servo leftArmServo;
     public Servo rightArmServo;
     public Servo rampServo;
     public Servo jewelActuatorServo;
-    public Servo relicActuatorServo;
+    public Servo relicGtabberServo;
+    public Servo relicRotateServo;
     public DigitalChannel liftMotorTouchSensor;
+    public DigitalChannel relicLiftTouchSensor;
     public OpticalDistanceSensor leftODS;
     public OpticalDistanceSensor rightODS;
 
     //public ColorSensor colorSensorMR;
     public ColorSensor colorSensorREV;
-    //public OpticalDistanceSensor odsSensorLeft;
-    //public OpticalDistanceSensor odsSensorRight;
     public BNO055IMU imu;
 
     static float JEWEL_ACTUATOR_UP = 0.2f;
@@ -46,27 +47,30 @@ public class RobotHardware {
         // Define and Initialize
         hardwareMap = hwMap;
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-        //odsSensorLeft = hardwareMap.get(OpticalDistanceSensor.class, "left ods sensor");
-        //odsSensorRight = hardwareMap.get(OpticalDistanceSensor.class, "right ods sensor");
         frontLeftMotor = hardwareMap.dcMotor.get("front left motor");
         rearRightMotor = hardwareMap.dcMotor.get("rear right motor");
         frontRightMotor = hardwareMap.dcMotor.get("front right motor");
         rearLeftMotor = hardwareMap.dcMotor.get("rear left motor");
         liftMotor = hardwareMap.dcMotor.get("lift motor");
-        //colorSensorMR = hardwareMap.get(ColorSensor.class, "ground color sensor");
+        //relicLiftMotor = hardwareMap.dcMotor.get("relic lift motor");
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
         leftArmServo = hardwareMap.servo.get("left arm");
         rightArmServo = hardwareMap.servo.get("right arm");
+        relicGtabberServo = hardwareMap.servo.get("relic grabber servo");
+        relicRotateServo = hardwareMap.servo.get("relic rotate servo");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
-        leftODS = hardwareMap.opticalDistanceSensor.get("left ods");
-        rightODS = hardwareMap.opticalDistanceSensor.get("right ods");
+        //relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
+        //leftODS = hardwareMap.opticalDistanceSensor.get("left ods");
+        //rightODS = hardwareMap.opticalDistanceSensor.get("right ods");
         liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
         //rampServo = hardwareMap.servo.get("ramp servo");
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
 
         leftArmServo.setPosition(0.07);
         rightArmServo.setPosition(0.93);
+        //relicGtabberServo.setPosition(0);   //change these later
+        //relicRotateServo.setPosition(0);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);

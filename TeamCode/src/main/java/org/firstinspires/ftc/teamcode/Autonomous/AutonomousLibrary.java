@@ -62,7 +62,10 @@ public class AutonomousLibrary {
         robot = robotSent;
     }
     public void init(HardwareMap hardwareMapSent, Telemetry telemetry, Gamepad gamepad1, LinearOpMode caller) {
+
         setTeamColorAndPosition(gamepad1, telemetry, caller);
+        telemetry.addLine("initializing");
+        telemetry.update();
         hardwareMap = hardwareMapSent;
         robot = new RobotHardware();
         CommonLibrary cl = new CommonLibrary();
@@ -75,6 +78,7 @@ public class AutonomousLibrary {
         parameters.vuforiaLicenseKey = "Ac+j+R7/////AAAAGXEMop5pnkoqqEXMkOojnpQriKcyqCStGTQ0SVWtZDKiyucL+bWQPvA2YRrhGk/diKOkLGVRsP2l0UHYI37HSgl59Y81KNpEjxUEj34kk/Tm+ck3RrCgDuNtY4lsmePAuTAta6jakcmmESS4Gd2e0FAI97wuo6uJ4CAOXeAFs+AcqNQ162w10gJqOaTlYJVU1z8+UWQca/fwc/pcQ4sqwXzsL3NFpMgE3cijkAGxIZ6xAxkK5YI+3QJxzljDhszlG8dVOx8JJ4TflpzMNYpya36bPiKUlT++LQb6Xmn+HJpOChXg3vEtp2TV9hkFCe1CNjoYFCpsMTORho4tUGNPeUK0+JQBnHozcnbJdVnV+e/L";
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        lowerLift();
         cl.resetLiftMotorEncoder();
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
@@ -293,23 +297,34 @@ public class AutonomousLibrary {
         resetMotorEncoders();
     }
 
+    public void lowerLift() {
+        while(robot.liftMotorTouchSensor.getState() == true) {
+
+            robot.liftMotor.setPower(-.25);
+        }
+        robot.liftMotor.setPower(0);
+    }
+
+
 
     public void blockFollow(LinearOpMode caller) {
 
-        double power = 1;
-
-        while (robot.leftODS.getRawLightDetected() < 0.7 && robot.rightODS.getRawLightDetected() < 0.7) {
-
-            caller.telemetry.addData("Right ODS ", robot.rightODS.getRawLightDetected());
-            caller.telemetry.addData("Left ODS ", robot.leftODS.getRawLightDetected());
+        double power = .5;
+        caller.telemetry.addLine("in the method");
+        caller.telemetry.update();
+        while (/*robot.leftODS.getRawLightDetected() < 0.7 && robot.rightODS.getRawLightDetected() < 0.7 && */!caller.isStopRequested()) {
+            robot.rightODS.enableLed(true);
+            robot.leftODS.enableLed(true);
+            caller.telemetry.addData("Right ODS ", robot.rightODS.getLightDetected() * 10);
+            caller.telemetry.addData("Left ODS ", robot.leftODS.getLightDetected() * 10);
             caller.telemetry.update();
 
-            double powerModifierLeft = Range.clip(1 + (robot.leftODS.getRawLightDetected() - robot.rightODS.getRawLightDetected()), -1, 1);
-            double powerModifierRight = Range.clip(1 + (robot.rightODS.getRawLightDetected() - robot.leftODS.getRawLightDetected()), -1, 1);
-            robot.frontLeftMotor.setPower(power * powerModifierLeft);
-            robot.frontRightMotor.setPower(power * powerModifierRight);
-            robot.rearRightMotor.setPower(power * powerModifierLeft);
-            robot.rearLeftMotor.setPower(power * powerModifierRight);
+            double powerModifierRight = Range.clip((1 + ((robot.leftODS.getRawLightDetected() - robot.rightODS.getRawLightDetected()) * 10) * power), 0.1, 0.7);//* 20?
+            double powerModifierLeft = Range.clip((1 + ((robot.rightODS.getRawLightDetected() - robot.leftODS.getRawLightDetected()) * 10) * power), 0.1, 0.7);
+            robot.frontLeftMotor.setPower(powerModifierLeft);
+            robot.frontRightMotor.setPower(powerModifierRight);
+            robot.rearRightMotor.setPower(powerModifierLeft);
+            robot.rearLeftMotor.setPower(powerModifierRight);
         }
     }
 
@@ -596,15 +611,20 @@ public class AutonomousLibrary {
         robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
         cl.wait(200,caller);
         robot.liftMotor.setPower(1);
-        cl.wait(200,caller);
+        cl.wait(600,caller);
         robot.liftMotor.setPower(0);
     }
 
-    public void openArms() {
 
+    public void openArms(CommonLibrary cl, LinearOpMode caller) {
+
+        robot.liftMotor.setPower(-1);
+        cl.wait(300,caller);
+        robot.liftMotor.setPower(0);
         robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
         robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
     }
+
 
     public void driveToVuforiaPositionFromTheLeft(Telemetry telemetry, LinearOpMode caller, String vuforiaPosition) {
 
@@ -621,6 +641,7 @@ public class AutonomousLibrary {
         telemetry.addData("Position", vuforiaPosition);
         telemetry.update();
     }
+
 
     public void driveToVuforiaPositionFromTheRight(Telemetry telemetry, LinearOpMode caller, String vuforiaPosition) {
 

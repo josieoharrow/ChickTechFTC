@@ -79,7 +79,7 @@ public class TeleOpDriver extends OpMode {
             t2.start();
             liftLowered = true;
         }
-
+        //TEST CHANGING ABOVE THREAD TO NOT SEND CALLER
         tol.translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
         tol.translateLeftStickToRotation(gamepad1);
         tol.setDrivingMotorPowers(gamepad1, telemetry);
