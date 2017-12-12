@@ -83,6 +83,39 @@ public class AutonomousLibrary {
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+
+    public void moveLift(float rotations, LinearOpMode caller) {
+
+        int oldEncoderPosition = robot.liftMotor.getCurrentPosition();
+        final float ENCODER_TICKS_PER_ROTATION = 1152;
+
+        if (rotations > 0) {
+
+            while (robot.liftMotor.getCurrentPosition() < (rotations * ENCODER_TICKS_PER_ROTATION) + oldEncoderPosition) {
+
+                float closeMultiplier = 1;
+                if ((rotations * ENCODER_TICKS_PER_ROTATION + oldEncoderPosition) - robot.liftMotor.getCurrentPosition() < 200) {
+
+                    closeMultiplier = 0.5f;
+                }
+                robot.liftMotor.setPower(.5 * closeMultiplier);
+            }
+        } else {
+
+            while (robot.liftMotor.getCurrentPosition() > (rotations * ENCODER_TICKS_PER_ROTATION) + oldEncoderPosition) {
+
+                float closeMultiplier = 1;
+                if ((rotations * ENCODER_TICKS_PER_ROTATION + oldEncoderPosition) - robot.liftMotor.getCurrentPosition() > -200) {
+
+                    closeMultiplier = 0.5f;
+                }
+               robot.liftMotor.setPower(-.5 * closeMultiplier);
+            }
+        }
+
+        robot.liftMotor.setPower(0);
+    }
+
     public int setTeamColorAndPosition (Gamepad gamepad1, Telemetry telemetry, LinearOpMode caller) {
         int teamColor = 0;
         int position = 0;

@@ -38,7 +38,8 @@ public class AutonomousDriverTest extends LinearOpMode {
             if (!ran) {
                 telemetry.addLine("HERE");
                 telemetry.update();
-                al.blockFollow(this);
+                al.moveLift(3, this);
+                //al.blockFollow(this);
                 ran = true;
             }
             telemetry.addLine("out of method");
