@@ -594,17 +594,17 @@ public class AutonomousLibrary {
                 //drive opposite side of color sensor
                 telemetry.addLine("I see the blue jewel and I am on red team");
                 telemetry.update();
-                turnToAngleWithPID(10, telemetry, caller);
+                PIDturnRelativeToField(10, telemetry, caller);
                 robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
-                turnToAngleWithPID(-10, telemetry, caller);
+                PIDturnRelativeToField(0, telemetry, caller);
 
             } else if (teamColorAndPosition == 3 || teamColorAndPosition == 4) {
                 //drive side of color sensor
                 telemetry.addLine("I see the blue jewel and I am on blue team");
                 telemetry.update();
-                turnToAngleWithPID(-10, telemetry, caller);
+                PIDturnRelativeToField(-10, telemetry, caller);
                 robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
-                turnToAngleWithPID(10, telemetry, caller);
+                PIDturnRelativeToField(0, telemetry, caller);
 
             } else {
                 //For case when you don't know what team you are on- error with ground color sensor
@@ -616,17 +616,17 @@ public class AutonomousLibrary {
                 //drive side of color sensor
                 telemetry.addLine("I see the red jewel and I am on red team");
                 telemetry.update();
-                turnToAngleWithPID(-10, telemetry, caller);
+                PIDturnRelativeToField(-10, telemetry, caller);
                 robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
-                turnToAngleWithPID(10, telemetry, caller);
+                PIDturnRelativeToField(0, telemetry, caller);
 
             } else if (teamColorAndPosition == 3 || teamColorAndPosition == 4){
                 //drive opposite side of color sensor
                 telemetry.addLine("I see the red jewel and I am on blue team");
                 telemetry.update();
-                turnToAngleWithPID(10, telemetry, caller);
+                PIDturnRelativeToField(10, telemetry, caller);
                 robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
-                turnToAngleWithPID(-10, telemetry, caller);
+                PIDturnRelativeToField(0, telemetry, caller);
 
             } else {
                 //For case when you don't know what team you are on- error with ground color sensor
@@ -647,7 +647,7 @@ public class AutonomousLibrary {
         Thread t1 = new Thread(new Runnable() {
             public void run() {
 
-                moveLift(1);
+                moveLift(2);
             }
         });
         t1.start();
