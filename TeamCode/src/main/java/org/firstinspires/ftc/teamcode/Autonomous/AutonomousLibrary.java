@@ -33,6 +33,7 @@ public class AutonomousLibrary {
     RobotHardware robot;
     HardwareMap hardwareMap;
     Orientation angles;
+    Orientation startAngles;
     static VuforiaLocalizer vuforia;
     static String pictoKey = "unknown";
     static String vuMarkSeen = "no";
@@ -77,6 +78,7 @@ public class AutonomousLibrary {
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
         cl.resetLiftMotorEncoder();
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        startAngles = robot.imu.getAngularOrientation();
     }
 
     public int setTeamColorAndPosition (Gamepad gamepad1, Telemetry telemetry, LinearOpMode caller) {
@@ -447,7 +449,6 @@ public class AutonomousLibrary {
     public void turnToAngleWithPID(int angle, Telemetry telemetry, LinearOpMode caller){
 
         runWithoutEncoders();
-        angles = robot.imu.getAngularOrientation();
         if (angle >= 360) {angle = angle - 360;}
         if (angle <= -360){angle = angle + 360;}
         double targetAngle = angles.firstAngle + angle;
@@ -471,7 +472,7 @@ public class AutonomousLibrary {
             if (currentError <= -180){currentError = currentError + 360;}
             telemetry.addData("Current error", currentError);
             //integral = integral + currentError;
-            double kpError = currentError * 0.008; //0.0042
+            double kpError = currentError * 0.008;
             double kiIntegral = integral * 0.0002 * timeChange;
             double derivative = (currentError - previousError) / timeChange;
             double kdDerivative = derivative * 0;
@@ -641,5 +642,60 @@ public class AutonomousLibrary {
 
     String formatDegrees(double degrees){
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+    public void PIDturnRelativeToField(int angle, Telemetry telemetry, LinearOpMode caller){
+
+        runWithoutEncoders();
+        if (angle >= 360) {angle = angle - 360;}
+        if (angle <= -360){angle = angle + 360;}
+        double targetAngle = startAngles.firstAngle + angle;
+        if (targetAngle >= 360) {targetAngle = targetAngle - 360;}
+        if (targetAngle <= -360){targetAngle = targetAngle + 360;}
+        double acceptableError = 0.5;
+        double currentError = 1;
+        double previousError = 0;
+        double integral = 0;
+        double power;
+        double previousTime = 0;
+        while (Math.abs(currentError) > acceptableError){
+
+            double timeChange = System.nanoTime() - previousTime;
+            previousTime = System.nanoTime();
+            timeChange = timeChange / 1e9;
+            angles = robot.imu.getAngularOrientation();
+            double currentAngle = angles.firstAngle ;
+            currentError = targetAngle - currentAngle;
+            telemetry.addData("Current angle", currentAngle);
+            if (currentError > 180)  {currentError = currentError - 360;}
+            if (currentError <= -180){currentError = currentError + 360;}
+            telemetry.addLine();
+            telemetry.addData("Current error", currentError);
+            //integral = integral + currentError;
+            double kpError = currentError * 0.008;
+            double kiIntegral = integral * 0.0002 * timeChange;
+            double derivative = (currentError - previousError) / timeChange;
+            double kdDerivative = derivative * 0;
+            power = kpError + kiIntegral + kdDerivative;
+            if (power > 1) {power = 1;}
+            if (power < 0.13 && power > 0) {power = 0.13;}
+            if (power > -0.13 && power < 0){power = -0.13;}
+            if (power < -1){power = -1;}
+            telemetry.addLine();
+            telemetry.addData("Power", power);
+            telemetry.update();
+            robot.frontLeftMotor.setPower(-power);
+            robot.frontRightMotor.setPower(power);
+            robot.rearRightMotor.setPower(power);
+            robot.rearLeftMotor.setPower(-power);
+            previousError = currentError;
+            if (caller.isStopRequested()){break;}
+        }
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower(0);
+        robot.rearRightMotor.setPower(0);
+        robot.rearLeftMotor.setPower(0);
+        telemetry.addData("done", "done");
+        telemetry.update();
     }
 }
