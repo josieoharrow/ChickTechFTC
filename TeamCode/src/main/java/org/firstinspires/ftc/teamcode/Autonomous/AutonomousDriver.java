@@ -48,9 +48,9 @@ public class AutonomousDriver extends LinearOpMode {
                         //red team corner balance board
                         telemetry.addLine("I am on the red team and in the corner");
                         telemetry.update();
-                        al.driveAtAngle(26, 270, telemetry, this);
+                        al.driveAtAngle(24, 270, telemetry, this);
                         al.turnToAngleWithPID(88, telemetry, this);//bump up
-                        al.driveAtAngle(-2, 180, telemetry, this);
+                        //al.driveAtAngle(-2, 180, telemetry, this);
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 2) {
 

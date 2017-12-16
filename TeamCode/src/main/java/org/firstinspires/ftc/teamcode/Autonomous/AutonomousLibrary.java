@@ -646,7 +646,7 @@ public class AutonomousLibrary {
         Thread t1 = new Thread(new Runnable() {
             public void run() {
 
-                moveLift(1);
+                moveLift(2);
             }
         });
         t1.start();
