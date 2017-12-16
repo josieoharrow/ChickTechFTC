@@ -49,8 +49,8 @@ public class AutonomousDriver extends LinearOpMode {
                         telemetry.addLine("I am on the red team and in the corner");
                         telemetry.update();
                         al.driveAtAngle(24, 270, telemetry, this);
-                        al.turnToAngleWithPID(88, telemetry, this);//bump up
-                        //al.driveAtAngle(-2, 180, telemetry, this);
+                        al.PIDturnRelativeToField(90, telemetry, this);//bump up
+                        al.driveAtAngle(3, 0, telemetry, this);
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 2) {
 
@@ -60,7 +60,7 @@ public class AutonomousDriver extends LinearOpMode {
                         cl.wait(200, this);
                         al.driveAtAngle(22, 270, telemetry, this);
                         cl.wait(200, this);
-                        al.turnToAngleWithPID(178, telemetry, this);//bump up when fixed
+                        al.PIDturnRelativeToField(180, telemetry, this);//bump up when fixed
                         cl.wait(200, this);
                         al.driveAtAngle(1.5, 180, telemetry, this);
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
@@ -70,7 +70,7 @@ public class AutonomousDriver extends LinearOpMode {
                         telemetry.addLine("I am on the blue team and in the corner");
                         telemetry.update();
                         al.driveAtAngle(24, 90, telemetry, this);
-                        al.turnToAngleWithPID(90, telemetry, this);
+                        al.PIDturnRelativeToField(90, telemetry, this);
                         al.driveToVuforiaPositionFromTheLeft(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 4) {
 
