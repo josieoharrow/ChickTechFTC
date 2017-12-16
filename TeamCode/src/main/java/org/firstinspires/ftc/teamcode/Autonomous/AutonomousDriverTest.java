@@ -34,11 +34,16 @@ public class AutonomousDriverTest extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-
             if (!ran) {
+
+
+
                 telemetry.addLine("HERE");
                 telemetry.update();
-                al.moveLift(3, this);
+                al.moveLift(3);
+                Thread.sleep(200);
+                al.moveLift(-3);
+
                 //al.blockFollow(this);
                 ran = true;
             }

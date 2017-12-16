@@ -84,7 +84,7 @@ public class AutonomousLibrary {
     }
 
 
-    public void moveLift(float rotations, LinearOpMode caller) {
+    public void moveLift(float rotations) {
 
         int oldEncoderPosition = robot.liftMotor.getCurrentPosition();
         final float ENCODER_TICKS_PER_ROTATION = 1152;
@@ -642,18 +642,20 @@ public class AutonomousLibrary {
 
         robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
         robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
-        cl.wait(200,caller);
-        robot.liftMotor.setPower(1);
-        cl.wait(600,caller);
-        robot.liftMotor.setPower(0);
+        cl.wait(200, caller);
+        Thread t1 = new Thread(new Runnable() {
+            public void run() {
+
+                moveLift(1);
+            }
+        });
+        t1.start();
     }
 
 
-    public void openArms(CommonLibrary cl, LinearOpMode caller) {
+    public void openArms() {
 
-        robot.liftMotor.setPower(-1);
-        cl.wait(300,caller);
-        robot.liftMotor.setPower(0);
+        moveLift(-1);
         robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
         robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
     }
