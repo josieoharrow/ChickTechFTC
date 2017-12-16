@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -32,6 +33,8 @@ public class TeleOpLibrary {
     static final double RIGHT_ARM_OPEN = 0.93;
     static final double RIGHT_ARM_MID = 0.57;
     static final double LEFT_ARM_MID = 0.45;
+    static final double RELIC_GRABBER_CLOSED = 0;   //CHANGE THIS
+    static final double RELIC_GRABBER_OPEN = 0;   //CHANGE THIS
 
     static final double RAMP_SERVO_DOWN = 0.0;
     static final double RAMP_SERVO_UP = 1.0;
@@ -51,6 +54,7 @@ public class TeleOpLibrary {
     final float SPEED_REDUCTION_COEFFICIENT = .6f;
 
     boolean liftMotorResetButtonPressed = false;
+    boolean isGrabberClosed = false;
 
     float liftMotorFluidMinimum = LIFT_MOTOR_MINIMUM_POSITION;
     float liftMotorFluidMaximum = LIFT_MOTOR_MINIMUM_POSITION;
@@ -84,6 +88,20 @@ public class TeleOpLibrary {
         float HorizontalInput = Range.clip(gamepad1.left_stick_x, -1, 1);
         clockwiseRotation = scaleInput(HorizontalInput);
         counterclockwiseRotation = scaleInput(-HorizontalInput);
+    }
+
+    public void lowerLift(OpMode caller) {
+        while(robot.liftMotorTouchSensor.getState() == true) {
+            robot.liftMotor.setPower(-.5);
+
+            translateRightStickToSlidingRelativeToField(caller.gamepad1, caller.telemetry);
+            translateLeftStickToRotation(caller.gamepad1);
+            setDrivingMotorPowers(caller.gamepad1, caller.telemetry);
+            armServos(caller.gamepad1, caller.gamepad2, caller.telemetry);
+            setDrivingMotorPowers(caller.gamepad1, caller.telemetry);
+            generalTelemetry(caller.gamepad1, caller.gamepad2, caller.telemetry);
+        }
+        robot.liftMotor.setPower(0);
     }
 
 
@@ -179,14 +197,6 @@ public class TeleOpLibrary {
             robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
             robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
         }
-
-        if (gamepad1.dpad_up) {
-
-            telemetry.addLine("Opening");
-            telemetry.update();
-            robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
-            robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
-        }
     }
 
 
@@ -252,8 +262,30 @@ public class TeleOpLibrary {
         }
     }
 
+    public void setRelicLiftPower(Gamepad gamepad2){
+        float relicMotorPower = (gamepad2.right_stick_y)/2;
+        robot.relicLiftMotor.setPower(relicMotorPower);
 
+        //add if statement for if button gets pressed and encoder thing
+    }
 
+    public void manipulateGrabber(Gamepad gamepad2){
+        if (gamepad2.right_bumper){
+            robot.relicGtabberServo.setPosition(RELIC_GRABBER_CLOSED);
+        }
+        if (gamepad2.left_bumper){
+            robot.relicGtabberServo.setPosition(RELIC_GRABBER_OPEN);
+        }
+    }
+
+    public void rotateGrabber(Gamepad gamepad2){
+        if (gamepad2.dpad_up){
+            robot.relicRotateServo.setPosition(0);      //change these to variables
+        }
+        if (gamepad2.left_bumper){
+            robot.relicRotateServo.setPosition(0);      //change these to variables
+        }
+    }
     private static double scaleInput(double dVal)  {
         /**
          * Converts raw input into values that can be used as power arguments for motors and servos
