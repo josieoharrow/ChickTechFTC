@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Common;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -25,10 +26,10 @@ public class RobotHardware {
     public Servo rightArmServo;
     public Servo rampServo;
     public Servo jewelActuatorServo;
-    public Servo relicGtabberServo;
+    public Servo relicGrabberServo;
     public Servo relicRotateServo;
     public DigitalChannel liftMotorTouchSensor;
-    public DigitalChannel relicLiftTouchSensor;
+    public AnalogInput relicLiftTouchSensor;
     public OpticalDistanceSensor leftODS;
     public OpticalDistanceSensor rightODS;
 
@@ -52,15 +53,15 @@ public class RobotHardware {
         frontRightMotor = hardwareMap.dcMotor.get("front right motor");
         rearLeftMotor = hardwareMap.dcMotor.get("rear left motor");
         liftMotor = hardwareMap.dcMotor.get("lift motor");
-        //relicLiftMotor = hardwareMap.dcMotor.get("relic lift motor");
+        relicLiftMotor = hardwareMap.dcMotor.get("relic lift motor");
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
         leftArmServo = hardwareMap.servo.get("left arm");
         rightArmServo = hardwareMap.servo.get("right arm");
-        relicGtabberServo = hardwareMap.servo.get("relic grabber servo");
+        relicGrabberServo = hardwareMap.servo.get("relic grabber servo");
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
-        //relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
+        relicLiftTouchSensor = hardwareMap.analogInput.get("relic lift touch sensor");//AI get voltage if necessary
         //leftODS = hardwareMap.opticalDistanceSensor.get("left ods");
         //rightODS = hardwareMap.opticalDistanceSensor.get("right ods");
         liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
@@ -69,12 +70,13 @@ public class RobotHardware {
 
         leftArmServo.setPosition(0.07);
         rightArmServo.setPosition(0.93);
-        //relicGtabberServo.setPosition(0);   //change these later
-        //relicRotateServo.setPosition(0);
+        relicGrabberServo.setPosition(.9);
+        relicRotateServo.setPosition(1);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rearLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        //relicLiftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void initGyro() {

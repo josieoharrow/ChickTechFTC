@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -33,8 +34,10 @@ public class TeleOpLibrary {
     static final double RIGHT_ARM_OPEN = 0.93;
     static final double RIGHT_ARM_MID = 0.57;
     static final double LEFT_ARM_MID = 0.45;
-    static final double RELIC_GRABBER_CLOSED = 0;   //CHANGE THIS
-    static final double RELIC_GRABBER_OPEN = 0;   //CHANGE THIS
+    static final double RELIC_GRABBER_CLOSED = .9;
+    static final double RELIC_GRABBER_OPEN = 0.3;
+    static final double RELIC_ROTATE_DOWN = 1;
+    static final double RELIC_ROTATE_UP = 0.1;
 
     static final double RAMP_SERVO_DOWN = 0.0;
     static final double RAMP_SERVO_UP = 1.0;
@@ -53,11 +56,21 @@ public class TeleOpLibrary {
     final float LIFT_MOTOR_MINIMUM_POSITION = -10;
     final float SPEED_REDUCTION_COEFFICIENT = .6f;
 
+    final float RELIC_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;      //These are the same as the glyph lift so it probably needs changed
+    final float RELIC_MOTOR_MINIMUM_POSITION = 10;
+
+    float relicFluidMaximum = RELIC_MOTOR_MAXIMUM_POSITION;
+
     boolean liftMotorResetButtonPressed = false;
     boolean isGrabberClosed = false;
 
+    float voltage1 = 0;
+    float voltage2 = 0;
+
+    boolean relicResetPressed = true;
+
     float liftMotorFluidMinimum = LIFT_MOTOR_MINIMUM_POSITION;
-    float liftMotorFluidMaximum = LIFT_MOTOR_MINIMUM_POSITION;
+    float liftMotorFluidMaximum = LIFT_MOTOR_MINIMUM_POSITION;      //why is this this???
     int liftMotorEncoderPositon = 0;
 
     public enum motor {
@@ -74,6 +87,7 @@ public class TeleOpLibrary {
         cl.init(hardwareMapSent);
         robot.init(hardwareMap);
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.relicLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotorEncoderPositon = robot.liftMotor.getCurrentPosition();
     }
 
@@ -97,11 +111,16 @@ public class TeleOpLibrary {
             translateRightStickToSlidingRelativeToField(caller.gamepad1, caller.telemetry);
             translateLeftStickToRotation(caller.gamepad1);
             setDrivingMotorPowers(caller.gamepad1, caller.telemetry);
-            armServos(caller.gamepad1, caller.gamepad2, caller.telemetry);
+            armServos(caller.gamepad2, caller.telemetry);
             setDrivingMotorPowers(caller.gamepad1, caller.telemetry);
-            generalTelemetry(caller.gamepad1, caller.gamepad2, caller.telemetry);
+            generalTelemetry(caller);
         }
         robot.liftMotor.setPower(0);
+    }
+
+    public void setServoPosition(Servo servo, double position) {
+
+        servo.setPosition(position);
     }
 
 
@@ -113,7 +132,7 @@ public class TeleOpLibrary {
             speedCoefficient = SPEED_REDUCTION_COEFFICIENT;
         }
 
-        translateLeftStickToRotation(gamepad1);
+        translateLeftStickToRotation(gamepad1);//SHOULDN't BE CALLED BEFORE POWER SETTING
 
         //if (gamepad1.left_bumper) {
         //    translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
@@ -121,17 +140,17 @@ public class TeleOpLibrary {
             translateRightStickToSlidingRelativeToRobot(gamepad1);
         //}
 
-        robot.frontLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementFLPower) * speedCoefficient, -1, 1));
-        robot.frontRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementFRPower) * speedCoefficient, -1, 1));
-        robot.rearRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementRRPower) * speedCoefficient, -1, 1));
-        robot.rearLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementRLPower) * speedCoefficient, -1, 1));
+        robot.frontLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementFLPower) * Math.abs((clockwiseRotation + positionalMovementFLPower)) * speedCoefficient, -1, 1));
+        robot.frontRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementFRPower) * Math.abs((counterclockwiseRotation + positionalMovementFRPower)) * speedCoefficient, -1, 1));
+        robot.rearRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementRRPower) * Math.abs((counterclockwiseRotation + positionalMovementRRPower)) * speedCoefficient, -1, 1));
+        robot.rearLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementRLPower) * Math.abs((clockwiseRotation + positionalMovementRLPower)) * speedCoefficient, -1, 1));
     }
 
 
     public void translateRightStickToSlidingRelativeToRobot(Gamepad gamepad1) {
 
         float modifiedYValue = -gamepad1.right_stick_y; //This is because the phone was receiving y values that were flipped from all controllers, resulting in backwards driving behavior
-        positionalMovementFLPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1)); //may need switched
+        positionalMovementFLPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
         positionalMovementFRPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
         positionalMovementRRPower = scaleInput(Range.clip((modifiedYValue + gamepad1.right_stick_x), -1, 1));
         positionalMovementRLPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
@@ -155,26 +174,37 @@ public class TeleOpLibrary {
     }
 
 
-    public void generalTelemetry(Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
+    public void generalTelemetry(OpMode caller) {
 
+
+        float negativePower = -(scaleInput(caller.gamepad1.left_trigger))/2;
+        float positivePower = (scaleInput(caller.gamepad1.right_trigger))/2;
+        float netPower = positivePower + negativePower;
+
+
+        Telemetry telemetry = caller.telemetry;
         telemetry.clear();
-    /*    telemetry.addData("heading: ", robot.imu.getAngularOrientation().firstAngle);
-        telemetry.addData("front right motor power ", robot.frontRightMotor.getPower());
-        telemetry.addData("front left motor power ", robot.frontLeftMotor.getPower());
-        telemetry.addData("rear right motor power ", robot.rearRightMotor.getPower());
-        telemetry.addData("rear left motor power ", robot.rearLeftMotor.getPower());*/
-        if (robot.liftMotorTouchSensor.getState() == true) {
-            telemetry.addData("Digital Touch", "Is Not Pressed");
-        } else {
-            telemetry.addData("Digital Touch", "Is Pressed");
-        }
+        telemetry.addData("pressed? ", relicResetPressed);
+        telemetry.addData("voltge", robot.relicLiftTouchSensor.getVoltage());
+        telemetry.addData("voltge", voltage1);
+
+        telemetry.addData("voltge", voltage2);
+
+        telemetry.addData("relic position", robot.relicLiftMotor.getCurrentPosition());
+        telemetry.addData("neg ", negativePower);
+        telemetry.addData("pos", positivePower);
+        telemetry.addData("net", netPower);
+        telemetry.addData("power ", robot.relicLiftMotor.getPower());
+
+
+
 
         telemetry.update();
     }
 
 
 
-    public void armServos(Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
+    public void armServos(Gamepad gamepad2, Telemetry telemetry) {
 
         if (gamepad2.x) {
             telemetry.addLine("Opening");
@@ -245,7 +275,7 @@ public class TeleOpLibrary {
             telemetry.addData("Lower limit",liftMotorFluidMinimum);
             telemetry.addData("Direction multiplier", directionMultiplier);
             telemetry.addData("Power", gamepad2.right_trigger - gamepad2.left_trigger);
-            telemetry.update();
+            //telemetry.update();
             robot.liftMotor.setPower(Range.clip(scaleInput((double)(netPower)), -1, 1));
         } else {
 
@@ -254,38 +284,79 @@ public class TeleOpLibrary {
             telemetry.addData("Direction multiplier", directionMultiplier);
             telemetry.addData("Power", gamepad2.right_trigger - gamepad2.left_trigger);
             telemetry.update();
-            if (!gamepad2.left_bumper) {
-                robot.liftMotor.setPower(0);
+          //  if (!gamepad2.y) {
+            //    robot.liftMotor.setPower(0);
+           // } else {
+                robot.liftMotor.setPower(-leftPower);
+           // }
+        }
+    }
+
+    public void setRelicLiftPower(Gamepad gamepad1, OpMode caller) {
+
+        float negativePower = -(scaleInput(gamepad1.left_trigger))/2;
+        float positivePower = (scaleInput(gamepad1.right_trigger))/2;
+        float netPower = positivePower + negativePower;
+        voltage1 = (float)robot.relicLiftTouchSensor.getVoltage();
+       // caller.telemetry.addData("V1", voltage1);
+        //aller.telemetry.addData("v2", voltage2);
+       // caller.telemetry.update();
+        if (Math.abs(voltage1 - voltage2) > 0.005) {//4 was pretty good
+            if (voltage1 > voltage2) {
+                relicResetPressed = true;
             } else {
-                robot.liftMotor.setPower(Range.clip(scaleInput((double)(netPower)), -1, 1));
+                relicResetPressed = false;
             }
         }
+
+        if (robot.relicLiftMotor.getCurrentPosition() > relicFluidMaximum && !gamepad1.y) {
+
+            caller.telemetry.addLine("RELIC LIFT ENCODER MAXIMUM REACHED");
+        }
+        //if (relicResetPressed && !gamepad1.y) {
+
+           // robot.relicLiftMotor.setPower(positivePower);//YAS
+         //   relicFluidMaximum = robot.relicLiftMotor.getCurrentPosition() + RELIC_MOTOR_MAXIMUM_POSITION;
+       // } else if (robot.relicLiftMotor.getCurrentPosition() > relicFluidMaximum && !gamepad1.y) {
+
+           // robot.relicLiftMotor.setPower(negativePower);//LOVE THIS
+         //} else {
+
+            robot.relicLiftMotor.setPower(netPower);
+       // }
+
+        voltage2 = (float)robot.relicLiftTouchSensor.getVoltage();
     }
 
-    public void setRelicLiftPower(Gamepad gamepad2){
-        float relicMotorPower = (gamepad2.right_stick_y)/2;
-        robot.relicLiftMotor.setPower(relicMotorPower);
-
-        //add if statement for if button gets pressed and encoder thing
-    }
-
-    public void manipulateGrabber(Gamepad gamepad2){
-        if (gamepad2.right_bumper){
-            robot.relicGtabberServo.setPosition(RELIC_GRABBER_CLOSED);
+    public void manipulateGrabber(Gamepad gamepad1){
+        if (gamepad1.x){
+            robot.relicGrabberServo.setPosition(RELIC_GRABBER_CLOSED);
         }
-        if (gamepad2.left_bumper){
-            robot.relicGtabberServo.setPosition(RELIC_GRABBER_OPEN);
+        if (gamepad1.b){
+            robot.relicGrabberServo.setPosition(RELIC_GRABBER_OPEN);
         }
     }
 
-    public void rotateGrabber(Gamepad gamepad2){
-        if (gamepad2.dpad_up){
-            robot.relicRotateServo.setPosition(0);      //change these to variables
+    public void endServoReset(OpMode caller) {
+
+        robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
+        robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
+        robot.relicGrabberServo.setPosition(RELIC_GRABBER_OPEN);
+    }
+
+    public void rotateGrabber(Gamepad gamepad1, Telemetry telemetry){
+        if (gamepad1.dpad_up){
+            robot.relicRotateServo.setPosition(RELIC_ROTATE_UP);
+            telemetry.addLine("dpad up has been pressed");
+            telemetry.update();
         }
-        if (gamepad2.left_bumper){
-            robot.relicRotateServo.setPosition(0);      //change these to variables
+        if (gamepad1.dpad_down){
+            robot.relicRotateServo.setPosition(RELIC_ROTATE_DOWN);
+            telemetry.addLine("dpad down has been pressed");
+            telemetry.update();
         }
     }
+
     private static double scaleInput(double dVal)  {
         /**
          * Converts raw input into values that can be used as power arguments for motors and servos
@@ -303,6 +374,33 @@ public class TeleOpLibrary {
         }
 
         double dScale;
+
+        if (dVal < 0) {
+            dScale = -scaleArray[index];
+        } else {
+            dScale = scaleArray[index];
+        }
+
+        return dScale;
+    }
+
+    private static float scaleInput(float dVal)  {
+        /**
+         * Converts raw input into values that can be used as power arguments for motors and servos
+         */
+
+        float[] scaleArray = { 0.0f, 0.05f, 0.09f, 0.10f, 0.12f, 0.15f, 0.18f, 0.24f,
+                0.30f, 0.36f, 0.43f, 0.50f, 0.60f, 0.72f, 0.85f, 1.00f, 1.00f };
+
+        int index = (int) (dVal * 16.0);
+
+        if (index < 0) {
+            index = -index;
+        } else if (index > 16) {
+            index = 16;
+        }
+
+        float dScale;
 
         if (dVal < 0) {
             dScale = -scaleArray[index];
