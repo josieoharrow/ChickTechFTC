@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode.Common;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -29,9 +28,9 @@ public class RobotHardware {
     public Servo relicGrabberServo;
     public Servo relicRotateServo;
     public DigitalChannel liftMotorTouchSensor;
-    public AnalogInput relicLiftTouchSensor;
-    public OpticalDistanceSensor leftODS;
-    public OpticalDistanceSensor rightODS;
+    public DigitalChannel relicLiftTouchSensor;
+    public LynxI2cColorRangeSensor leftSensorDistance;
+    public LynxI2cColorRangeSensor rightSensorDistance;
 
     //public ColorSensor colorSensorMR;
     public ColorSensor colorSensorREV;
@@ -61,9 +60,9 @@ public class RobotHardware {
         relicGrabberServo = hardwareMap.servo.get("relic grabber servo");
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
-        relicLiftTouchSensor = hardwareMap.analogInput.get("relic lift touch sensor");//AI get voltage if necessary
-        //leftODS = hardwareMap.opticalDistanceSensor.get("left ods");
-        //rightODS = hardwareMap.opticalDistanceSensor.get("right ods");
+        relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
+        leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
+        rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
         //rampServo = hardwareMap.servo.get("ramp servo");
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
