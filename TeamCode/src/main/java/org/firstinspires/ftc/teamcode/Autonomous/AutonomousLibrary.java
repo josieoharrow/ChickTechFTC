@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -48,6 +49,8 @@ public class AutonomousLibrary {
     static final double RIGHT_ARM_CLOSED = 0.28;
     static final double LEFT_ARM_OPEN = 0.07;
     static final double RIGHT_ARM_OPEN = 0.93;
+    static final double RIGHT_ARM_MID = 0.57;
+    static final double LEFT_ARM_MID = 0.45;
     static final double RAMP_SERVO_DOWN = 0.0;
     static final double RAMP_SERVO_UP = 1.0;
     public ColorSensor colorSensorREV;
@@ -341,26 +344,117 @@ public class AutonomousLibrary {
     }
 
 
+    public void blockFollowJoTest(LinearOpMode caller) {
 
-    public void blockFollow(LinearOpMode caller) {
+        double left = robot.leftSensorDistance.getLightDetected();
+        double right = robot.rightSensorDistance.getLightDetected();
+        double rightPower;
+        double leftPower;
 
-        double power = .5;
-        caller.telemetry.addLine("in the method");
-        caller.telemetry.update();
-        while (/*robot.leftODS.getRawLightDetected() < 0.7 && robot.rightODS.getRawLightDetected() < 0.7 && */!caller.isStopRequested()) {
-            robot.rightODS.enableLed(true);
-            robot.leftODS.enableLed(true);
-            caller.telemetry.addData("Right ODS ", robot.rightODS.getLightDetected() * 10);
-            caller.telemetry.addData("Left ODS ", robot.leftODS.getLightDetected() * 10);
+        while  (left < 0.6 && right < 0.6) {
+
+            left = robot.leftSensorDistance.getLightDetected();
+            right = robot.rightSensorDistance.getLightDetected();
+            double net = (left - right) * 10;
+            rightPower = Range.clip(1 - net, 0.3, 1) * 0.4;
+            leftPower = Range.clip(1 + net, 03., 1) * 0.4;
+
+            robot.frontLeftMotor.setPower(rightPower);
+            robot.frontRightMotor.setPower(leftPower);
+            robot.rearRightMotor.setPower(rightPower);
+            robot.rearLeftMotor.setPower(leftPower);
+        }
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower(0);
+        robot.rearRightMotor.setPower(0);
+        robot.rearLeftMotor.setPower(0);
+    }
+    public void blockFollowTest(LinearOpMode caller, Telemetry telemetry, CommonLibrary cl){
+
+        double power = 0.65;
+        double modifier = 0.25;
+        double left = robot.leftSensorDistance.getLightDetected();
+        double right = robot.rightSensorDistance.getLightDetected();
+        double leftPower = 0;
+        double rightPower = 0;
+        boolean ranClearBlocks = false;
+        while ((left < 0.6 && right < 0.6)&& !caller.isStopRequested()) {
+            leftPower = 0;
+            rightPower = 0;
+            if ((left > 0.15 || right > 0.15) && !ranClearBlocks) {//<??18
+                // Sees block stage, clears other clocks
+                robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
+                robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
+                driveAtAngle(3, 90, caller.telemetry, caller);
+                robot.rightArmServo.setPosition(RIGHT_ARM_MID);
+                robot.leftArmServo.setPosition(LEFT_ARM_MID);
+                driveAtAngle(1, 90, caller.telemetry, caller);
+                ranClearBlocks = true;
+            } else {
+                left = robot.leftSensorDistance.getLightDetected();
+                right = robot.rightSensorDistance.getLightDetected();
+            }
+
+            if (left > right + 0.02) {
+                leftPower = - modifier;
+            } else if(right > left + 0.02) {
+                rightPower = - modifier;
+            }
+            if (leftPower + rightPower > 0){
+                caller.telemetry.addLine("Correcting path");
+            } else {
+                caller.telemetry.addLine("Not correcting path");
+            }
             caller.telemetry.update();
 
-            double powerModifierRight = Range.clip((1 + ((robot.leftODS.getRawLightDetected() - robot.rightODS.getRawLightDetected()) * 10) * power), 0.1, 0.7);//* 20?
-            double powerModifierLeft = Range.clip((1 + ((robot.rightODS.getRawLightDetected() - robot.leftODS.getRawLightDetected()) * 10) * power), 0.1, 0.7);
+            robot.rightArmServo.setPosition(RIGHT_ARM_MID);
+            robot.leftArmServo.setPosition(LEFT_ARM_MID);
+            robot.frontLeftMotor.setPower(power + leftPower);
+            robot.frontRightMotor.setPower(power + rightPower);
+            robot.rearRightMotor.setPower(power + leftPower);
+            robot.rearLeftMotor.setPower(power + rightPower);
+        }
+
+            closeArms(cl, caller);
+            robot.frontLeftMotor.setPower(0);
+            robot.frontRightMotor.setPower(0);
+            robot.rearRightMotor.setPower(0);
+            robot.rearLeftMotor.setPower(0);
+    }
+
+    public void blockFollow(LinearOpMode caller, boolean stopAtBlock) {
+
+        double power = .25;
+        caller.telemetry.addLine("in the method");
+        caller.telemetry.update();
+        boolean going = true;
+
+        while (going && !caller.isStopRequested()) {
+            double left = robot.leftSensorDistance.getDistance(DistanceUnit.CM);
+            double right = robot.rightSensorDistance.getDistance(DistanceUnit.CM);
+
+            if ((left < 3 || right < 3) && stopAtBlock) {
+                going = false;
+            }
+            caller.telemetry.addData("left Distance (cm)",
+                    String.format(Locale.US, "%.02f", robot.leftSensorDistance.getLightDetected()));
+            caller.telemetry.addData("Right Distance (cm)",
+                    String.format(Locale.US, "%.02f", robot.rightSensorDistance.getLightDetected()));
+            caller.telemetry.addData("Right ODS ", right);
+            caller.telemetry.addData("Left ODS ", left);
+            caller.telemetry.update();
+
+            double powerModifierRight = Range.clip((1 + (left - right) * power), 0.1, 0.5);
+            double powerModifierLeft = Range.clip((1 + (right - left) * power), 0.1, 0.5);
             robot.frontLeftMotor.setPower(powerModifierLeft);
             robot.frontRightMotor.setPower(powerModifierRight);
             robot.rearRightMotor.setPower(powerModifierLeft);
             robot.rearLeftMotor.setPower(powerModifierRight);
         }
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower(0);
+        robot.rearRightMotor.setPower(0);
+        robot.rearLeftMotor.setPower(0);
     }
 
     double convertEncoderValuesToLinearDrivingInches(double drivingAngle, double encoderValue) {

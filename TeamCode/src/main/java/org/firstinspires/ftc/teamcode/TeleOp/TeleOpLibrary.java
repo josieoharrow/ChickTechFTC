@@ -64,9 +64,6 @@ public class TeleOpLibrary {
     boolean liftMotorResetButtonPressed = false;
     boolean isGrabberClosed = false;
 
-    float voltage1 = 0;
-    float voltage2 = 0;
-
     boolean relicResetPressed = true;
 
     float liftMotorFluidMinimum = LIFT_MOTOR_MINIMUM_POSITION;
@@ -185,10 +182,8 @@ public class TeleOpLibrary {
         Telemetry telemetry = caller.telemetry;
         telemetry.clear();
         telemetry.addData("pressed? ", relicResetPressed);
-        telemetry.addData("voltge", robot.relicLiftTouchSensor.getVoltage());
-        telemetry.addData("voltge", voltage1);
+        telemetry.addData("state", robot.relicLiftTouchSensor.getState());
 
-        telemetry.addData("voltge", voltage2);
 
         telemetry.addData("relic position", robot.relicLiftMotor.getCurrentPosition());
         telemetry.addData("neg ", negativePower);
@@ -297,35 +292,30 @@ public class TeleOpLibrary {
         float negativePower = -(scaleInput(gamepad1.left_trigger))/2;
         float positivePower = (scaleInput(gamepad1.right_trigger))/2;
         float netPower = positivePower + negativePower;
-        voltage1 = (float)robot.relicLiftTouchSensor.getVoltage();
-       // caller.telemetry.addData("V1", voltage1);
-        //aller.telemetry.addData("v2", voltage2);
-       // caller.telemetry.update();
-        if (Math.abs(voltage1 - voltage2) > 0.005) {//4 was pretty good
-            if (voltage1 > voltage2) {
-                relicResetPressed = true;
-            } else {
-                relicResetPressed = false;
-            }
+
+        if (robot.relicLiftTouchSensor.getState() == true) {
+            relicResetPressed = true;
+        } else {
+            relicResetPressed = false;
         }
 
         if (robot.relicLiftMotor.getCurrentPosition() > relicFluidMaximum && !gamepad1.y) {
 
             caller.telemetry.addLine("RELIC LIFT ENCODER MAXIMUM REACHED");
         }
-        //if (relicResetPressed && !gamepad1.y) {
+        if (relicResetPressed && !gamepad1.y) {
 
-           // robot.relicLiftMotor.setPower(positivePower);//YAS
-         //   relicFluidMaximum = robot.relicLiftMotor.getCurrentPosition() + RELIC_MOTOR_MAXIMUM_POSITION;
-       // } else if (robot.relicLiftMotor.getCurrentPosition() > relicFluidMaximum && !gamepad1.y) {
+            robot.relicLiftMotor.setPower(positivePower);//YAS
+            relicFluidMaximum = robot.relicLiftMotor.getCurrentPosition() + RELIC_MOTOR_MAXIMUM_POSITION;
+        } else if (robot.relicLiftMotor.getCurrentPosition() > relicFluidMaximum && !gamepad1.y) {
 
-           // robot.relicLiftMotor.setPower(negativePower);//LOVE THIS
-         //} else {
+            robot.relicLiftMotor.setPower(negativePower);//LOVE THIS
+         } else {
 
             robot.relicLiftMotor.setPower(netPower);
-       // }
+        }
 
-        voltage2 = (float)robot.relicLiftTouchSensor.getVoltage();
+
     }
 
     public void manipulateGrabber(Gamepad gamepad1){

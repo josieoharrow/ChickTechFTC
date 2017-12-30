@@ -3,7 +3,10 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
+
+import java.util.Locale;
 
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoDecipher;
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.initial;
@@ -23,32 +26,29 @@ public class AutonomousDriverTest extends LinearOpMode {
     RobotHardware robot;
 
     @Override
-    public void runOpMode () throws InterruptedException {
+    public void runOpMode() throws InterruptedException {
 
         AutonomousLibrary al = new AutonomousLibrary();
         al.init(hardwareMap, telemetry, gamepad1, this);
+        CommonLibrary cl = new CommonLibrary();
+        cl.init(hardwareMap);
         robot = new RobotHardware();
         Boolean ran = false;
         robot.init(hardwareMap);
         waitForStart();
-
+       // al.blockFollowJoTest(this);
+        al.blockFollowTest(this, telemetry, cl);
 
         while (opModeIsActive()) {
-            if (!ran) {
-
-
-
-                telemetry.addLine("HERE");
-                telemetry.update();
-                al.moveLift(3);
-                Thread.sleep(200);
-                al.moveLift(-3);
-
-                //al.blockFollow(this);
-                ran = true;
-            }
-            telemetry.addLine("out of method");
+            telemetry.addData("left Distance (cm)",
+                    String.format(Locale.US, "%.02f", robot.leftSensorDistance.getLightDetected()));
+            telemetry.addData("Right Distance (cm)",
+                    String.format(Locale.US, "%.02f", robot.rightSensorDistance.getLightDetected()));
             telemetry.update();
+
         }
+
+
     }
-    }
+}
+

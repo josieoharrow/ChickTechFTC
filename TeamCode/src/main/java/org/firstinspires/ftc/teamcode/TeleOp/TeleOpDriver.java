@@ -92,7 +92,8 @@ public class TeleOpDriver extends OpMode {
         tol.setRelicLiftPower(gamepad1, this);
         tol.rotateGrabber(gamepad1, telemetry);
 
-        if (op.getRuntime() >= 120) {
+        if (op.getRuntime() >= 122) {
+            //FIX THIS
 
             tol.endServoReset(this);
         }
