@@ -11,12 +11,12 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
  */
 @Autonomous(name = "Main Autonomous")
 //@Disabled
+
 public class AutonomousDriver extends LinearOpMode {
 
     boolean runLinearCode = true;
-    int teamColor;
+
     String vuforiaPosition = "unknown";
-    LinearOpMode active;
 
     static float JEWEL_ACTUATOR_UP = 0.2f;
 
@@ -32,8 +32,11 @@ public class AutonomousDriver extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+
             try {
+
                 if (runLinearCode) {
+
                     telemetry.update();
                     vuforiaPosition = al.pictoDecipher(telemetry, this);
                     al.closeArms(cl, this);
@@ -86,25 +89,25 @@ public class AutonomousDriver extends LinearOpMode {
                         telemetry.update();
                     }
 
-                    // al.driveAtAngle(4, 90, telemetry, this);
                     al.openArms();
                     al.driveAtAngle(10, 90, telemetry, this);//push block in more
                     al.driveAtAngle(3, 270, telemetry, this);
                     final AutonomousLibrary newAl;
                     newAl = al;
-                    active = this;
+
                     Thread t1 = new Thread(new Runnable() {
                         public void run() {
+
                             newAl.lowerLift();
                         }
                     });
+
                     t1.start();
-                    //     }
                 }
 
                 runLinearCode = false;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
+
                 telemetry.addLine("Autonomous was interrupted.");
                 telemetry.update();
             }
