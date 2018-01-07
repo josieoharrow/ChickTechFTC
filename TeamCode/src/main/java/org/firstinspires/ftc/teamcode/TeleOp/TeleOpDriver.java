@@ -80,13 +80,15 @@ public class TeleOpDriver extends OpMode {
             });
             t2.start();
             liftLowered = true;
+        } else {
+            
+            tol.setLiftMotorPower(gamepad2);
         }
 
         tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.armServos(gamepad2, telemetry);
         tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
         tol.setDrivingMotorPowers(gamepad1, telemetry);
-        tol.setLiftMotorPower(gamepad2);
         tol.generalTelemetry(this);
         tol.manipulateGrabber(gamepad1);
         tol.setRelicLiftPower(gamepad1, this);
