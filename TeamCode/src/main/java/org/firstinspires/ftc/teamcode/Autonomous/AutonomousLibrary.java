@@ -356,7 +356,7 @@ public class AutonomousLibrary {
         robot.frontRightMotor.setPower(0.4);
         robot.rearRightMotor.setPower(0.4);
         robot.rearLeftMotor.setPower(0.4);
-        
+
         int values[] = new int[2];
         values[0] = robot.mrRangeSensor.rawOptical();
         values[1] =  robot.mrRangeSensor.rawUltrasonic();
