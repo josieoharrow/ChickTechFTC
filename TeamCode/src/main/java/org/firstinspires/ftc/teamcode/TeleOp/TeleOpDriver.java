@@ -57,6 +57,7 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void loop() {
+
         op = this;
 
         if (!gyroInitialized) {
@@ -71,32 +72,30 @@ public class TeleOpDriver extends OpMode {
         }
 
         if (!liftLowered) {
+
             Thread t2 = new Thread(new Runnable() {
                 public void run() {
-                    tol.lowerLift(op);
+                    tol.lowerLift();
                 }
             });
             t2.start();
             liftLowered = true;
         }
-        //TEST CHANGING ABOVE THREAD TO NOT SEND CALLER
-      //  tol.translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
-       // tol.translateLeftStickToRotation(gamepad1);
+
         tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.armServos(gamepad2, telemetry);
         tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
         tol.setDrivingMotorPowers(gamepad1, telemetry);
-        tol.setLiftMotorPower(gamepad2, telemetry);
+        tol.setLiftMotorPower(gamepad2);
         tol.generalTelemetry(this);
         tol.manipulateGrabber(gamepad1);
         tol.setRelicLiftPower(gamepad1, this);
         tol.rotateGrabber(gamepad1, telemetry);
 
-        if (op.getRuntime() >= 122) {
-            //FIX THIS
+        /*if (op.getRuntime() >= 122) {
 
-            tol.endServoReset(this);
-        }
+            tol.endServoReset();
+        }*/
     }
 
     /*
@@ -104,5 +103,7 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void stop() {
+        tol.endServoReset();//test
+
     }
 }
