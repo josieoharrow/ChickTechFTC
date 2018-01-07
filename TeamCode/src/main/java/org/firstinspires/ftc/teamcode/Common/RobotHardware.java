@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Common;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -27,6 +28,8 @@ public class RobotHardware {
     public Servo jewelActuatorServo;
     public Servo relicGrabberServo;
     public Servo relicRotateServo;
+    public CRServo leftSaw;
+    public CRServo rightSaw;
     public DigitalChannel liftMotorTouchSensor;
     public DigitalChannel relicLiftTouchSensor;
     public LynxI2cColorRangeSensor leftSensorDistance;
@@ -61,6 +64,8 @@ public class RobotHardware {
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
         relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
+        leftSaw = hardwareMap.crservo.get("leftsaw");
+        rightSaw = hardwareMap.crservo.get("rightsaw");
         leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
         rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);

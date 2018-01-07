@@ -83,9 +83,9 @@ public class TeleOpLibrary {
         cl = new CommonLibrary();
         cl.init(hardwareMapSent);
         robot.init(hardwareMap);
-        robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        /*robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.relicLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftMotorEncoderPositon = robot.liftMotor.getCurrentPosition();
+        liftMotorEncoderPositon = robot.liftMotor.getCurrentPosition();*/
     }
 
     public void initGyro() {
@@ -411,6 +411,28 @@ public class TeleOpLibrary {
     String formatDegrees(double degrees) {
 
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+    public void armWheels(Gamepad gamepad1, Telemetry telemetry) {
+
+        if (gamepad1.a) {
+            telemetry.addLine("Forward/Reverse");
+            telemetry.update();
+            robot.leftSaw.setPower(1);
+            robot.rightSaw.setPower(-1);
+        }
+        else if (gamepad1.b) {
+            telemetry.addLine("Reverse/Forward");
+            telemetry.update();
+            robot.leftSaw.setPower(-1);
+            robot.rightSaw.setPower(1);
+        }
+        else if (gamepad1.x){
+            telemetry.addLine("Stop");
+            telemetry.update();
+            robot.leftSaw.setPower(0);
+            robot.rightSaw.setPower(0);
+        }
     }
 
 }
