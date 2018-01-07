@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Common;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -21,9 +22,8 @@ public class RobotHardware {
     public DcMotor rearLeftMotor;
     public DcMotor liftMotor;
     public DcMotor relicLiftMotor;
-    public Servo leftArmServo;
-    public Servo rightArmServo;
-    public Servo rampServo;
+    public Servo blockGrabberServo;
+    //public Servo rightArmServo;
     public Servo jewelActuatorServo;
     public Servo relicGrabberServo;
     public Servo relicRotateServo;
@@ -32,11 +32,15 @@ public class RobotHardware {
     public LynxI2cColorRangeSensor leftSensorDistance;
     public LynxI2cColorRangeSensor rightSensorDistance;
 
+    public static ModernRoboticsI2cRangeSensor mrRangeSensor;
+
     //public ColorSensor colorSensorMR;
     public ColorSensor colorSensorREV;
     public BNO055IMU imu;
 
-    static float JEWEL_ACTUATOR_UP = 0.2f;
+    static float JEWEL_ACTUATOR_UP = 0.15f;
+    static float BLOCK_GRABBER_OPEN = 0f;
+
 
     /* local OpMode members. */
     HardwareMap hardwareMap;
@@ -55,27 +59,27 @@ public class RobotHardware {
         relicLiftMotor = hardwareMap.dcMotor.get("relic lift motor");
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
-        leftArmServo = hardwareMap.servo.get("left arm");
-        rightArmServo = hardwareMap.servo.get("right arm");
+        blockGrabberServo = hardwareMap.servo.get("block grabber");
+        //rightArmServo = hardwareMap.servo.get("right arm");
         relicGrabberServo = hardwareMap.servo.get("relic grabber servo");
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
         relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
         leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
         rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
+        mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");
+
         liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
-        //rampServo = hardwareMap.servo.get("ramp servo");
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
 
-        leftArmServo.setPosition(0.07);
-        rightArmServo.setPosition(0.93);
+        blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+        //rightArmServo.setPosition(0.93);
         relicGrabberServo.setPosition(.9);
         relicRotateServo.setPosition(1);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rearLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        //relicLiftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void initGyro() {
