@@ -37,7 +37,7 @@ public class AutonomousDriverTest extends LinearOpMode {
         robot.init(hardwareMap);
         waitForStart();
        // al.blockFollowJoTest(this);
-        al.blockFollowTest(this, telemetry, cl);
+        //al.blockFollowTest(this, telemetry, cl);
 
         while (opModeIsActive()) {
             telemetry.addData("left Distance (cm)",

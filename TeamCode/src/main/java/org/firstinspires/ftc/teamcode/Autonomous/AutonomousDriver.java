@@ -60,11 +60,11 @@ public class AutonomousDriver extends LinearOpMode {
                         //red ream center balance board
                         telemetry.addLine("I am on the red team and in the center");
                         telemetry.update();
-                        cl.wait(200, this);
+                        //cl.wait(200, this);
                         al.driveAtAngle(22, 270, telemetry, this);
-                        cl.wait(200, this);
+                        //cl.wait(200, this);
                         al.PIDturnRelativeToField(180, telemetry, this);//bump up when fixed
-                        cl.wait(200, this);
+                        //cl.wait(200, this);
                         al.driveAtAngle(1.5, 180, telemetry, this);
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 3) {
@@ -81,7 +81,8 @@ public class AutonomousDriver extends LinearOpMode {
                         telemetry.addLine("I am on the blue team and in the center");
                         telemetry.update();
                         al.driveAtAngle(24, 90, telemetry, this);
-                        cl.wait(200, this);
+                        al.PIDturnRelativeToField(0, telemetry, this);//bump up when fixed
+                        //cl.wait(200, this);
                         al.driveToVuforiaPositionFromTheLeft(telemetry, this, vuforiaPosition);
                     } else {
 

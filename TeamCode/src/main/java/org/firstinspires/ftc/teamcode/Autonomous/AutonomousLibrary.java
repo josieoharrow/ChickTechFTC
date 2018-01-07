@@ -40,19 +40,20 @@ public class AutonomousLibrary {
     static String vuMarkSeen = "no";
     static double SLOWING_INCHES_THRESHOLD = 10;
     static double DRIVING_POWER_SLOW_MODIFIER = 0.5;
-    static float JEWEL_ACTUATOR_DOWN = 0.9f;
-    static float JEWEL_ACTUATOR_UP = 0.2f;
+    static float JEWEL_ACTUATOR_DOWN = 0.84f;
+    static float JEWEL_ACTUATOR_UP = 0.15f;
     static double ENCODER_TICKS_TO_INCHES = 4/1130;
     static double INCHES_TO_ENCODER_TICKS = 288/4 * 0.1666666666; // * .31;
 
-    static final double LEFT_ARM_CLOSED = 0.72;
+    /*static final double LEFT_ARM_CLOSED = 0.72;
     static final double RIGHT_ARM_CLOSED = 0.28;
     static final double LEFT_ARM_OPEN = 0.07;
     static final double RIGHT_ARM_OPEN = 0.93;
     static final double RIGHT_ARM_MID = 0.57;
-    static final double LEFT_ARM_MID = 0.45;
-    static final double RAMP_SERVO_DOWN = 0.0;
-    static final double RAMP_SERVO_UP = 1.0;
+    static final double LEFT_ARM_MID = 0.45;*/
+    static final double BLOCK_GRABBER_OPEN = 0.0;
+    static final double BLOCK_GRABBER_MID = 0.5;
+    static final double BLOCK_GRABBER_CLOSED = 1.0;
     public ColorSensor colorSensorREV;
     public int teamColorAndPosition = 0;
 
@@ -344,31 +345,33 @@ public class AutonomousLibrary {
     }
 
 
-    public void blockFollowJoTest(LinearOpMode caller) {
+    public void driveUntilWallDetection(LinearOpMode caller) {
 
-        double left = robot.leftSensorDistance.getLightDetected();
-        double right = robot.rightSensorDistance.getLightDetected();
-        double rightPower;
-        double leftPower;
+        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        while  (left < 0.6 && right < 0.6) {
+        robot.frontLeftMotor.setPower(0.4);
+        robot.frontRightMotor.setPower(0.4);
+        robot.rearRightMotor.setPower(0.4);
+        robot.rearLeftMotor.setPower(0.4);
+        
+        int values[] = new int[2];
+        values[0] = robot.mrRangeSensor.rawOptical();
+        values[1] =  robot.mrRangeSensor.rawUltrasonic();
 
-            left = robot.leftSensorDistance.getLightDetected();
-            right = robot.rightSensorDistance.getLightDetected();
-            double net = (left - right) * 10;
-            rightPower = Range.clip(1 - net, 0.3, 1) * 0.4;
-            leftPower = Range.clip(1 + net, 03., 1) * 0.4;
+        while ((values[1] < 9) && !caller.isStopRequested()) {
 
-            robot.frontLeftMotor.setPower(rightPower);
-            robot.frontRightMotor.setPower(leftPower);
-            robot.rearRightMotor.setPower(rightPower);
-            robot.rearLeftMotor.setPower(leftPower);
         }
+
         robot.frontLeftMotor.setPower(0);
         robot.frontRightMotor.setPower(0);
         robot.rearRightMotor.setPower(0);
         robot.rearLeftMotor.setPower(0);
     }
+
+
     public void blockFollowTest(LinearOpMode caller, Telemetry telemetry, CommonLibrary cl){
 
         double power = 0.65;
@@ -383,11 +386,11 @@ public class AutonomousLibrary {
             rightPower = 0;
             if ((left > 0.15 || right > 0.15) && !ranClearBlocks) {//<??18
                 // Sees block stage, clears other clocks
-                robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
-                robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
+                robot.blockGrabberServo.setPosition(BLOCK_GRABBER_CLOSED);
+                //robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
                 driveAtAngle(3, 90, caller.telemetry, caller);
-                robot.rightArmServo.setPosition(RIGHT_ARM_MID);
-                robot.leftArmServo.setPosition(LEFT_ARM_MID);
+                robot.blockGrabberServo.setPosition(BLOCK_GRABBER_MID);
+                //robot.leftArmServo.setPosition(LEFT_ARM_MID);
                 driveAtAngle(1, 90, caller.telemetry, caller);
                 ranClearBlocks = true;
             } else {
@@ -407,8 +410,8 @@ public class AutonomousLibrary {
             }
             caller.telemetry.update();
 
-            robot.rightArmServo.setPosition(RIGHT_ARM_MID);
-            robot.leftArmServo.setPosition(LEFT_ARM_MID);
+            robot.blockGrabberServo.setPosition(BLOCK_GRABBER_MID);
+            //robot.leftArmServo.setPosition(LEFT_ARM_MID);
             robot.frontLeftMotor.setPower(power + leftPower);
             robot.frontRightMotor.setPower(power + rightPower);
             robot.rearRightMotor.setPower(power + leftPower);
@@ -421,6 +424,7 @@ public class AutonomousLibrary {
             robot.rearRightMotor.setPower(0);
             robot.rearLeftMotor.setPower(0);
     }
+
 
     public void blockFollow(LinearOpMode caller, boolean stopAtBlock) {
 
@@ -735,8 +739,8 @@ public class AutonomousLibrary {
 
     public void closeArms(CommonLibrary cl, LinearOpMode caller) {
 
-        robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
-        robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
+        robot.blockGrabberServo.setPosition(BLOCK_GRABBER_CLOSED);
+        //robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
         cl.wait(200, caller);
         Thread t1 = new Thread(new Runnable() {
             public void run() {
@@ -751,8 +755,8 @@ public class AutonomousLibrary {
     public void openArms() {
 
         moveLift(-1);
-        robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
-        robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
+        robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+        //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
     }
 
 
