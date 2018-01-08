@@ -25,15 +25,18 @@ public class TeleOpLibrary {
     RobotHardware robot;
     HardwareMap hardwareMap;
     Orientation angles;
+    TeleOpDriver mainDriver;
     CommonLibrary cl;
 
-
-    static final double LEFT_ARM_CLOSED = 0.72;
+    /*static final double LEFT_ARM_CLOSED = 0.72;
     static final double RIGHT_ARM_CLOSED = 0.28;
     static final double LEFT_ARM_OPEN = 0.07;
     static final double RIGHT_ARM_OPEN = 0.93;
     static final double RIGHT_ARM_MID = 0.57;
-    static final double LEFT_ARM_MID = 0.45;
+    static final double LEFT_ARM_MID = 0.45;*/
+    static final double BLOCK_GRABBER_OPEN = 0.0;
+    static final double BLOCK_GRABBER_MID = 0.5;
+    static final double BLOCK_GRABBER_CLOSED = 1.0;
     static final double RELIC_GRABBER_CLOSED = .9;
     static final double RELIC_GRABBER_OPEN = 0.3;
     static final double RELIC_ROTATE_DOWN = 1;
@@ -76,22 +79,25 @@ public class TeleOpLibrary {
     }
 
 
-    public void init(HardwareMap hardwareMapSent) {
+    public void init(OpMode caller) {
 
-        hardwareMap = hardwareMapSent;
+        mainDriver = (TeleOpDriver)caller;
+        hardwareMap = caller.hardwareMap;
         robot = new RobotHardware();
         cl = new CommonLibrary();
-        cl.init(hardwareMapSent);
+        cl.init(caller.hardwareMap);
         robot.init(hardwareMap);
         /*robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.relicLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotorEncoderPositon = robot.liftMotor.getCurrentPosition();*/
     }
 
+
     public void initGyro() {
 
         robot.initGyro();
     }
+
 
     public void translateLeftStickToRotation(Gamepad gamepad1) {
         // Button: left joystick
@@ -101,19 +107,17 @@ public class TeleOpLibrary {
         counterclockwiseRotation = scaleInput(-HorizontalInput);
     }
 
-    public void lowerLift(OpMode caller) {
-        while(robot.liftMotorTouchSensor.getState() == true) {
-            robot.liftMotor.setPower(-.5);
 
-            translateRightStickToSlidingRelativeToField(caller.gamepad1, caller.telemetry);
-            translateLeftStickToRotation(caller.gamepad1);
-            setDrivingMotorPowers(caller.gamepad1, caller.telemetry);
-            armServos(caller.gamepad2, caller.telemetry);
-            setDrivingMotorPowers(caller.gamepad1, caller.telemetry);
-            generalTelemetry(caller);
+    public void lowerLift() {
+
+        while(robot.liftMotorTouchSensor.getState() && mainDriver.running) {
+
+            robot.liftMotor.setPower(-.5);
         }
+
         robot.liftMotor.setPower(0);
     }
+
 
     public void setServoPosition(Servo servo, double position) {
 
@@ -129,7 +133,7 @@ public class TeleOpLibrary {
             speedCoefficient = SPEED_REDUCTION_COEFFICIENT;
         }
 
-        translateLeftStickToRotation(gamepad1);//SHOULDN't BE CALLED BEFORE POWER SETTING
+        translateLeftStickToRotation(gamepad1);
 
         //if (gamepad1.left_bumper) {
         //    translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
@@ -204,23 +208,23 @@ public class TeleOpLibrary {
         if (gamepad2.x) {
             telemetry.addLine("Opening");
             telemetry.update();
-            robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
-            robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
+            robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+            //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
         }
 
         if (gamepad2.a) {
 
             telemetry.addLine("Mid Way");
             telemetry.update();
-            robot.leftArmServo.setPosition(LEFT_ARM_MID);
-            robot.rightArmServo.setPosition(RIGHT_ARM_MID);
+            robot.blockGrabberServo.setPosition(BLOCK_GRABBER_MID);
+            //robot.rightArmServo.setPosition(RIGHT_ARM_MID);
         }
         if (gamepad2.b) {
 
             telemetry.addLine("Closing");
             telemetry.update();
-            robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
-            robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
+            robot.blockGrabberServo.setPosition(BLOCK_GRABBER_CLOSED);
+            //robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
         }
     }
 
@@ -240,52 +244,38 @@ public class TeleOpLibrary {
         }
     }
 
-    public void setLiftMotorPower(Gamepad gamepad2, Telemetry telemetry) {
+    public void setLiftMotorPower(Gamepad gamepad2) {
 
-        float directionMultiplier = 0;
         float rightPower = gamepad2.right_trigger;
         float leftPower = gamepad2.left_trigger;
         float netPower = rightPower - leftPower;
-        boolean ExceedingEncoderLimit = false;
-        if (netPower != 0) {
-            directionMultiplier = Math.abs(netPower) / netPower;
-        }
+        boolean exceedingEncoderLimit = false;
+        boolean belowEncoderLimit = false;
 
         if (robot.liftMotor.getCurrentPosition() >= 0) {
 
-            if (directionMultiplier == 1 && robot.liftMotor.getCurrentPosition() > liftMotorFluidMaximum) {
-                ExceedingEncoderLimit = true;
+            if (robot.liftMotor.getCurrentPosition() > liftMotorFluidMaximum) {
+                exceedingEncoderLimit = true;
             }
         } else {
 
-            if (directionMultiplier == -1 && robot.liftMotor.getCurrentPosition() < liftMotorFluidMinimum) {
-                ExceedingEncoderLimit = true;
+            if (robot.liftMotor.getCurrentPosition() < liftMotorFluidMinimum) {
+                belowEncoderLimit = true;
             }
         }
 
-        if(!ExceedingEncoderLimit) {
+        if(!gamepad2.y && robot.liftMotor.getCurrentPosition() > liftMotorFluidMaximum) {
 
-            telemetry.addData("Lift Motor encoder", robot.liftMotor.getCurrentPosition());
-            telemetry.addData("Upper limit", liftMotorFluidMaximum);
-            telemetry.addData("Lower limit",liftMotorFluidMinimum);
-            telemetry.addData("Direction multiplier", directionMultiplier);
-            telemetry.addData("Power", gamepad2.right_trigger - gamepad2.left_trigger);
-            //telemetry.update();
-            robot.liftMotor.setPower(Range.clip(scaleInput((double)(netPower)), -1, 1));
+            robot.liftMotor.setPower(Range.clip(scaleInput((double)(-leftPower)), -1, 1));
+        } else if (!gamepad2.y && robot.liftMotor.getCurrentPosition() < liftMotorFluidMinimum) {
+
+            robot.liftMotor.setPower(Range.clip(scaleInput((double)(rightPower)), -1, 1));
         } else {
 
-            telemetry.addLine("WARNING: LIMIT HAS BEEN DETECTED");
-            telemetry.addData("Lift Motor encoder", robot.liftMotor.getCurrentPosition());
-            telemetry.addData("Direction multiplier", directionMultiplier);
-            telemetry.addData("Power", gamepad2.right_trigger - gamepad2.left_trigger);
-            telemetry.update();
-          //  if (!gamepad2.y) {
-            //    robot.liftMotor.setPower(0);
-           // } else {
-                robot.liftMotor.setPower(-leftPower);
-           // }
+            robot.liftMotor.setPower(Range.clip(scaleInput((double)netPower), -1, 1));
         }
     }
+
 
     public void setRelicLiftPower(Gamepad gamepad1, OpMode caller) {
 
@@ -293,29 +283,28 @@ public class TeleOpLibrary {
         float positivePower = (scaleInput(gamepad1.right_trigger))/2;
         float netPower = positivePower + negativePower;
 
-        if (robot.relicLiftTouchSensor.getState() == true) {
+        if (!robot.relicLiftTouchSensor.getState() == true) {
+
             relicResetPressed = true;
         } else {
+
             relicResetPressed = false;
         }
 
-        if (robot.relicLiftMotor.getCurrentPosition() > relicFluidMaximum && !gamepad1.y) {
+        if (robot.relicLiftMotor.getCurrentPosition() > relicFluidMaximum) {
 
             caller.telemetry.addLine("RELIC LIFT ENCODER MAXIMUM REACHED");
+            caller.telemetry.update();
         }
+
         if (relicResetPressed && !gamepad1.y) {
 
-            robot.relicLiftMotor.setPower(positivePower);//YAS
+            robot.relicLiftMotor.setPower(positivePower);
             relicFluidMaximum = robot.relicLiftMotor.getCurrentPosition() + RELIC_MOTOR_MAXIMUM_POSITION;
-        } else if (robot.relicLiftMotor.getCurrentPosition() > relicFluidMaximum && !gamepad1.y) {
-
-            robot.relicLiftMotor.setPower(negativePower);//LOVE THIS
-         } else {
+        } else {
 
             robot.relicLiftMotor.setPower(netPower);
         }
-
-
     }
 
     public void manipulateGrabber(Gamepad gamepad1){
@@ -327,10 +316,10 @@ public class TeleOpLibrary {
         }
     }
 
-    public void endServoReset(OpMode caller) {
+    public void endServoReset() {
 
-        robot.leftArmServo.setPosition(LEFT_ARM_OPEN);
-        robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
+        robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+        //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
         robot.relicGrabberServo.setPosition(RELIC_GRABBER_OPEN);
     }
 

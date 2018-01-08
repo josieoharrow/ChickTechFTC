@@ -17,6 +17,7 @@ public class TeleOpDriver extends OpMode {
     OpMode op;
     Boolean gyroInitialized = false;
     Boolean liftLowered = false;
+    public Boolean running = true;
 
     @Override
     public void init() {
@@ -33,7 +34,7 @@ public class TeleOpDriver extends OpMode {
         tol = new TeleOpLibrary();
         telemetry.addLine("Initializing TeleOpLibrary. Please wait.");
         telemetry.update();
-        tol.init(hardwareMap);
+        tol.init(this);
         telemetry.addLine("Initializing complete.");
         telemetry.update();
     }
@@ -50,6 +51,7 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void start() {
+
     }
 
     /*
@@ -57,6 +59,7 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void loop() {
+
         op = this;
 
         if (!gyroInitialized) {
@@ -71,38 +74,46 @@ public class TeleOpDriver extends OpMode {
         }
 
         if (!liftLowered) {
+
             Thread t2 = new Thread(new Runnable() {
                 public void run() {
-                    tol.lowerLift(op);
+                    tol.lowerLift();
                 }
             });
             t2.start();
             liftLowered = true;
+        } else {
+
+            tol.setLiftMotorPower(gamepad2);
         }
-        //TEST CHANGING ABOVE THREAD TO NOT SEND CALLER
-      //  tol.translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
-       // tol.translateLeftStickToRotation(gamepad1);
+
         tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.armServos(gamepad2, telemetry);
         tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
         tol.setDrivingMotorPowers(gamepad1, telemetry);
-        tol.setLiftMotorPower(gamepad2, telemetry);
         tol.generalTelemetry(this);
         tol.manipulateGrabber(gamepad1);
         tol.setRelicLiftPower(gamepad1, this);
         tol.rotateGrabber(gamepad1, telemetry);
+    }
 
-        if (op.getRuntime() >= 122) {
-            //FIX THIS
+    public Boolean getRunning() {
 
-            tol.endServoReset(this);
-        }
+        return running;
     }
 
     /*
-     * Code to run ONCE after the driver hits STOP
-     */
+    * Code to run ONCE after the driver hits STOP
+    */
     @Override
     public void stop() {
+
+        tol.endServoReset();
+        running = false;
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
