@@ -17,6 +17,7 @@ public class TeleOpDriver extends OpMode {
     OpMode op;
     Boolean gyroInitialized = false;
     Boolean liftLowered = false;
+    public Boolean running = true;
 
     @Override
     public void init() {
@@ -33,7 +34,7 @@ public class TeleOpDriver extends OpMode {
         tol = new TeleOpLibrary();
         telemetry.addLine("Initializing TeleOpLibrary. Please wait.");
         telemetry.update();
-        tol.init(hardwareMap);
+        tol.init(this);
         telemetry.addLine("Initializing complete.");
         telemetry.update();
     }
@@ -50,6 +51,7 @@ public class TeleOpDriver extends OpMode {
      */
     @Override
     public void start() {
+
     }
 
     /*
@@ -81,7 +83,7 @@ public class TeleOpDriver extends OpMode {
             t2.start();
             liftLowered = true;
         } else {
-            
+
             tol.setLiftMotorPower(gamepad2);
         }
 
@@ -93,19 +95,25 @@ public class TeleOpDriver extends OpMode {
         tol.manipulateGrabber(gamepad1);
         tol.setRelicLiftPower(gamepad1, this);
         tol.rotateGrabber(gamepad1, telemetry);
+    }
 
-        /*if (op.getRuntime() >= 122) {
+    public Boolean getRunning() {
 
-            tol.endServoReset();
-        }*/
+        return running;
     }
 
     /*
-     * Code to run ONCE after the driver hits STOP
-     */
+    * Code to run ONCE after the driver hits STOP
+    */
     @Override
     public void stop() {
-        tol.endServoReset();//test
 
+        tol.endServoReset();
+        running = false;
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

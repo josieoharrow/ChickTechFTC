@@ -34,7 +34,7 @@ public class TeleOpDriverTest extends OpMode {
         tol = new TeleOpLibrary();
         telemetry.addLine("Initializing TeleOpLibrary. Please wait.");
         telemetry.update();
-        tol.init(hardwareMap);
+        tol.init(this);
         telemetry.addLine("Initializing complete.");
         telemetry.update();
     }

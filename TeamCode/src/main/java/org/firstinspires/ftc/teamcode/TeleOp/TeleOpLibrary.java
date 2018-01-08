@@ -25,6 +25,7 @@ public class TeleOpLibrary {
     RobotHardware robot;
     HardwareMap hardwareMap;
     Orientation angles;
+    TeleOpDriver mainDriver;
     CommonLibrary cl;
 
     /*static final double LEFT_ARM_CLOSED = 0.72;
@@ -78,12 +79,13 @@ public class TeleOpLibrary {
     }
 
 
-    public void init(HardwareMap hardwareMapSent) {
+    public void init(OpMode caller) {
 
-        hardwareMap = hardwareMapSent;
+        mainDriver = (TeleOpDriver)caller;
+        hardwareMap = caller.hardwareMap;
         robot = new RobotHardware();
         cl = new CommonLibrary();
-        cl.init(hardwareMapSent);
+        cl.init(caller.hardwareMap);
         robot.init(hardwareMap);
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.relicLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -108,7 +110,7 @@ public class TeleOpLibrary {
 
     public void lowerLift() {
 
-        while(robot.liftMotorTouchSensor.getState() == true) {
+        while(robot.liftMotorTouchSensor.getState() && mainDriver.running) {
 
             robot.liftMotor.setPower(-.5);
         }
