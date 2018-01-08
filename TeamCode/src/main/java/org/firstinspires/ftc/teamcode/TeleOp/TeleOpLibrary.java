@@ -27,12 +27,6 @@ public class TeleOpLibrary {
     Orientation angles;
     CommonLibrary cl;
 
-    /*static final double LEFT_ARM_CLOSED = 0.72;
-    static final double RIGHT_ARM_CLOSED = 0.28;
-    static final double LEFT_ARM_OPEN = 0.07;
-    static final double RIGHT_ARM_OPEN = 0.93;
-    static final double RIGHT_ARM_MID = 0.57;
-    static final double LEFT_ARM_MID = 0.45;*/
     static final double BLOCK_GRABBER_OPEN = 0.0;
     static final double BLOCK_GRABBER_MID = 0.5;
     static final double BLOCK_GRABBER_CLOSED = 1.0;
@@ -133,11 +127,8 @@ public class TeleOpLibrary {
 
         translateLeftStickToRotation(gamepad1);
 
-        //if (gamepad1.left_bumper) {
-        //    translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
-        //} else {
-            translateRightStickToSlidingRelativeToRobot(gamepad1);
-        //}
+        translateRightStickToSlidingRelativeToRobot(gamepad1);
+
 
         robot.frontLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementFLPower) * Math.abs((clockwiseRotation + positionalMovementFLPower)) * speedCoefficient, -1, 1));
         robot.frontRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementFRPower) * Math.abs((counterclockwiseRotation + positionalMovementFRPower)) * speedCoefficient, -1, 1));

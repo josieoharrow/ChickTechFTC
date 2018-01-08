@@ -44,13 +44,10 @@ public class AutonomousLibrary {
     static float JEWEL_ACTUATOR_UP = 0.15f;
     static double ENCODER_TICKS_TO_INCHES = 4/1130;
     static double INCHES_TO_ENCODER_TICKS = 288/4 * 0.1666666666; // * .31;
+    static double EXTEND_TOUCH_SENSOR = 1;  //MAY NEED TO CHANGE THIS
+    static double RETRACT_TOUCH_SENSOR = 0; //MAY NEED TO CHANGE THIS
+    static double OFF = 0.5;
 
-    /*static final double LEFT_ARM_CLOSED = 0.72;
-    static final double RIGHT_ARM_CLOSED = 0.28;
-    static final double LEFT_ARM_OPEN = 0.07;
-    static final double RIGHT_ARM_OPEN = 0.93;
-    static final double RIGHT_ARM_MID = 0.57;
-    static final double LEFT_ARM_MID = 0.45;*/
     static final double BLOCK_GRABBER_OPEN = 0.0;
     static final double BLOCK_GRABBER_MID = 0.5;
     static final double BLOCK_GRABBER_CLOSED = 1.0;
@@ -287,6 +284,12 @@ public class AutonomousLibrary {
         telemetry.update();
         return pictoKey;
     }
+    public void turnOffMotors() {
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower(0);
+        robot.rearRightMotor.setPower(0);
+        robot.rearLeftMotor.setPower(0);
+    }
 
     public void driveAtAngle(double distance, double angle, Telemetry telemetry, LinearOpMode caller) {
 
@@ -328,10 +331,7 @@ public class AutonomousLibrary {
 
         telemetry.addLine("done");
         telemetry.update();
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
-        robot.rearRightMotor.setPower(0);
-        robot.rearLeftMotor.setPower(0);
+        turnOffMotors();
         runUsingEncoders();
         resetMotorEncoders();
     }
@@ -365,10 +365,33 @@ public class AutonomousLibrary {
 
         }
 
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
-        robot.rearRightMotor.setPower(0);
-        robot.rearLeftMotor.setPower(0);
+        turnOffMotors();
+    }
+
+    public void columnDetection(LinearOpMode caller, CommonLibrary cl){
+
+        driveUntilWallDetection(caller);
+        manipulateTouchSensorActuator(caller, cl, true);
+        if (robot.columnTouchSensor.getState() == false){
+            driveAtAngle(10, 0, caller.telemetry , caller);
+        } else{
+            turnOffMotors();
+        }
+        manipulateTouchSensorActuator(caller, cl, false);
+    }
+
+    public void manipulateTouchSensorActuator (LinearOpMode caller, CommonLibrary cl, boolean extend){
+
+        if (extend) {
+            robot.columnServo.setPower(EXTEND_TOUCH_SENSOR);
+            cl.wait(500, caller);
+            robot.columnServo.setPower(OFF);
+        } else {
+            robot.columnServo.setPower(RETRACT_TOUCH_SENSOR);
+            cl.wait(500, caller);
+            robot.columnServo.setPower(OFF);
+        }
+
     }
 
 
@@ -411,7 +434,6 @@ public class AutonomousLibrary {
             caller.telemetry.update();
 
             robot.blockGrabberServo.setPosition(BLOCK_GRABBER_MID);
-            //robot.leftArmServo.setPosition(LEFT_ARM_MID);
             robot.frontLeftMotor.setPower(power + leftPower);
             robot.frontRightMotor.setPower(power + rightPower);
             robot.rearRightMotor.setPower(power + leftPower);
@@ -419,10 +441,7 @@ public class AutonomousLibrary {
         }
 
             closeArms(cl, caller);
-            robot.frontLeftMotor.setPower(0);
-            robot.frontRightMotor.setPower(0);
-            robot.rearRightMotor.setPower(0);
-            robot.rearLeftMotor.setPower(0);
+            turnOffMotors();
     }
 
 
@@ -455,10 +474,7 @@ public class AutonomousLibrary {
             robot.rearRightMotor.setPower(powerModifierLeft);
             robot.rearLeftMotor.setPower(powerModifierRight);
         }
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
-        robot.rearRightMotor.setPower(0);
-        robot.rearLeftMotor.setPower(0);
+        turnOffMotors();
     }
 
     double convertEncoderValuesToLinearDrivingInches(double drivingAngle, double encoderValue) {
@@ -662,10 +678,7 @@ public class AutonomousLibrary {
             previousError = currentError;
             if (caller.isStopRequested()){break;}
          }
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
-        robot.rearRightMotor.setPower(0);
-        robot.rearLeftMotor.setPower(0);
+        turnOffMotors();
         telemetry.addData("done", "done");
         telemetry.update();
     }
@@ -870,10 +883,7 @@ public class AutonomousLibrary {
             previousError = currentError;
             if (caller.isStopRequested()){break;}
         }
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
-        robot.rearRightMotor.setPower(0);
-        robot.rearLeftMotor.setPower(0);
+        turnOffMotors();
         telemetry.addData("done", "done");
         telemetry.update();
     }

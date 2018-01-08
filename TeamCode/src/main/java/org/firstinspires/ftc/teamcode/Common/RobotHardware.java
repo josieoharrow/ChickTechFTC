@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Common;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -23,12 +24,13 @@ public class RobotHardware {
     public DcMotor liftMotor;
     public DcMotor relicLiftMotor;
     public Servo blockGrabberServo;
-    //public Servo rightArmServo;
     public Servo jewelActuatorServo;
     public Servo relicGrabberServo;
     public Servo relicRotateServo;
+    public CRServo columnServo;
     public DigitalChannel liftMotorTouchSensor;
     public DigitalChannel relicLiftTouchSensor;
+    public DigitalChannel columnTouchSensor;
     public LynxI2cColorRangeSensor leftSensorDistance;
     public LynxI2cColorRangeSensor rightSensorDistance;
 
@@ -60,7 +62,6 @@ public class RobotHardware {
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
         blockGrabberServo = hardwareMap.servo.get("block grabber");
-        //rightArmServo = hardwareMap.servo.get("right arm");
         relicGrabberServo = hardwareMap.servo.get("relic grabber servo");
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
@@ -68,14 +69,17 @@ public class RobotHardware {
         leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
         rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");
+        columnServo = hardwareMap.crservo.get("column servo");
+        columnTouchSensor = hardwareMap.digitalChannel.get("column touch sensor");
+
 
         liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
 
         blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
-        //rightArmServo.setPosition(0.93);
         relicGrabberServo.setPosition(.9);
         relicRotateServo.setPosition(1);
+        columnServo.setPower(0.5);  //this is turned off
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
