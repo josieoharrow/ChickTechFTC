@@ -41,7 +41,7 @@ public class AutonomousLibrary {
     static double SLOWING_INCHES_THRESHOLD = 10;
     static double DRIVING_POWER_SLOW_MODIFIER = 0.5;
     static float JEWEL_ACTUATOR_DOWN = 0.84f;
-    static float JEWEL_ACTUATOR_UP = 0.15f;
+    static float JEWEL_ACTUATOR_UP = 0.5f;
     static double ENCODER_TICKS_TO_INCHES = 4/1130;
     static double INCHES_TO_ENCODER_TICKS = 288/4 * 0.1666666666; // * .31;
 
@@ -53,7 +53,7 @@ public class AutonomousLibrary {
     static final double LEFT_ARM_MID = 0.45;*/
     static final double BLOCK_GRABBER_OPEN = 0.0;
     static final double BLOCK_GRABBER_MID = 0.5;
-    static final double BLOCK_GRABBER_CLOSED = 1.0;
+    static final double BLOCK_GRABBER_CLOSED = 0.7;
     public ColorSensor colorSensorREV;
     public int teamColorAndPosition = 0;
 
@@ -187,13 +187,6 @@ public class AutonomousLibrary {
         return teamColorAndPosition;
     }
 
-    public void motorsOn() {
-
-        robot.frontRightMotor.setPower(1);
-        robot.frontLeftMotor.setPower(1);
-        robot.rearLeftMotor.setPower(1);
-        robot.rearRightMotor.setPower(1);
-    }
 
     public String pictoDecipher(Telemetry telemetry, LinearOpMode caller){
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
@@ -372,7 +365,42 @@ public class AutonomousLibrary {
     }
 
 
-    public void blockFollowTest(LinearOpMode caller, Telemetry telemetry, CommonLibrary cl){
+    public void driveByBlockColumnsFromTheLeft(int columnCount, LinearOpMode caller) {
+
+        float distanceReadingOriginal = robot.mrRangeSensor.rawUltrasonic();
+        float distanceReadingFluid = robot.mrRangeSensor.rawUltrasonic();
+        int columnDetectedCount = 0;
+        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+       /* robot.frontLeftMotor.setPower(0.4);
+        robot.frontRightMotor.setPower(-0.4);
+        robot.rearRightMotor.setPower(0.4);
+        robot.rearLeftMotor.setPower(-0.4);*/
+
+        while (columnDetectedCount < columnCount && !caller.isStopRequested()) {
+            caller.telemetry.addData("MR ", robot.mrRangeSensor.getI2cAddress());
+            caller.telemetry.addData("MR ", robot.mrRangeSensor.rawUltrasonic());
+            caller.telemetry.addData("MR ", robot.mrRangeSensor.getDistance(DistanceUnit.CM));
+            caller.telemetry.update();
+
+            if (Math.abs(distanceReadingOriginal - distanceReadingFluid) > 1) {//????
+
+                columnDetectedCount ++;
+            }
+            distanceReadingFluid = robot.mrRangeSensor.rawUltrasonic();
+        }
+
+        robot.frontLeftMotor.setPower(0);
+        robot.frontRightMotor.setPower(0);
+        robot.rearRightMotor.setPower(0);
+        robot.rearLeftMotor.setPower(0);
+    }
+
+
+    public void blockFollow(LinearOpMode caller, CommonLibrary cl){
 
         double power = 0.65;
         double modifier = 0.25;
@@ -426,7 +454,7 @@ public class AutonomousLibrary {
     }
 
 
-    public void blockFollow(LinearOpMode caller, boolean stopAtBlock) {
+    public void blockFollowTest(LinearOpMode caller, boolean stopAtBlock) {
 
         double power = .25;
         caller.telemetry.addLine("in the method");
@@ -461,12 +489,6 @@ public class AutonomousLibrary {
         robot.rearLeftMotor.setPower(0);
     }
 
-    double convertEncoderValuesToLinearDrivingInches(double drivingAngle, double encoderValue) {
-
-        double wheelToDrivingAngle = 45 - drivingAngle;
-        double modifiedEncoderTicks = encoderValue * Math.cos(wheelToDrivingAngle);
-        return convertEncoderTicksToInches(modifiedEncoderTicks);
-    }
 
     double convertEncoderTicksToInches(double encoderTicks) {
 
@@ -815,13 +837,6 @@ public class AutonomousLibrary {
         }
     }
 
-    String formatAngle(AngleUnit angleUnit, double angle) {
-        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
-    }
-
-    String formatDegrees(double degrees){
-        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
-    }
 
     public void PIDturnRelativeToField(int angle, Telemetry telemetry, LinearOpMode caller){
 

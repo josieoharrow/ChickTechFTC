@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -14,8 +13,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
-
-import java.util.Locale;
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -35,10 +32,10 @@ public class TeleOpLibrary {
     static final double RIGHT_ARM_MID = 0.57;
     static final double LEFT_ARM_MID = 0.45;*/
     static final double BLOCK_GRABBER_OPEN = 0.0;
-    static final double BLOCK_GRABBER_MID = 0.5;
-    static final double BLOCK_GRABBER_CLOSED = 1.0;
-    static final double RELIC_GRABBER_CLOSED = .9;
-    static final double RELIC_GRABBER_OPEN = 0.3;
+    static final double BLOCK_GRABBER_MID = 0.3;    //This was at 0.5
+    static final double BLOCK_GRABBER_CLOSED = 0.7; //This was at 1
+    static final double RELIC_GRABBER_CLOSED = .1;
+    static final double RELIC_GRABBER_OPEN = 0.2;
     static final double RELIC_ROTATE_DOWN = 1;
     static final double RELIC_ROTATE_UP = 0.1;
 
@@ -390,17 +387,6 @@ public class TeleOpLibrary {
         return dScale;
     }
 
-
-    String formatAngle(AngleUnit angleUnit, double angle) {
-
-        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
-    }
-
-
-    String formatDegrees(double degrees) {
-
-        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
-    }
 
     public void armWheels(Gamepad gamepad1, Telemetry telemetry) {
 

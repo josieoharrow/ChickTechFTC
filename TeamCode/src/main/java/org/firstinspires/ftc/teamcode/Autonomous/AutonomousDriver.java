@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 public class AutonomousDriver extends LinearOpMode {
 
     boolean runLinearCode = true;
-
+    boolean setFirstBlockInFarLeftColumn = false;
     String vuforiaPosition = "unknown";
 
     static float JEWEL_ACTUATOR_UP = 0.2f;
@@ -45,6 +45,11 @@ public class AutonomousDriver extends LinearOpMode {
                     al.robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
                     telemetry.addData("vuforia ", vuforiaPosition);
                     telemetry.update();
+
+                    if (vuforiaPosition == "left") {
+
+                        setFirstBlockInFarLeftColumn = true;
+                    }
 
                     if (al.teamColorAndPosition == 1) {
 

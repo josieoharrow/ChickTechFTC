@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.Common;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -34,8 +34,7 @@ public class RobotHardware {
     public DigitalChannel relicLiftTouchSensor;
     public LynxI2cColorRangeSensor leftSensorDistance;
     public LynxI2cColorRangeSensor rightSensorDistance;
-
-    public static ModernRoboticsI2cRangeSensor mrRangeSensor;
+    public ModernRoboticsI2cRangeSensor mrRangeSensor;
 
     //public ColorSensor colorSensorMR;
     public ColorSensor colorSensorREV;
@@ -68,18 +67,17 @@ public class RobotHardware {
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
         relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
-        leftSaw = hardwareMap.crservo.get("leftsaw");
-        rightSaw = hardwareMap.crservo.get("rightsaw");
+        //leftSaw = hardwareMap.crservo.get("leftsaw");
+        //rightSaw = hardwareMap.crservo.get("rightsaw");
         leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
         rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");
-
         liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
 
         blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
         //rightArmServo.setPosition(0.93);
-        relicGrabberServo.setPosition(.9);
+        relicGrabberServo.setPosition(.1);
         relicRotateServo.setPosition(1);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);

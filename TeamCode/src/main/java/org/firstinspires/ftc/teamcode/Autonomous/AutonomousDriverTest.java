@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 import org.firstinspires.ftc.teamcode.Common.RobotHardware;
 
-import java.util.Locale;
-
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.pictoDecipher;
 //import static org.firstinspires.ftc.teamcode.Autonomous.AutonomousLibrary.initial;
 
@@ -32,23 +30,8 @@ public class AutonomousDriverTest extends LinearOpMode {
         al.init(hardwareMap, telemetry, gamepad1, this);
         CommonLibrary cl = new CommonLibrary();
         cl.init(hardwareMap);
-        robot = new RobotHardware();
         Boolean ran = false;
-        robot.init(hardwareMap);
         waitForStart();
-       // al.blockFollowJoTest(this);
-        //al.blockFollowTest(this, telemetry, cl);
-
-        while (opModeIsActive()) {
-            telemetry.addData("left Distance (cm)",
-                    String.format(Locale.US, "%.02f", robot.leftSensorDistance.getLightDetected()));
-            telemetry.addData("Right Distance (cm)",
-                    String.format(Locale.US, "%.02f", robot.rightSensorDistance.getLightDetected()));
-            telemetry.update();
-
-        }
-
-
+        al.driveByBlockColumnsFromTheLeft(1, this);
     }
 }
-

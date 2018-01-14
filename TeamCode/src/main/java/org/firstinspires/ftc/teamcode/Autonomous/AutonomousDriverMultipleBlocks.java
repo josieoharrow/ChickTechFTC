@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 public class AutonomousDriverMultipleBlocks extends LinearOpMode {
 
     boolean runLinearCode = true;
-
+    boolean setFirstBlockInFarLeftColumn = false;
     String vuforiaPosition = "unknown";
 
     static float JEWEL_ACTUATOR_UP = 0.2f;
@@ -45,6 +45,11 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                     al.robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
                     telemetry.addData("vuforia ", vuforiaPosition);
                     telemetry.update();
+
+                    if (vuforiaPosition == "left") {
+
+                        setFirstBlockInFarLeftColumn = true;
+                    }
 
                     if (al.teamColorAndPosition == 1) {
 
@@ -104,6 +109,50 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                     });
 
                     t1.start();
+
+                    if (al.teamColorAndPosition == 2) {
+
+                        //red ream center balance board
+                        al.PIDturnRelativeToField(90, telemetry, this);//?
+                        al.blockFollow(this, cl);
+                        al.PIDturnRelativeToField(-90, telemetry, this);//?
+
+                        al.driveUntilWallDetection(this);
+                        if (setFirstBlockInFarLeftColumn) {
+                            al.driveByBlockColumnsFromTheLeft(2, this);
+                        } else {
+                            al.driveByBlockColumnsFromTheLeft(1, this);
+                        }
+                        al.driveAtAngle(10, 0, telemetry, this);
+                        al.openArms();
+                        al.driveAtAngle(10, 90, telemetry, this);//push block in more
+                        al.driveAtAngle(3, 270, telemetry, this);
+                    } else if (al.teamColorAndPosition == 4) {
+
+                        //blue team center balance board
+                        al.PIDturnRelativeToField(90, telemetry, this);
+                        al.blockFollow(this, cl);
+                        al.PIDturnRelativeToField(-90, telemetry, this);
+                        al.driveUntilWallDetection(this);
+                        if (setFirstBlockInFarLeftColumn) {
+                            al.driveByBlockColumnsFromTheLeft(2, this);
+                        } else {
+                            al.driveByBlockColumnsFromTheLeft(1, this);
+                        }
+                        al.driveAtAngle(10, 0, telemetry, this);
+                        al.openArms();
+                        al.driveAtAngle(10, 90, telemetry, this);//push block in more
+                        al.driveAtAngle(3, 270, telemetry, this);
+                    }
+
+                    Thread t2 = new Thread(new Runnable() {
+                        public void run() {
+
+                            newAl.lowerLift();
+                        }
+                    });
+
+                    t2.start();
                 }
 
                 runLinearCode = false;
