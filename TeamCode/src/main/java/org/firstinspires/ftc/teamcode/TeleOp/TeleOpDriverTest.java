@@ -58,9 +58,9 @@ public class TeleOpDriverTest extends OpMode {
      */
     @Override
     public void loop() {
+        tol.testSetSlidePower(gamepad1);
 
-
-
+/*
        if (gamepad1.dpad_left && tol.robot.relicRotateServo.getPosition() != 1) {
 
             g1left = true;
@@ -98,7 +98,7 @@ public class TeleOpDriverTest extends OpMode {
         telemetry.addData("grabber position ", tol.robot.relicGrabberServo.getPosition());
         telemetry.addData("ROTATE position ", tol.robot.relicRotateServo.getPosition());
 
-        telemetry.update();
+        telemetry.update();*/
     }
 
     /*

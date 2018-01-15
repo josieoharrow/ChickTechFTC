@@ -23,6 +23,7 @@ public class TeleOpLibrary {
     HardwareMap hardwareMap;
     Orientation angles;
     TeleOpDriver mainDriver;
+    TeleOpDriverTest testDriver;
     CommonLibrary cl;
 
     /*static final double LEFT_ARM_CLOSED = 0.72;
@@ -78,7 +79,12 @@ public class TeleOpLibrary {
 
     public void init(OpMode caller) {
 
-        mainDriver = (TeleOpDriver)caller;
+        try {
+            mainDriver = (TeleOpDriver) caller;
+        } catch (Exception e) {
+            testDriver = (TeleOpDriverTest) caller;
+        }
+
         hardwareMap = caller.hardwareMap;
         robot = new RobotHardware();
         cl = new CommonLibrary();
@@ -113,12 +119,18 @@ public class TeleOpLibrary {
         }
 
         robot.liftMotor.setPower(0);
+        mainDriver.liftLowered = true;
     }
 
 
     public void setServoPosition(Servo servo, double position) {
 
         servo.setPosition(position);
+    }
+
+
+    public void testSetSlidePower(Gamepad gamepad1) {
+        robot.relicLiftMotor.setPower(gamepad1.right_stick_y);
     }
 
 
