@@ -58,7 +58,7 @@ public class TeleOpDriverTest extends OpMode {
      */
     @Override
     public void loop() {
-        tol.testSetSlidePower(gamepad1);
+        tol.testMotors(this);
 
 /*
        if (gamepad1.dpad_left && tol.robot.relicRotateServo.getPosition() != 1) {

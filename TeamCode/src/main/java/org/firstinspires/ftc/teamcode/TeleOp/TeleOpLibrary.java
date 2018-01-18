@@ -90,9 +90,6 @@ public class TeleOpLibrary {
         cl = new CommonLibrary();
         cl.init(caller.hardwareMap);
         robot.init(hardwareMap);
-        /*robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.relicLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftMotorEncoderPositon = robot.liftMotor.getCurrentPosition();*/
     }
 
 
@@ -111,6 +108,13 @@ public class TeleOpLibrary {
     }
 
 
+    public void testMotors(TeleOpDriverTest caller) {
+
+        robot.frontLeftMotor.setPower(caller.gamepad1.right_stick_y);
+        robot.frontRightMotor.setPower(caller.gamepad1.right_stick_y);
+        robot.rearLeftMotor.setPower(caller.gamepad1.right_stick_y);
+        robot.rearRightMotor.setPower(caller.gamepad1.right_stick_y);
+    }
     public void lowerLift() {
 
         while(robot.liftMotorTouchSensor.getState() && mainDriver.running) {

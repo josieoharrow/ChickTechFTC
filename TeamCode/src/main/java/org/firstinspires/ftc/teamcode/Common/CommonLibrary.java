@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Common;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -21,6 +20,8 @@ public class CommonLibrary {
         robot = new RobotHardware();
         robot.init(hardwareMap);
     }
+
+
     public void resetLiftMotorEncoder() {
 
         robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -28,24 +29,6 @@ public class CommonLibrary {
         }
     }
 
-    public void wait(double milliseconds, OpMode caller) {
-
-        long startTime =  System.currentTimeMillis();
-
-        long currentTime = System.currentTimeMillis();
-
-        try {
-
-            while ((currentTime - startTime) < milliseconds) {
-
-                currentTime = System.currentTimeMillis();
-            }
-        } catch (Exception e) {
-
-            caller.telemetry.addData("WAIT ERROR: ", e.getMessage());
-            caller.telemetry.update();
-        }
-    }
 
     public void wait(double milliseconds, LinearOpMode caller) {
 

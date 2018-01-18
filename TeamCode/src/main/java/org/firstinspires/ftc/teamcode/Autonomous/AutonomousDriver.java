@@ -106,6 +106,7 @@ public class AutonomousDriver extends LinearOpMode {
                     al.openArms();
                     al.driveAtAngle(12, 90, telemetry, this);//push block in more
                     al.driveAtAngle(5, 270, telemetry, this);
+                    al.turnToAngleWithPID(90, telemetry, this);//Turn so arms won't hit block
                    /* final AutonomousLibrary newAl;
                     newAl = al;
 
