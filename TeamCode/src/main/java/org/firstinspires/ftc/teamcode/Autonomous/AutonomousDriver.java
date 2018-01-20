@@ -28,7 +28,7 @@ public class AutonomousDriver extends LinearOpMode {
         CommonLibrary cl = new CommonLibrary();
         cl.init(hardwareMap);
         telemetry.addLine("ready to start");
-        telemetry.update();
+       // telemetry.update();
         waitForStart();
 
         while (opModeIsActive()) {
@@ -94,7 +94,10 @@ public class AutonomousDriver extends LinearOpMode {
                         al.driveAtAngle(24, 90, telemetry, this);
                         cl.wait(200, this);
                         al.PIDturnRelativeToField(0, telemetry, this);//bump up when fixed
+                        cl.wait(200, this);
+                        al.driveAtAngle(2, 0, telemetry, this);
                         cl.wait(300, this);
+
                         //cl.wait(200, this);
                         al.driveToVuforiaPositionFromTheLeft(telemetry, this, vuforiaPosition);
                     } else {
@@ -103,10 +106,11 @@ public class AutonomousDriver extends LinearOpMode {
                         telemetry.update();
                     }
 
-                    al.openArms();
+                    al.openArms(cl, this);
                     al.driveAtAngle(12, 90, telemetry, this);//push block in more
-                    al.driveAtAngle(5, 270, telemetry, this);
+                    al.driveAtAngle(12, 270, telemetry, this);
                     al.turnToAngleWithPID(90, telemetry, this);//Turn so arms won't hit block
+                    al.driveAtAngle(5, 0, telemetry, this);
                    /* final AutonomousLibrary newAl;
                     newAl = al;
 

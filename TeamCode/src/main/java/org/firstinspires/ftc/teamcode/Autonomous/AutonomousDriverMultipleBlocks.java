@@ -95,7 +95,7 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                         telemetry.update();
                     }
 
-                    al.openArms();
+                    al.openArms(cl, this);
                     al.driveAtAngle(10, 90, telemetry, this);//push block in more
                     al.driveAtAngle(3, 270, telemetry, this);
                     final AutonomousLibrary newAl;
@@ -124,7 +124,7 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                             al.driveByBlockColumnsFromTheLeft(1, this);
                         }
                         al.driveAtAngle(10, 0, telemetry, this);
-                        al.openArms();
+                        al.openArms(cl, this);
                         al.driveAtAngle(10, 90, telemetry, this);//push block in more
                         al.driveAtAngle(3, 270, telemetry, this);
                     } else if (al.teamColorAndPosition == 4) {
@@ -140,7 +140,7 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                             al.driveByBlockColumnsFromTheLeft(1, this);
                         }
                         al.driveAtAngle(10, 0, telemetry, this);
-                        al.openArms();
+                        al.openArms(cl, this);
                         al.driveAtAngle(10, 90, telemetry, this);//push block in more
                         al.driveAtAngle(3, 270, telemetry, this);
                     }

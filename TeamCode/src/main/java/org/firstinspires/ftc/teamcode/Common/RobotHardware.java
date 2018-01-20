@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -68,7 +69,8 @@ public class RobotHardware {
         //rightSaw = hardwareMap.crservo.get("rightsaw");
         leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
         rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
-        mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");
+        colorSensorREV.setI2cAddress(I2cAddr.create7bit(0x39));
+        //mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");
         liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
 
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
@@ -84,6 +86,10 @@ public class RobotHardware {
         rearRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        while (rearLeftMotor.isBusy()) {
+
+        }
     }
 
     public void initGyro() {

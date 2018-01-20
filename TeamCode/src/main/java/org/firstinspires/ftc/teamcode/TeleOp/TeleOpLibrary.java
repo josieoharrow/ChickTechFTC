@@ -114,7 +114,15 @@ public class TeleOpLibrary {
         robot.frontRightMotor.setPower(caller.gamepad1.right_stick_y);
         robot.rearLeftMotor.setPower(caller.gamepad1.right_stick_y);
         robot.rearRightMotor.setPower(caller.gamepad1.right_stick_y);
+
+        caller.telemetry.addData("Mode ", robot.rearLeftMotor.getMode());
+        caller.telemetry.addData("Power ", robot.rearLeftMotor.getPower());
+        caller.telemetry.addData("zero left rear ", robot.rearLeftMotor.getZeroPowerBehavior());
+        caller.telemetry.addData("zero right rear ", robot.rearRightMotor.getZeroPowerBehavior());
+        caller.telemetry.update();
     }
+
+
     public void lowerLift() {
 
         while(robot.liftMotorTouchSensor.getState() && mainDriver.running) {

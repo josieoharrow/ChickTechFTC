@@ -40,7 +40,7 @@ public class AutonomousLibrary {
     static String vuMarkSeen = "no";
     static double SLOWING_INCHES_THRESHOLD = 10;
     static double DRIVING_POWER_SLOW_MODIFIER = 0.5;
-    static float JEWEL_ACTUATOR_DOWN = 0.84f;
+    static float JEWEL_ACTUATOR_DOWN = 0.8f;
     static float JEWEL_ACTUATOR_UP = 0.5f;
     static double ENCODER_TICKS_TO_INCHES = 4/1130;
     static double INCHES_TO_ENCODER_TICKS = 288/4 * 0.1666666666; // * .31;
@@ -87,6 +87,8 @@ public class AutonomousLibrary {
         cl.resetLiftMotorEncoder();
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         startAngles = robot.imu.getAngularOrientation();
+        telemetry.addData("Addr ", robot.colorSensorREV.getI2cAddress());
+        telemetry.update();
     }
 
 
@@ -205,7 +207,6 @@ public class AutonomousLibrary {
             double timeChange = (currentTime - startTime);
            // if (startTime < Thread.activeCount() + 2000 || caller.isStopRequested()) {break;}
             if (timeChange > 1000 || caller.isStopRequested()) {break;}
-
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) { //If the pictograph is found
                 telemetry.addData("I see something", 0);
                 telemetry.update();
@@ -220,7 +221,6 @@ public class AutonomousLibrary {
                         break;
                     }
                 }
-
                 if (vuMark == RelicRecoveryVuMark.CENTER) { //If the pictograph is the center pictograph
                     pictoKey = "center"; //Record that the pictograph is the center one
                     telemetry.addData("VuMark", "%s visible", vuMark); //Display which vumark has been seen
@@ -232,7 +232,6 @@ public class AutonomousLibrary {
                         break;
                     }
                 }
-
                 if (vuMark == RelicRecoveryVuMark.RIGHT) { //If the pictograph is the right pictograph
                     pictoKey = "right"; //Record that the pictograph is the right one
                     telemetry.addData("VuMark", "%s visible", vuMark); //Display which vumark has been seen
@@ -272,9 +271,7 @@ public class AutonomousLibrary {
                 telemetry.update();
 //                if (startTime < Thread.activeCount() + 2000 || caller.isStopRequested()) {break;}
                 if (timeChange > 1000 || caller.isStopRequested()) {break;}
-
             }
-
         }
         telemetry.addData("Vuforia ", pictoKey);
         telemetry.update();
@@ -330,6 +327,7 @@ public class AutonomousLibrary {
     }
 
     public void lowerLift() {
+
         while(robot.liftMotorTouchSensor.getState() == true) {
 
             robot.liftMotor.setPower(-.25);
@@ -425,7 +423,6 @@ public class AutonomousLibrary {
                 left = robot.leftSensorDistance.getLightDetected();
                 right = robot.rightSensorDistance.getLightDetected();
             }
-
             if (left > right + 0.02) {
                 leftPower = - modifier;
             } else if(right > left + 0.02) {
@@ -762,22 +759,26 @@ public class AutonomousLibrary {
     public void closeArms(CommonLibrary cl, LinearOpMode caller) {
 
         robot.blockGrabberServo.setPosition(BLOCK_GRABBER_CLOSED);
-        //robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
-        cl.wait(200, caller);
-        Thread t1 = new Thread(new Runnable() {
-            public void run() {
+        cl.wait(300, caller);
 
-                moveLift(2);
-            }
-        });
-        t1.start();
+        //robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
+        //cl.wait(200, caller);
+       // Thread t1 = new Thread(new Runnable() {
+           // public void run() {
+
+        moveLift(2);
+          //  }
+       // });
+      //  t1.start();
     }
 
 
-    public void openArms() {
+    public void openArms(CommonLibrary cl, LinearOpMode caller) {
 
-        moveLift(-1);
+        moveLift(-2);
+        cl.wait(300, caller);
         robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+
         //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
     }
 
