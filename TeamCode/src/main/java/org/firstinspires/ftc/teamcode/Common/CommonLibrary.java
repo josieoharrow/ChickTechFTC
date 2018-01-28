@@ -16,12 +16,12 @@ public class CommonLibrary {
     RobotHardware robot;
     HardwareMap hardwareMap;
 
-    static final double RIGHT_GRABBER_OPEN = 0.2;
+    static final double RIGHT_GRABBER_OPEN = 0;
     static final double RIGHT_GRABBER_MID = 0.4;
-    static final double RIGHT_GRABBER_CLOSED = 0.6;
-    static final double LEFT_GRABBER_OPEN = 0.8;
-    static final double LEFT_GRABBER_MID = 0.5;
-    static final double LEFT_GRABBER_CLOSED = 0.2;
+    static final double RIGHT_GRABBER_CLOSED = 0.5;
+    static final double LEFT_GRABBER_OPEN = 0.9;
+    static final double LEFT_GRABBER_MID = 0.4;
+    static final double LEFT_GRABBER_CLOSED = 0.3;
 
     public void init(HardwareMap hardwareMapSent) {
 
