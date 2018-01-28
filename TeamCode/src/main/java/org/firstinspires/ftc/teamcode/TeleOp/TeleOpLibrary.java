@@ -388,25 +388,43 @@ public class TeleOpLibrary {
     }
 
 
-    public void armWheels(Gamepad gamepad1, Telemetry telemetry) {
-
-        if (gamepad1.a) {
-            telemetry.addLine("Forward/Reverse");
+    public void paintRollersSpin(Gamepad gamepad2, Telemetry telemetry) {
+        double spinStart = System.nanoTime();
+        if (gamepad2.dpad_up) {
+            telemetry.addLine("Forward/Reverse spins");
             telemetry.update();
-            robot.leftSaw.setPower(1);
-            robot.rightSaw.setPower(-1);
+            robot.leftRoller.setPower(1);
+            robot.rightRoller.setPower(-1);
+            if (gamepad2.dpad_left){
+                telemetry.addLine("Stop spin");
+                telemetry.update();
+                robot.leftRoller.setPower(0);
+                robot.rightRoller.setPower(0);
+            }
+            /*else if (System.nanoTime() >= (spinStart + 3500)) {
+                telemetry.addLine("Stopping spin");
+                telemetry.update();
+                robot.leftRoller.setPower(0);
+                robot.rightRoller.setPower(0);
+            }*/
         }
-        else if (gamepad1.b) {
-            telemetry.addLine("Reverse/Forward");
+        else if (gamepad2.dpad_down) {
+            telemetry.addLine("Reverse/Forward spins");
             telemetry.update();
-            robot.leftSaw.setPower(-1);
-            robot.rightSaw.setPower(1);
-        }
-        else if (gamepad1.x){
-            telemetry.addLine("Stop");
-            telemetry.update();
-            robot.leftSaw.setPower(0);
-            robot.rightSaw.setPower(0);
+            robot.leftRoller.setPower(-1);
+            robot.rightRoller.setPower(1);
+            if (gamepad2.dpad_left){
+                telemetry.addLine("Stop spin");
+                telemetry.update();
+                robot.leftRoller.setPower(0);
+                robot.rightRoller.setPower(0);
+            }
+            /*else if (System.nanoTime() >= (spinStart + 3500)) {
+                telemetry.addLine("Stopping spin");
+                telemetry.update();
+                robot.leftRoller.setPower(0);
+                robot.rightRoller.setPower(0);
+            }*/
         }
     }
 

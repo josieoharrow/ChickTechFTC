@@ -28,8 +28,8 @@ public class RobotHardware {
     public Servo jewelActuatorServo;
     public Servo relicGrabberServo;
     public Servo relicRotateServo;
-    public CRServo leftSaw;
-    public CRServo rightSaw;
+    public DcMotor leftRoller;
+    public DcMotor rightRoller;
     public DigitalChannel liftMotorTouchSensor;
     public DigitalChannel relicLiftTouchSensor;
     public LynxI2cColorRangeSensor leftSensorDistance;
@@ -67,8 +67,8 @@ public class RobotHardware {
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
         relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
-        //leftSaw = hardwareMap.crservo.get("leftsaw");
-        //rightSaw = hardwareMap.crservo.get("rightsaw");
+        //leftRoller = hardwareMap.dcMotor.get("left roller");
+        //rightRoller = hardwareMap.dcMotor.get("right roller");
         leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
         rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");
