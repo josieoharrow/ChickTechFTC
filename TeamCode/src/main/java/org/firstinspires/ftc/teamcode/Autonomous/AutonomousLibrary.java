@@ -35,6 +35,7 @@ public class AutonomousLibrary {
     HardwareMap hardwareMap;
     Orientation angles;
     Orientation startAngles;
+    CommonLibrary cl;
     static VuforiaLocalizer vuforia;
     static String pictoKey = "unknown";
     static String vuMarkSeen = "no";
@@ -53,7 +54,7 @@ public class AutonomousLibrary {
     static final double LEFT_ARM_MID = 0.45;*/
     static final double BLOCK_GRABBER_OPEN = 0.0;
     static final double BLOCK_GRABBER_MID = 0.5;
-    static final double BLOCK_GRABBER_CLOSED = 0.7;
+    static final double BLOCK_GRABBER_CLOSED = 1;
     public ColorSensor colorSensorREV;
     public int teamColorAndPosition = 0;
 
@@ -73,7 +74,7 @@ public class AutonomousLibrary {
         telemetry.update();
         hardwareMap = hardwareMapSent;
         robot = new RobotHardware();
-        CommonLibrary cl = new CommonLibrary();
+        cl = new CommonLibrary();
         cl.init(hardwareMapSent);
         robot.init(hardwareMap);
         robot.initGyro();
@@ -87,10 +88,10 @@ public class AutonomousLibrary {
         cl.resetLiftMotorEncoder();
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         startAngles = robot.imu.getAngularOrientation();
-        telemetry.addData("Addr ", robot.colorSensorREV.getI2cAddress());
-        telemetry.update();
+        cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
+        //robot.leftGrabber.setPosition(LEFT_GRABBER_OPEN);
+        //robot.rightGrabber.setPosition(RIGHT_GRABBER_OPEN);
     }
-
 
     public void moveLift(float rotations) {
 
@@ -412,10 +413,10 @@ public class AutonomousLibrary {
             rightPower = 0;
             if ((left > 0.15 || right > 0.15) && !ranClearBlocks) {//<??18
                 // Sees block stage, clears other clocks
-                robot.blockGrabberServo.setPosition(BLOCK_GRABBER_CLOSED);
+                //robot.blockGrabberServo.setPosition(BLOCK_GRABBER_CLOSED);
                 //robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
                 driveAtAngle(3, 90, caller.telemetry, caller);
-                robot.blockGrabberServo.setPosition(BLOCK_GRABBER_MID);
+                cl.manipulateGrabberPosition(CommonLibrary.Grabber.Mid);
                 //robot.leftArmServo.setPosition(LEFT_ARM_MID);
                 driveAtAngle(1, 90, caller.telemetry, caller);
                 ranClearBlocks = true;
@@ -435,7 +436,7 @@ public class AutonomousLibrary {
             }
             caller.telemetry.update();
 
-            robot.blockGrabberServo.setPosition(BLOCK_GRABBER_MID);
+            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Mid);
             //robot.leftArmServo.setPosition(LEFT_ARM_MID);
             robot.frontLeftMotor.setPower(power + leftPower);
             robot.frontRightMotor.setPower(power + rightPower);
@@ -758,7 +759,8 @@ public class AutonomousLibrary {
 
     public void closeArms(CommonLibrary cl, LinearOpMode caller) {
 
-        robot.blockGrabberServo.setPosition(BLOCK_GRABBER_CLOSED);
+        //robot.blockGrabberServo.setposition(BLOCK_GRABBER_CLOSED);
+        cl.manipulateGrabberPosition(CommonLibrary.Grabber.Close);
         cl.wait(300, caller);
 
         //robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
@@ -775,9 +777,10 @@ public class AutonomousLibrary {
 
     public void openArms(CommonLibrary cl, LinearOpMode caller) {
 
-        moveLift(-2);
+        moveLift(-1.5f);
         cl.wait(300, caller);
-        robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+        //robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+        cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
 
         //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
     }
@@ -872,10 +875,10 @@ public class AutonomousLibrary {
             double derivative = (currentError - previousError) / timeChange;
             double kdDerivative = derivative * 0;
             power = kpError + kiIntegral + kdDerivative;
-            if (power > 1) {power = 1;}
-            if (power < 0.13 && power > 0) {power = 0.13;}
-            if (power > -0.13 && power < 0){power = -0.13;}
-            if (power < -1){power = -1;}
+            if (power > 0.75) {power = 0.75;}
+            if (power < 0.14 && power > 0) {power = 0.14;}
+            if (power > -0.14 && power < 0){power = -0.14;}
+            if (power < -0.75){power = -0.75;}
             telemetry.addLine();
             telemetry.addData("Power", power);
             telemetry.update();

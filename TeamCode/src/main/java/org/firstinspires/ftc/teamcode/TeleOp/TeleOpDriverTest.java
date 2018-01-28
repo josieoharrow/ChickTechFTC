@@ -58,7 +58,14 @@ public class TeleOpDriverTest extends OpMode {
      */
     @Override
     public void loop() {
-        tol.testMotors(this);
+
+        if (gamepad1.a){
+            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
+        } else if (gamepad1.b){
+            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Close);
+        } else if (gamepad1.a){
+            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Mid);
+        }
 
 /*
        if (gamepad1.dpad_left && tol.robot.relicRotateServo.getPosition() != 1) {

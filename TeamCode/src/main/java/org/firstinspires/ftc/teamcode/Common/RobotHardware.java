@@ -17,6 +17,8 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 public class RobotHardware {
 
+    //CommonLibrary cl;
+
     /* Public OpMode members. */
     public DcMotor frontLeftMotor;
     public DcMotor rearRightMotor;
@@ -24,10 +26,12 @@ public class RobotHardware {
     public DcMotor rearLeftMotor;
     public DcMotor liftMotor;
     public DcMotor relicLiftMotor;
-    public Servo blockGrabberServo;
+    //public Servo blockGrabberServo;
     public Servo jewelActuatorServo;
     public Servo relicGrabberServo;
     public Servo relicRotateServo;
+    public Servo rightGrabber;
+    public Servo leftGrabber;
     public CRServo leftSaw;
     public CRServo rightSaw;
     public DigitalChannel liftMotorTouchSensor;
@@ -39,7 +43,6 @@ public class RobotHardware {
     public BNO055IMU imu;
 
     static float JEWEL_ACTUATOR_UP = 0.15f;
-    static float BLOCK_GRABBER_OPEN = 0f;
     static float RELIC_GRABBER_DOWN = .1f;
     static float RELIC_ROTATE_DOWN = 1f;
 
@@ -50,6 +53,7 @@ public class RobotHardware {
     public void init(HardwareMap hwMap) {
 
         // Define and Initialize
+       // cl = new CommonLibrary();
         hardwareMap = hwMap;
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         frontLeftMotor = hardwareMap.dcMotor.get("front left motor");
@@ -60,23 +64,29 @@ public class RobotHardware {
         relicLiftMotor = hardwareMap.dcMotor.get("relic lift motor");
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
-        blockGrabberServo = hardwareMap.servo.get("block grabber");
+        //blockGrabberServo = hardwareMap.servo.get("block grabber");
         relicGrabberServo = hardwareMap.servo.get("relic grabber servo");
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
         relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
+        rightGrabber = hardwareMap.servo.get("right grabber");
+        leftGrabber = hardwareMap.servo.get("left grabber");
+
         //leftSaw = hardwareMap.crservo.get("leftsaw");
         //rightSaw = hardwareMap.crservo.get("rightsaw");
-        leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
-        rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
+        //leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
+        //rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         colorSensorREV.setI2cAddress(I2cAddr.create7bit(0x39));
+
         //mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");
+        //mrRangeSensor.setI2cAddress(I2cAddr.create7bit(0x14));
         liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
 
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
-        blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+        //blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
         relicGrabberServo.setPosition(RELIC_GRABBER_DOWN);
         relicRotateServo.setPosition(RELIC_ROTATE_DOWN);
+        //cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
         liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);

@@ -28,7 +28,7 @@ public class AutonomousDriver extends LinearOpMode {
         CommonLibrary cl = new CommonLibrary();
         cl.init(hardwareMap);
         telemetry.addLine("ready to start");
-       // telemetry.update();
+        telemetry.update();
         waitForStart();
 
         while (opModeIsActive()) {
@@ -56,11 +56,12 @@ public class AutonomousDriver extends LinearOpMode {
                         //red team corner balance board
                         telemetry.addLine("I am on the red team and in the corner");
                         telemetry.update();
-                        al.driveAtAngle(24, 270, telemetry, this);
+                        cl.wait(200, this);
+                        al.driveAtAngle(23, 270, telemetry, this);
                         cl.wait(200, this);
                         al.PIDturnRelativeToField(90, telemetry, this);//bump up
                         cl.wait(300, this);
-                        al.driveAtAngle(3, 0, telemetry, this);
+                        //al.driveAtAngle(3, 0, telemetry, this);
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 2) {
 
@@ -110,7 +111,9 @@ public class AutonomousDriver extends LinearOpMode {
                     al.driveAtAngle(12, 90, telemetry, this);//push block in more
                     al.driveAtAngle(12, 270, telemetry, this);
                     al.turnToAngleWithPID(90, telemetry, this);//Turn so arms won't hit block
-                    al.driveAtAngle(5, 0, telemetry, this);
+                    al.driveAtAngle(15, 0, telemetry, this);
+                    al.driveAtAngle(10, 180, telemetry, this);
+                   // al.driveAtAngle(10, 90, telemetry, this);
                    /* final AutonomousLibrary newAl;
                     newAl = al;
 

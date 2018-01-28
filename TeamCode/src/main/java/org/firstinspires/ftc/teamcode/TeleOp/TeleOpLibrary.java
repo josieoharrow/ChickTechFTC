@@ -34,7 +34,8 @@ public class TeleOpLibrary {
     static final double LEFT_ARM_MID = 0.45;*/
     static final double BLOCK_GRABBER_OPEN = 0.0;
     static final double BLOCK_GRABBER_MID = 0.3;    //This was at 0.5
-    static final double BLOCK_GRABBER_CLOSED = 0.7; //This was at 1
+    static final double BLOCK_GRABBER_CLOSED = 1; //This was at 1
+
     static final double RELIC_GRABBER_CLOSED = .1;
     static final double RELIC_GRABBER_OPEN = 0.2;
     static final double RELIC_ROTATE_DOWN = 1;
@@ -53,7 +54,7 @@ public class TeleOpLibrary {
     public double counterclockwiseRotation = 0;
 
     final float ENCODER_TICKS_PER_ROTATION = 1152;
-    final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;
+    final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 5;//was 4
     final float LIFT_MOTOR_MINIMUM_POSITION = -10;
     final float SPEED_REDUCTION_COEFFICIENT = .6f;
 
@@ -229,7 +230,7 @@ public class TeleOpLibrary {
         if (gamepad2.x) {
             telemetry.addLine("Opening");
             telemetry.update();
-            robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
             //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
         }
 
@@ -237,14 +238,14 @@ public class TeleOpLibrary {
 
             telemetry.addLine("Mid Way");
             telemetry.update();
-            robot.blockGrabberServo.setPosition(BLOCK_GRABBER_MID);
+            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Mid);
             //robot.rightArmServo.setPosition(RIGHT_ARM_MID);
         }
         if (gamepad2.b) {
 
             telemetry.addLine("Closing");
             telemetry.update();
-            robot.blockGrabberServo.setPosition(BLOCK_GRABBER_CLOSED);
+            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Close);
             //robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
         }
     }
@@ -339,7 +340,8 @@ public class TeleOpLibrary {
 
     public void endServoReset() {
 
-        robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+        //robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+        cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
         //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
         robot.relicGrabberServo.setPosition(RELIC_GRABBER_OPEN);
     }
