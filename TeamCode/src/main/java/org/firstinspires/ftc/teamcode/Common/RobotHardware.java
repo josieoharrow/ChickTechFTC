@@ -30,6 +30,8 @@ public class RobotHardware {
     public Servo jewelActuatorServo;
     public Servo relicGrabberServo;
     public Servo relicRotateServo;
+    public Servo leftGrabber;
+    public Servo rightGrabber;
     public DcMotor leftRoller;
     public DcMotor rightRoller;
     public DigitalChannel liftMotorTouchSensor;
@@ -65,6 +67,8 @@ public class RobotHardware {
         //blockGrabberServo = hardwareMap.servo.get("block grabber");
         relicGrabberServo = hardwareMap.servo.get("relic grabber servo");
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
+        leftGrabber = hardwareMap.servo.get("left grabber");
+        rightGrabber = hardwareMap.servo.get("right grabberr");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
         relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
         //leftRoller = hardwareMap.dcMotor.get("left roller");
