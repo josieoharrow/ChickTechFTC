@@ -16,18 +16,19 @@ public class CommonLibrary {
     RobotHardware robot;
     HardwareMap hardwareMap;
 
-    static final double RIGHT_GRABBER_OPEN = 0;
-    static final double RIGHT_GRABBER_MID = 0.4;
-    static final double RIGHT_GRABBER_CLOSED = 0.5;
-    static final double LEFT_GRABBER_OPEN = 0.9;
-    static final double LEFT_GRABBER_MID = 0.4;
-    static final double LEFT_GRABBER_CLOSED = 0.3;
+    static final double RIGHT_GRABBER_OPEN = 1;
+    static final double RIGHT_GRABBER_MID = 0.7;
+    static final double RIGHT_GRABBER_CLOSED = 0.4;
+    static final double LEFT_GRABBER_OPEN = 0;
+    static final double LEFT_GRABBER_MID = 0.3;
+    static final double LEFT_GRABBER_CLOSED = 0.6;
 
     public void init(HardwareMap hardwareMapSent) {
 
         hardwareMap = hardwareMapSent;
         robot = new RobotHardware();
         robot.init(hardwareMap);
+        manipulateGrabberPosition(Grabber.Open);
     }
 
 

@@ -53,7 +53,6 @@ public class RobotHardware {
     public void init(HardwareMap hwMap) {
 
         // Define and Initialize
-       // cl = new CommonLibrary();
         hardwareMap = hwMap;
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         frontLeftMotor = hardwareMap.dcMotor.get("front left motor");
