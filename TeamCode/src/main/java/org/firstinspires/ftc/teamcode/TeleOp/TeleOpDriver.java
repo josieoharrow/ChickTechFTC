@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 /**
  * Created by Robotics on 8/27/2017.
  */
+
 @TeleOp(name = "TeleOp")
 //@Disabled
 public class TeleOpDriver extends OpMode {
@@ -15,9 +16,9 @@ public class TeleOpDriver extends OpMode {
     TeleOpLibrary tol;
     CommonLibrary cl;
     OpMode op;
-    Boolean gyroInitialized = false;
-    Boolean liftLowered = false;
+    Boolean gyroInitializationRan = false;
     public Boolean running = true;
+    public Boolean liftLowered = false;
 
     @Override
     public void init() {
@@ -62,7 +63,7 @@ public class TeleOpDriver extends OpMode {
 
         op = this;
 
-        if (!gyroInitialized) {
+        if (!gyroInitializationRan) {
 
             Thread t1 = new Thread(new Runnable() {
                 public void run() {
@@ -70,7 +71,7 @@ public class TeleOpDriver extends OpMode {
                 }
             });
             t1.start();
-            gyroInitialized = true;
+            gyroInitializationRan = true;
         }
 
         if (!liftLowered) {
@@ -81,7 +82,7 @@ public class TeleOpDriver extends OpMode {
                 }
             });
             t2.start();
-            liftLowered = true;
+
         } else {
 
             tol.setLiftMotorPower(gamepad2);
@@ -90,7 +91,6 @@ public class TeleOpDriver extends OpMode {
         tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.armServos(gamepad2, telemetry);
         tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
-        tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.generalTelemetry(this);
         tol.manipulateGrabber(gamepad1);
         tol.setRelicLiftPower(gamepad1, this);
@@ -102,9 +102,17 @@ public class TeleOpDriver extends OpMode {
         return running;
     }
 
+    public void setLiftLowered(Boolean liftLowered) {
+        this.liftLowered = liftLowered;
+    }
+
+    public Boolean getLiftLowered() {
+        return liftLowered;
+    }
+
     /*
-    * Code to run ONCE after the driver hits STOP
-    */
+            * Code to run ONCE after the driver hits STOP
+            */
     @Override
     public void stop() {
 

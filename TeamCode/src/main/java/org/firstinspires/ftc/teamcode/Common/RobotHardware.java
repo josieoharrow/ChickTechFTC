@@ -9,12 +9,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by Robotics on 8/27/2017.
  */
 public class RobotHardware {
+
+    //CommonLibrary cl;
 
     /* Public OpMode members. */
     public DcMotor frontLeftMotor;
@@ -23,8 +26,7 @@ public class RobotHardware {
     public DcMotor rearLeftMotor;
     public DcMotor liftMotor;
     public DcMotor relicLiftMotor;
-    public Servo blockGrabberServo;
-    //public Servo rightArmServo;
+    //public Servo blockGrabberServo;
     public Servo jewelActuatorServo;
     public Servo relicGrabberServo;
     public Servo relicRotateServo;
@@ -35,14 +37,12 @@ public class RobotHardware {
     public LynxI2cColorRangeSensor leftSensorDistance;
     public LynxI2cColorRangeSensor rightSensorDistance;
     public ModernRoboticsI2cRangeSensor mrRangeSensor;
-
-    //public ColorSensor colorSensorMR;
     public ColorSensor colorSensorREV;
     public BNO055IMU imu;
 
     static float JEWEL_ACTUATOR_UP = 0.15f;
-    static float BLOCK_GRABBER_OPEN = 0f;
-
+    static float RELIC_GRABBER_DOWN = .1f;
+    static float RELIC_ROTATE_DOWN = 1f;
 
     /* local OpMode members. */
     HardwareMap hardwareMap;
@@ -51,6 +51,7 @@ public class RobotHardware {
     public void init(HardwareMap hwMap) {
 
         // Define and Initialize
+       // cl = new CommonLibrary();
         hardwareMap = hwMap;
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         frontLeftMotor = hardwareMap.dcMotor.get("front left motor");
@@ -61,8 +62,7 @@ public class RobotHardware {
         relicLiftMotor = hardwareMap.dcMotor.get("relic lift motor");
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
-        blockGrabberServo = hardwareMap.servo.get("block grabber");
-        //rightArmServo = hardwareMap.servo.get("right arm");
+        //blockGrabberServo = hardwareMap.servo.get("block grabber");
         relicGrabberServo = hardwareMap.servo.get("relic grabber servo");
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
@@ -72,17 +72,26 @@ public class RobotHardware {
         leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
         rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");
-        liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
-        jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+        colorSensorREV.setI2cAddress(I2cAddr.create7bit(0x39));        liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
 
-        blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
-        //rightArmServo.setPosition(0.93);
-        relicGrabberServo.setPosition(.1);
-        relicRotateServo.setPosition(1);
+        jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+        //blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+        relicGrabberServo.setPosition(RELIC_GRABBER_DOWN);
+        relicRotateServo.setPosition(RELIC_ROTATE_DOWN);
+        //cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
+        liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rearLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rearRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        while (rearLeftMotor.isBusy()) {
+
+        }
     }
 
     public void initGyro() {
@@ -90,7 +99,7 @@ public class RobotHardware {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
 

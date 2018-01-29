@@ -23,6 +23,7 @@ public class TeleOpLibrary {
     HardwareMap hardwareMap;
     Orientation angles;
     TeleOpDriver mainDriver;
+    TeleOpDriverTest testDriver;
     CommonLibrary cl;
 
     /*static final double LEFT_ARM_CLOSED = 0.72;
@@ -33,7 +34,8 @@ public class TeleOpLibrary {
     static final double LEFT_ARM_MID = 0.45;*/
     static final double BLOCK_GRABBER_OPEN = 0.0;
     static final double BLOCK_GRABBER_MID = 0.3;    //This was at 0.5
-    static final double BLOCK_GRABBER_CLOSED = 0.7; //This was at 1
+    static final double BLOCK_GRABBER_CLOSED = 1; //This was at 1
+
     static final double RELIC_GRABBER_CLOSED = .1;
     static final double RELIC_GRABBER_OPEN = 0.2;
     static final double RELIC_ROTATE_DOWN = 1;
@@ -52,7 +54,7 @@ public class TeleOpLibrary {
     public double counterclockwiseRotation = 0;
 
     final float ENCODER_TICKS_PER_ROTATION = 1152;
-    final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;
+    final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 5;//was 4
     final float LIFT_MOTOR_MINIMUM_POSITION = -10;
     final float SPEED_REDUCTION_COEFFICIENT = .6f;
 
@@ -78,15 +80,17 @@ public class TeleOpLibrary {
 
     public void init(OpMode caller) {
 
-        mainDriver = (TeleOpDriver)caller;
+        try {
+            mainDriver = (TeleOpDriver) caller;
+        } catch (Exception e) {
+            testDriver = (TeleOpDriverTest) caller;
+        }
+
         hardwareMap = caller.hardwareMap;
         robot = new RobotHardware();
         cl = new CommonLibrary();
         cl.init(caller.hardwareMap);
         robot.init(hardwareMap);
-        /*robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.relicLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftMotorEncoderPositon = robot.liftMotor.getCurrentPosition();*/
     }
 
 
@@ -105,6 +109,21 @@ public class TeleOpLibrary {
     }
 
 
+    public void testMotors(TeleOpDriverTest caller) {
+
+        robot.frontLeftMotor.setPower(caller.gamepad1.right_stick_y);
+        robot.frontRightMotor.setPower(caller.gamepad1.right_stick_y);
+        robot.rearLeftMotor.setPower(caller.gamepad1.right_stick_y);
+        robot.rearRightMotor.setPower(caller.gamepad1.right_stick_y);
+
+        caller.telemetry.addData("Mode ", robot.rearLeftMotor.getMode());
+        caller.telemetry.addData("Power ", robot.rearLeftMotor.getPower());
+        caller.telemetry.addData("zero left rear ", robot.rearLeftMotor.getZeroPowerBehavior());
+        caller.telemetry.addData("zero right rear ", robot.rearRightMotor.getZeroPowerBehavior());
+        caller.telemetry.update();
+    }
+
+
     public void lowerLift() {
 
         while(robot.liftMotorTouchSensor.getState() && mainDriver.running) {
@@ -113,12 +132,18 @@ public class TeleOpLibrary {
         }
 
         robot.liftMotor.setPower(0);
+        mainDriver.liftLowered = true;
     }
 
 
     public void setServoPosition(Servo servo, double position) {
 
         servo.setPosition(position);
+    }
+
+
+    public void testSetSlidePower(Gamepad gamepad1) {
+        robot.relicLiftMotor.setPower(gamepad1.right_stick_y);
     }
 
 
@@ -205,7 +230,7 @@ public class TeleOpLibrary {
         if (gamepad2.x) {
             telemetry.addLine("Opening");
             telemetry.update();
-            robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
             //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
         }
 
@@ -213,14 +238,14 @@ public class TeleOpLibrary {
 
             telemetry.addLine("Mid Way");
             telemetry.update();
-            robot.blockGrabberServo.setPosition(BLOCK_GRABBER_MID);
+            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Mid);
             //robot.rightArmServo.setPosition(RIGHT_ARM_MID);
         }
         if (gamepad2.b) {
 
             telemetry.addLine("Closing");
             telemetry.update();
-            robot.blockGrabberServo.setPosition(BLOCK_GRABBER_CLOSED);
+            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Close);
             //robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
         }
     }
@@ -315,7 +340,8 @@ public class TeleOpLibrary {
 
     public void endServoReset() {
 
-        robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+        //robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
+        cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
         //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
         robot.relicGrabberServo.setPosition(RELIC_GRABBER_OPEN);
     }
