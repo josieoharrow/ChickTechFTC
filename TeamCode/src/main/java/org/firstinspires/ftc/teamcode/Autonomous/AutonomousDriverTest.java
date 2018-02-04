@@ -32,6 +32,8 @@ public class AutonomousDriverTest extends LinearOpMode {
         cl.init(hardwareMap);
         Boolean ran = false;
         waitForStart();
+        al.closeArms(cl, this);
+        al.moveLift(-1.5f);
         al.driveByBlockColumnsFromTheLeft(1, this);
     }
 }

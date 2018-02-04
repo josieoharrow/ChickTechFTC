@@ -76,7 +76,7 @@ public class AutonomousDriver extends LinearOpMode {
                         al.PIDturnRelativeToField(180, telemetry, this);//bump up when fixed
                         cl.wait(300, this);
 
-                        al.driveAtAngle(1.5, 180, telemetry, this);
+                        al.driveAtAngle(1, 180, telemetry, this);
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 3) {
 
