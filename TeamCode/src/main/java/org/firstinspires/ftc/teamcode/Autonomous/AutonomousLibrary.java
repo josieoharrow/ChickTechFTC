@@ -789,9 +789,9 @@ public class AutonomousLibrary {
     public void driveToVuforiaPositionFromTheLeft(Telemetry telemetry, LinearOpMode caller, String vuforiaPosition) {
 
         if (vuforiaPosition == "left") {
-            driveAtAngle(4, 0, telemetry, caller);
+            driveAtAngle(5, 0, telemetry, caller);
         } else if (vuforiaPosition == "right") {
-            driveAtAngle(15, 0, telemetry, caller);
+            driveAtAngle(17, 0, telemetry, caller);
 
         } else {
             //if center or unknown

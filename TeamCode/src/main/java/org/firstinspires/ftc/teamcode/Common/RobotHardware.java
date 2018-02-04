@@ -26,7 +26,6 @@ public class RobotHardware {
     public DcMotor rearLeftMotor;
     public DcMotor liftMotor;
     public DcMotor relicLiftMotor;
-    //public Servo blockGrabberServo;
     public Servo jewelActuatorServo;
     public Servo relicGrabberServo;
     public Servo relicRotateServo;
@@ -63,25 +62,22 @@ public class RobotHardware {
         relicLiftMotor = hardwareMap.dcMotor.get("relic lift motor");
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
-        //blockGrabberServo = hardwareMap.servo.get("block grabber");
         relicGrabberServo = hardwareMap.servo.get("relic grabber servo");
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
         leftGrabber = hardwareMap.servo.get("left grabber");
-        rightGrabber = hardwareMap.servo.get("right grabberr");
+        rightGrabber = hardwareMap.servo.get("right grabber");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
         relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
         //leftRoller = hardwareMap.dcMotor.get("left roller");
         //rightRoller = hardwareMap.dcMotor.get("right roller");
-        leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
-        rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
+        //leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
+        //rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");
         colorSensorREV.setI2cAddress(I2cAddr.create7bit(0x39));        liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
 
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
-        //blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
         relicGrabberServo.setPosition(RELIC_GRABBER_DOWN);
         relicRotateServo.setPosition(RELIC_ROTATE_DOWN);
-        //cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
         liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);

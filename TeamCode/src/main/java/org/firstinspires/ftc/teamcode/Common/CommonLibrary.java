@@ -52,21 +52,6 @@ public class CommonLibrary {
         }
     }
 
-    /*public void manipulateGrabberPosition(int position){
-        if (position == 0) {
-            //close
-            robot.leftGrabber.setPosition(LEFT_GRABBER_CLOSED);
-            robot.rightGrabber.setPosition(RIGHT_GRABBER_CLOSED);
-        } else if (position == 1){
-            //mid
-            robot.leftGrabber.setPosition(LEFT_GRABBER_MID);
-            robot.rightGrabber.setPosition(RIGHT_GRABBER_MID);
-        } else if (position == 2){
-            //open
-            robot.leftGrabber.setPosition(LEFT_GRABBER_OPEN);
-            robot.rightGrabber.setPosition(RIGHT_GRABBER_OPEN);
-        }
-    }*/
     public void manipulateGrabberPosition(Grabber position){
         switch (position){
             case Open:

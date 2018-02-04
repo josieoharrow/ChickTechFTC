@@ -45,6 +45,7 @@ public class AutonomousDriver extends LinearOpMode {
                     al.robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
                     telemetry.addData("vuforia ", vuforiaPosition);
                     telemetry.update();
+                    cl.wait(400, this);
 
                     if (vuforiaPosition == "left") {
 
@@ -82,7 +83,7 @@ public class AutonomousDriver extends LinearOpMode {
                         //blue team corner balance board
                         telemetry.addLine("I am on the blue team and in the corner");
                         telemetry.update();
-                        al.driveAtAngle(24, 90, telemetry, this);
+                        al.driveAtAngle(23.5, 90, telemetry, this);//4
                         cl.wait(200, this);
                         al.PIDturnRelativeToField(90, telemetry, this);
                         cl.wait(300, this);
@@ -109,8 +110,8 @@ public class AutonomousDriver extends LinearOpMode {
 
                     al.openArms(cl, this);
                     al.driveAtAngle(12, 90, telemetry, this);//push block in more
-                    al.driveAtAngle(12, 270, telemetry, this);
-                    al.turnToAngleWithPID(90, telemetry, this);//Turn so arms won't hit block
+                    al.driveAtAngle(7, 270, telemetry, this);
+                    /*al.turnToAngleWithPID(90, telemetry, this);//Turn so arms won't hit block
                     al.driveAtAngle(15, 0, telemetry, this);
                     al.driveAtAngle(10, 180, telemetry, this);
                    // al.driveAtAngle(10, 90, telemetry, this);
