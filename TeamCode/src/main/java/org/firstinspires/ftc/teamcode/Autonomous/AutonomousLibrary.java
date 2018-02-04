@@ -374,10 +374,10 @@ public class AutonomousLibrary {
         robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-       /* robot.frontLeftMotor.setPower(0.4);
+        robot.frontLeftMotor.setPower(0.4);
         robot.frontRightMotor.setPower(-0.4);
         robot.rearRightMotor.setPower(0.4);
-        robot.rearLeftMotor.setPower(-0.4);*/
+        robot.rearLeftMotor.setPower(-0.4);
 
         while (columnDetectedCount < columnCount && !caller.isStopRequested()) {
             caller.telemetry.addData("MR ", robot.mrRangeSensor.getI2cAddress());
@@ -385,7 +385,7 @@ public class AutonomousLibrary {
             caller.telemetry.addData("MR ", robot.mrRangeSensor.getDistance(DistanceUnit.CM));
             caller.telemetry.update();
 
-            if (Math.abs(distanceReadingOriginal - distanceReadingFluid) > 1) {//????
+            if (Math.abs(distanceReadingOriginal - distanceReadingFluid) > 1 && distanceReadingOriginal > distanceReadingFluid) {//????
 
                 columnDetectedCount ++;
             }
