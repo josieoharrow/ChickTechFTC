@@ -18,10 +18,10 @@ public class CommonLibrary {
 
     static final double RIGHT_GRABBER_OPEN = 1;
     static final double RIGHT_GRABBER_MID = 0.775;//0.5
-    static final double RIGHT_GRABBER_CLOSED = 0.53; //0.63
+    static final double RIGHT_GRABBER_CLOSED = 0.50; //0.63
     static final double LEFT_GRABBER_OPEN = 0;
     static final double LEFT_GRABBER_MID = 0.225; //0.46
-    static final double LEFT_GRABBER_CLOSED = 0.47; //0.41
+    static final double LEFT_GRABBER_CLOSED = 0.5; //0.41
 
     public void init(HardwareMap hardwareMapSent) {
 
