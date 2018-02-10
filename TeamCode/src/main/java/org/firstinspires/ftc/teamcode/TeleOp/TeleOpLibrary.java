@@ -230,7 +230,7 @@ public class TeleOpLibrary {
         if (gamepad2.x) {
             telemetry.addLine("Opening");
             telemetry.update();
-            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
+            cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Open, robot);
             //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
         }
 
@@ -238,14 +238,14 @@ public class TeleOpLibrary {
 
             telemetry.addLine("Mid Way");
             telemetry.update();
-            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Mid);
+            cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
             //robot.rightArmServo.setPosition(RIGHT_ARM_MID);
         }
         if (gamepad2.b) {
 
             telemetry.addLine("Closing");
             telemetry.update();
-            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Close);
+            cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Close, robot);
             //robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
         }
     }
@@ -329,7 +329,7 @@ public class TeleOpLibrary {
         }
     }
 
-    public void manipulateGrabber(Gamepad gamepad1){
+    public void manipulateRelicGrabber(Gamepad gamepad1){
         if (gamepad1.x){
             robot.relicGrabberServo.setPosition(RELIC_GRABBER_CLOSED);
         }
@@ -341,7 +341,7 @@ public class TeleOpLibrary {
     public void endServoReset() {
 
         //robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
-        cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
+        cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Open, robot);
         //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
         robot.relicGrabberServo.setPosition(RELIC_GRABBER_OPEN);
     }

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -65,7 +66,7 @@ public class AutonomousLibrary {
 
     public void declareRobot(RobotHardware robotSent) {
 
-        robot = robotSent;
+    //    robot = robotSent;
     }
     public void init(HardwareMap hardwareMapSent, Telemetry telemetry, Gamepad gamepad1, LinearOpMode caller) {
 
@@ -75,9 +76,9 @@ public class AutonomousLibrary {
         hardwareMap = hardwareMapSent;
         robot = new RobotHardware();
         cl = new CommonLibrary();
-        cl.init(hardwareMapSent);
         robot.init(hardwareMap);
         robot.initGyro();
+        cl.init(hardwareMapSent);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
@@ -85,10 +86,10 @@ public class AutonomousLibrary {
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
         lowerLift();
-        cl.resetLiftMotorEncoder();
+        resetLiftMotorEncoder();
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         startAngles = robot.imu.getAngularOrientation();
-        cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
+        cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Open, robot);
         //robot.leftGrabber.setPosition(LEFT_GRABBER_OPEN);
         //robot.rightGrabber.setPosition(RIGHT_GRABBER_OPEN);
     }
@@ -131,7 +132,7 @@ public class AutonomousLibrary {
         String teamColorText = "";
         String positionText = "";
 
-        while (teamColorAndPosition == 0 && !caller.isStarted()) {
+        while (teamColorAndPosition == 0 && !caller.isStarted() && !caller.isStopRequested()) {
             if (teamColor + position == 0 || gamepad1.left_stick_button){
                 telemetry.addLine("Pick Team Color and Position:");
                 telemetry.addLine("     Press X for Blue Team");
@@ -364,30 +365,51 @@ public class AutonomousLibrary {
     }
 
 
-    public void driveByBlockColumnsFromTheLeft(int columnCount, LinearOpMode caller) {
+    public void driveByBlockColumns(LinearOpMode caller, Boolean left, int position) {
+    /* for position, 1= closest column, 2 = middle, 3 = farthest */
 
         float distanceReadingOriginal = robot.mrRangeSensor.rawUltrasonic();
         float distanceReadingFluid = robot.mrRangeSensor.rawUltrasonic();
         int columnDetectedCount = 0;
+        float front = 4;
+        float middle = 11f;
+        float end = 17.5f;
+        float driveDistance;
+        if (position == 1) {
+            driveDistance = front;
+        } else if (position == 2) {
+            driveDistance = middle;
+        } else {
+            driveDistance = end;
+        }
         robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        robot.frontLeftMotor.setPower(0.4);
-        robot.frontRightMotor.setPower(-0.4);
-        robot.rearRightMotor.setPower(0.4);
-        robot.rearLeftMotor.setPower(-0.4);
+        if (left) {
+            robot.frontLeftMotor.setPower(0.4);
+            robot.frontRightMotor.setPower(-0.4);
+            robot.rearRightMotor.setPower(0.4);
+            robot.rearLeftMotor.setPower(-0.4);
+        } else {
+            robot.frontLeftMotor.setPower(-0.4);
+            robot.frontRightMotor.setPower(0.4);
+            robot.rearRightMotor.setPower(-0.4);
+            robot.rearLeftMotor.setPower(0.4);
+        }
 
-        while (columnDetectedCount < columnCount && !caller.isStopRequested()) {
+
+        while (!caller.isStopRequested()) {
             caller.telemetry.addData("MR ", robot.mrRangeSensor.getI2cAddress());
             caller.telemetry.addData("MR ", robot.mrRangeSensor.rawUltrasonic());
             caller.telemetry.addData("MR ", robot.mrRangeSensor.getDistance(DistanceUnit.CM));
             caller.telemetry.update();
 
-            if (Math.abs(distanceReadingOriginal - distanceReadingFluid) > 3) {//????
+            if (Math.abs(distanceReadingOriginal - distanceReadingFluid) > 3 && distanceReadingOriginal > distanceReadingFluid) {
 
-                columnDetectedCount ++;
+                columnDetectedCount ++;//is to check if columnCount is greater than columnDetectedCount. Not currently implemented.
+                break;
             }
             distanceReadingFluid = robot.mrRangeSensor.rawUltrasonic();
         }
@@ -396,6 +418,14 @@ public class AutonomousLibrary {
         robot.frontRightMotor.setPower(0);
         robot.rearRightMotor.setPower(0);
         robot.rearLeftMotor.setPower(0);
+
+        if (left) {
+
+            driveAtAngle(driveDistance , 0, caller.telemetry, caller);
+        } else {
+
+            driveAtAngle(driveDistance, 180, caller.telemetry, caller);
+        }
     }
 
 
@@ -416,7 +446,7 @@ public class AutonomousLibrary {
                 //robot.blockGrabberServo.setPosition(BLOCK_GRABBER_CLOSED);
                 //robot.leftArmServo.setPosition(LEFT_ARM_CLOSED);
                 driveAtAngle(3, 90, caller.telemetry, caller);
-                cl.manipulateGrabberPosition(CommonLibrary.Grabber.Mid);
+                cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
                 //robot.leftArmServo.setPosition(LEFT_ARM_MID);
                 driveAtAngle(1, 90, caller.telemetry, caller);
                 ranClearBlocks = true;
@@ -436,7 +466,7 @@ public class AutonomousLibrary {
             }
             caller.telemetry.update();
 
-            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Mid);
+            cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
             //robot.leftArmServo.setPosition(LEFT_ARM_MID);
             robot.frontLeftMotor.setPower(power + leftPower);
             robot.frontRightMotor.setPower(power + rightPower);
@@ -757,10 +787,11 @@ public class AutonomousLibrary {
     }
 
 
+
     public void closeArms(CommonLibrary cl, LinearOpMode caller) {
 
         //robot.blockGrabberServo.setposition(BLOCK_GRABBER_CLOSED);
-        cl.manipulateGrabberPosition(CommonLibrary.Grabber.Close);
+        cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Close, robot);
         cl.wait(300, caller);
 
         //robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
@@ -777,10 +808,10 @@ public class AutonomousLibrary {
 
     public void openArms(CommonLibrary cl, LinearOpMode caller) {
 
-        moveLift(-1.5f);
-        cl.wait(300, caller);
+        //moveLift(-1.5f);
+        //cl.wait(300, caller);
         //robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
-        cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
+        cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Open, robot);
 
         //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
     }
@@ -818,7 +849,7 @@ public class AutonomousLibrary {
     }
 
 
-    public double determineMotorTargetPositionRatio(double angleHeading, motor m){
+    public double determineMotorTargetPositionRatio(double angleHeading, motor specifiedMotor){
 
         double frontLeftMotorAngle = Math.PI/4;
         double frontRightMotorAngle = -Math.PI/4;
@@ -830,11 +861,11 @@ public class AutonomousLibrary {
         double rearLeftMotorRatio = 1 / Math.sin(rearLeftMotorAngle + angleHeading);
         double rearRightMotorRatio = 1 / Math.sin(rearRightMotorAngle + angleHeading);
 
-        if (m == motor.FRONT_LEFT_MOTOR) {
+        if (specifiedMotor == motor.FRONT_LEFT_MOTOR) {
             return  frontLeftMotorRatio;
-        } else if (m == motor.FRONT_RIGHT_MOTOR) {
+        } else if (specifiedMotor == motor.FRONT_RIGHT_MOTOR) {
             return frontRightMotorRatio;
-        } else if (m == motor.REAR_LEFT_MOTOR) {
+        } else if (specifiedMotor == motor.REAR_LEFT_MOTOR) {
             return rearLeftMotorRatio;
         } else {
             return rearRightMotorRatio;
@@ -895,5 +926,12 @@ public class AutonomousLibrary {
         robot.rearLeftMotor.setPower(0);
         telemetry.addData("done", "done");
         telemetry.update();
+    }
+
+    public void resetLiftMotorEncoder() {
+
+        robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        while (robot.liftMotor.isBusy()) {
+        }
     }
 }

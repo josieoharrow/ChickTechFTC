@@ -92,7 +92,7 @@ public class TeleOpDriver extends OpMode {
         tol.armServos(gamepad2, telemetry);
         tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
         tol.generalTelemetry(this);
-        tol.manipulateGrabber(gamepad1);
+        tol.manipulateRelicGrabber(gamepad1);
         tol.setRelicLiftPower(gamepad1, this);
         tol.rotateGrabber(gamepad1, telemetry);
     }

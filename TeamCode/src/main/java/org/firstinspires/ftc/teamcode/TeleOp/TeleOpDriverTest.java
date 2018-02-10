@@ -59,8 +59,8 @@ public class TeleOpDriverTest extends OpMode {
     @Override
     public void loop() {
 
-        if (gamepad1.a){
-            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open);
+        /*if (gamepad1.a){
+            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open, robot);
         } else if (gamepad1.b){
             cl.manipulateGrabberPosition(CommonLibrary.Grabber.Close);
         } else if (gamepad1.a){

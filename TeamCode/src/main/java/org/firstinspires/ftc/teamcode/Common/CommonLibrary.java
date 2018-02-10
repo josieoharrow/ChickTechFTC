@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Common;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.robot.Robot;
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -13,7 +14,6 @@ public class CommonLibrary {
         Open, Mid, Close
     }
 
-    RobotHardware robot;
     HardwareMap hardwareMap;
 
     static final double RIGHT_GRABBER_OPEN = 1;
@@ -26,18 +26,8 @@ public class CommonLibrary {
     public void init(HardwareMap hardwareMapSent) {
 
         hardwareMap = hardwareMapSent;
-        robot = new RobotHardware();
-        robot.init(hardwareMap);
-        manipulateGrabberPosition(Grabber.Open);
     }
 
-
-    public void resetLiftMotorEncoder() {
-
-        robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        while (robot.liftMotor.isBusy()) {
-        }
-    }
 
 
     public void wait(double milliseconds, LinearOpMode caller) {
@@ -52,7 +42,8 @@ public class CommonLibrary {
         }
     }
 
-    public void manipulateGrabberPosition(Grabber position){
+    public void manipulateBlockGrabberPosition(Grabber position, RobotHardware robot){
+        //for arms? I think?
         switch (position){
             case Open:
                 robot.leftGrabber.setPosition(LEFT_GRABBER_OPEN);
