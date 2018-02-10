@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -31,6 +32,7 @@ public class RobotHardware {
     public Servo relicRotateServo;
     public Servo leftGrabber;
     public Servo rightGrabber;
+    public ServoController sc;
     public DcMotor leftRoller;
     public DcMotor rightRoller;
     public DigitalChannel liftMotorTouchSensor;

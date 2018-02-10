@@ -896,4 +896,38 @@ public class AutonomousLibrary {
         telemetry.addData("done", "done");
         telemetry.update();
     }
+
+    public void rollersSpinIn(double timeInSeconds, Telemetry telemetry, LinearOpMode caller) {
+        double spinStart = System.nanoTime();
+        while (caller.opModeIsActive()) {
+            telemetry.addLine("Suck in");
+            telemetry.update();
+            robot.leftRoller.setPower(1);
+            robot.rightRoller.setPower(-1);
+            if (System.nanoTime() > ((spinStart + (timeInSeconds * 1e9)))) {
+                telemetry.addLine("Stop");
+                telemetry.update();
+                robot.leftRoller.setPower(0);
+                robot.rightRoller.setPower(0);
+                break;
+            }
+        }
+    }
+
+    public void rollerSpinOut(double timeInSeconds, Telemetry telemetry, LinearOpMode caller) {
+        double spinStart = System.nanoTime();
+        while (caller.opModeIsActive()){
+            telemetry.addLine("Spit out");
+            telemetry.update();
+            robot.leftRoller.setPower(-1);
+            robot.rightRoller.setPower(1);
+            if (System.nanoTime() > ((spinStart + (timeInSeconds * 1e9)))) {
+                telemetry.addLine("Stop");
+                telemetry.update();
+                robot.leftRoller.setPower(0);
+                robot.rightRoller.setPower(0);
+                break;
+            }
+        }
+    }
 }
