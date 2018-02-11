@@ -87,7 +87,7 @@ public class AutonomousLibrary {
         colorSensorREV = hardwareMap.get(ColorSensor.class, "jewel color sensor");
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
         //lowerLift();
-        resetLiftMotorEncoder();
+        resetLiftMotorEncoder(caller);
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         startAngles = robot.imu.getAngularOrientation();
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Open, robot);
@@ -132,62 +132,70 @@ public class AutonomousLibrary {
         int position = 0;
         String teamColorText = "";
         String positionText = "";
+        try {
 
-        while (teamColorAndPosition == 0 && !caller.isStarted() && !caller.isStopRequested()) {
-            if (teamColor + position == 0 || gamepad1.left_stick_button) {
-                telemetry.addLine("Pick Team Color and Position:");
-                telemetry.addLine("     Press X for Blue Team");
-                telemetry.addLine("     Press B for Red Team");
-                telemetry.addLine("     Press Right Bumper for Center Balance Board");
-                telemetry.addLine("     Press Left Bumper for Corner Balance Board");
-                telemetry.addLine("     Press Right Stick to Save and Leave");
-                telemetry.addLine("");
-                telemetry.addLine(teamColorText + " | " + positionText);
-                telemetry.update();
-            }
-            if (gamepad1.x) {
-                teamColor = 3;
-                teamColorText = "Blue Team";
-                telemetry.addLine(teamColorText + " | " + positionText);
-                telemetry.addLine("For Menu, Press Left Stick");
-                telemetry.addLine("To Save and Leave, Press Right Stick");
-                telemetry.update();
-            }
-            if (gamepad1.b) {
-                teamColor = 1;
-                teamColorText = "Red Team";
-                telemetry.addLine(teamColorText + " | " + positionText);
-                telemetry.addLine("For Menu, Press Left Stick");
-                telemetry.addLine("To Save and Leave, Press Right Stick");
-                telemetry.update();
-            }
-            if (gamepad1.right_bumper) {
-                position = 1;
-                positionText = "Center Balance Board";
-                telemetry.addLine(teamColorText + " | " + positionText);
-                telemetry.addLine("For Menu, Press Left Stick");
-                telemetry.addLine("To Save and Leave, Press Right Stick");
-                telemetry.update();
-            }
-            if (gamepad1.left_bumper) {
-                position = 0;
-                positionText = "Corner Balance Board";
-                telemetry.addLine(teamColorText + " | " + positionText);
-                telemetry.addLine("For Menu, Press Left Stick");
-                telemetry.addLine("To Save and Leave, Press Right Stick");
-                telemetry.update();
-            }
+            while (teamColorAndPosition == 0 && !caller.isStarted()) { //Added opModeI
 
-            if (gamepad1.right_stick_button) {
-                teamColorAndPosition = teamColor + position;
-                telemetry.addData("team color", teamColorAndPosition);
-                telemetry.addLine(teamColorText + " | " + positionText);
-                telemetry.addLine("1 = Red Team, Corner Balance Board");
-                telemetry.addLine("2 = Red Team, Center Balance Board");
-                telemetry.addLine("3 = Blue Team, Corner Balance Board");
-                telemetry.addLine("4 = Blue Team, Center Balance Board");
-                telemetry.update();
+                if (teamColor + position == 0 || gamepad1.left_stick_button) {
+
+                    telemetry.addLine("Pick Team Color and Position:");
+                    telemetry.addLine("     Press X for Blue Team");
+                    telemetry.addLine("     Press B for Red Team");
+                    telemetry.addLine("     Press Right Bumper for Center Balance Board");
+                    telemetry.addLine("     Press Left Bumper for Corner Balance Board");
+                    telemetry.addLine("     Press Right Stick to Save and Leave");
+                    telemetry.addLine("");
+                    telemetry.addLine(teamColorText + " | " + positionText);
+                    telemetry.update();
+                }
+                if (gamepad1.x) {
+
+                    teamColor = 3;
+                    teamColorText = "Blue Team";
+                    telemetry.addLine(teamColorText + " | " + positionText);
+                    telemetry.addLine("For Menu, Press Left Stick");
+                    telemetry.addLine("To Save and Leave, Press Right Stick");
+                    telemetry.update();
+                }
+                if (gamepad1.b) {
+                    teamColor = 1;
+                    teamColorText = "Red Team";
+                    telemetry.addLine(teamColorText + " | " + positionText);
+                    telemetry.addLine("For Menu, Press Left Stick");
+                    telemetry.addLine("To Save and Leave, Press Right Stick");
+                    telemetry.update();
+                }
+                if (gamepad1.right_bumper) {
+                    position = 1;
+                    positionText = "Center Balance Board";
+                    telemetry.addLine(teamColorText + " | " + positionText);
+                    telemetry.addLine("For Menu, Press Left Stick");
+                    telemetry.addLine("To Save and Leave, Press Right Stick");
+                    telemetry.update();
+                }
+                if (gamepad1.left_bumper) {
+                    position = 0;
+                    positionText = "Corner Balance Board";
+                    telemetry.addLine(teamColorText + " | " + positionText);
+                    telemetry.addLine("For Menu, Press Left Stick");
+                    telemetry.addLine("To Save and Leave, Press Right Stick");
+                    telemetry.update();
+                }
+
+                if (gamepad1.right_stick_button) {
+                    teamColorAndPosition = teamColor + position;
+                    telemetry.addData("team color", teamColorAndPosition);
+                    telemetry.addLine(teamColorText + " | " + positionText);
+                    telemetry.addLine("1 = Red Team, Corner Balance Board");
+                    telemetry.addLine("2 = Red Team, Center Balance Board");
+                    telemetry.addLine("3 = Blue Team, Corner Balance Board");
+                    telemetry.addLine("4 = Blue Team, Center Balance Board");
+                    telemetry.update();
+                }
             }
+        } catch (Exception e) {
+
+            telemetry.addData("Initialization interrupted. \nERROR: ", e);
         }
         return teamColorAndPosition;
     }
@@ -201,7 +209,7 @@ public class AutonomousLibrary {
         long startTime = System.currentTimeMillis();
         pictoKey = "unknown";
 
-        while ("no".equals(vuMarkSeen)) { // While the vumark has not been seen
+        while ("no".equals(vuMarkSeen) && !caller.isStopRequested()) { // While the vumark has not been seen
 
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
             telemetry.addData("vumark", vuMark);
@@ -286,7 +294,7 @@ public class AutonomousLibrary {
 
     public void driveAtAngle(double distance, double angle, Telemetry telemetry, LinearOpMode caller) {
 
-        resetMotorEncoders();
+        resetMotorEncoders(caller);
 
         double wheelPowerAngle = angle * Math.PI / 180;
         // wheelPowerAngle = (Math.PI/2) - wheelPowerAngle;
@@ -329,7 +337,7 @@ public class AutonomousLibrary {
         robot.rearRightMotor.setPower(0);
         robot.rearLeftMotor.setPower(0);
         runUsingEncoders();
-        resetMotorEncoders();
+        resetMotorEncoders(caller);
     }
 
     public void lowerLift(LinearOpMode caller) {
@@ -528,13 +536,13 @@ public class AutonomousLibrary {
         return rotationCount * Math.PI * 4; //this math is not correct
     }
 
-    public void resetMotorEncoders() {
+    public void resetMotorEncoders(LinearOpMode caller) {
 
         robot.frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rearRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rearLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        while (robot.frontLeftMotor.isBusy() || robot.frontRightMotor.isBusy() || robot.rearLeftMotor.isBusy() || robot.rearRightMotor.isBusy()) {
+        while (!caller.isStopRequested() && robot.frontLeftMotor.isBusy() || robot.frontRightMotor.isBusy() || robot.rearLeftMotor.isBusy() || robot.rearRightMotor.isBusy()) {
         }
     }
 
@@ -562,7 +570,7 @@ public class AutonomousLibrary {
         }
     }
 
-    public void turnToAngleWithGyro(int turnAngle, double speed, Telemetry telemetry) {
+    public void turnToAngleWithGyro(LinearOpMode caller, int turnAngle, double speed, Telemetry telemetry) {
 
         angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float stopTarget;
@@ -582,7 +590,7 @@ public class AutonomousLibrary {
 
         if (left) {
             stopTarget = angles.firstAngle + turnAngle;
-            while (angles.firstAngle > stopTarget) {
+            while (!caller.isStopRequested() && angles.firstAngle > stopTarget) {
                 robot.frontLeftMotor.setPower(speed);
                 robot.frontRightMotor.setPower(-speed);
                 robot.rearRightMotor.setPower(-speed);
@@ -591,7 +599,7 @@ public class AutonomousLibrary {
             }
         } else {
             stopTarget = angles.firstAngle + turnAngle;
-            while (angles.firstAngle < stopTarget) {
+            while (!caller.isStopRequested() && angles.firstAngle < stopTarget) {
                 robot.frontLeftMotor.setPower(-speed);
                 robot.frontRightMotor.setPower(speed);
                 robot.rearRightMotor.setPower(speed);
@@ -601,9 +609,9 @@ public class AutonomousLibrary {
         }
     }
 
-    public void turnToAngleWithEncoderTicks(int turnAngle, double turnSpeed, Telemetry telemetry) {
+    public void turnToAngleWithEncoderTicks(int turnAngle, double turnSpeed, Telemetry telemetry, LinearOpMode caller) {
 
-        resetMotorEncoders();
+        resetMotorEncoders(caller);
         boolean left = false;
         if (turnAngle <= -360) {
             turnAngle = turnAngle + 360;
@@ -705,7 +713,7 @@ public class AutonomousLibrary {
         double integral = 0;
         double power;
         double previousTime = 0;
-        while (Math.abs(currentError) > acceptableError) {
+        while (!caller.isStopRequested() && Math.abs(currentError) > acceptableError) {
 
             double timeChange = System.nanoTime() - previousTime;
             previousTime = System.nanoTime();
@@ -996,10 +1004,10 @@ public class AutonomousLibrary {
     }
 
 
-    public void resetLiftMotorEncoder() {
+    public void resetLiftMotorEncoder(LinearOpMode caller) {
 
         robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        while (robot.liftMotor.isBusy()) {
+        while (!caller.isStopRequested() && robot.liftMotor.isBusy()) {
         }
 
     }
