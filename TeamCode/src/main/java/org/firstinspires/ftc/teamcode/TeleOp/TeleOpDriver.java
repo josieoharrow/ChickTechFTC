@@ -95,6 +95,7 @@ public class TeleOpDriver extends OpMode {
         tol.manipulateGrabber(gamepad1);
         tol.setRelicLiftPower(gamepad1, this);
         tol.rotateGrabber(gamepad1, telemetry);
+        tol.paintRollersSpin(gamepad2, telemetry);
     }
 
     public Boolean getRunning() {
