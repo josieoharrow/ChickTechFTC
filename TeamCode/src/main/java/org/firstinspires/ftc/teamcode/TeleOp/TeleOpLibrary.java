@@ -414,42 +414,23 @@ public class TeleOpLibrary {
 
     public void paintRollersSpin(Gamepad gamepad2, Telemetry telemetry) {
         double spinStart = System.nanoTime();
-        if (gamepad2.dpad_up) {
-            telemetry.addLine("Forward/Reverse spins");
+        if(gamepad2.dpad_down) {
+            telemetry.addLine("Suck in");
             telemetry.update();
             robot.leftRoller.setPower(1);
             robot.rightRoller.setPower(-1);
-            if (gamepad2.dpad_left){
-                telemetry.addLine("Stop spin");
-                telemetry.update();
-                robot.leftRoller.setPower(0);
-                robot.rightRoller.setPower(0);
-            }
-            /*else if (System.nanoTime() >= (spinStart + 3500)) {
-                telemetry.addLine("Stopping spin");
-                telemetry.update();
-                robot.leftRoller.setPower(0);
-                robot.rightRoller.setPower(0);
-            }*/
         }
-        else if (gamepad2.dpad_down) {
-            telemetry.addLine("Reverse/Forward spins");
+        if(gamepad2.dpad_up) {
+            telemetry.addLine("Push out");
             telemetry.update();
             robot.leftRoller.setPower(-1);
             robot.rightRoller.setPower(1);
-            if (gamepad2.dpad_left){
-                telemetry.addLine("Stop spin");
-                telemetry.update();
-                robot.leftRoller.setPower(0);
-                robot.rightRoller.setPower(0);
-            }
-            /*else if (System.nanoTime() >= (spinStart + 3500)) {
-                telemetry.addLine("Stopping spin");
-                telemetry.update();
-                robot.leftRoller.setPower(0);
-                robot.rightRoller.setPower(0);
-            }*/
         }
+        else if (!gamepad2.dpad_up || !gamepad2.dpad_down){
+            robot.leftRoller.setPower(0);
+            robot.rightRoller.setPower(0);
+        }
+
     }
 
 }
