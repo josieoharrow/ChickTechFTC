@@ -66,7 +66,7 @@ public class AutonomousDriverTest extends LinearOpMode {
             //al.driveAtAngle(3, 0, telemetry, this);
             al.driveAtAngle(3, 0, telemetry, this);
             cl.wait(200, this);
-            al.moveLift(-1.5f);
+            al.moveLift(-1f);
             cl.wait(500, this);
 
             al.driveByBlockColumns(this, false, columnPlacement);
@@ -93,7 +93,7 @@ public class AutonomousDriverTest extends LinearOpMode {
 
             al.driveAtAngle(3, 0, telemetry, this);
             cl.wait(200, this);
-            al.moveLift(-1.5f);
+            al.moveLift(-1f);
             cl.wait(500, this);
 
             al.driveByBlockColumns(this, false, columnPlacement);
@@ -117,7 +117,7 @@ public class AutonomousDriverTest extends LinearOpMode {
             cl.wait(300, this);
             al.driveAtAngle(3, 180, telemetry, this);
             cl.wait(200, this);
-            al.moveLift(-1.5f);
+            al.moveLift(-1f);
             cl.wait(500, this);
 
             al.driveByBlockColumns(this, true, columnPlacement);
@@ -143,7 +143,7 @@ public class AutonomousDriverTest extends LinearOpMode {
             al.driveAtAngle(3, 180, telemetry, this);
             cl.wait(200, this);
             //cl.wait(200, this);
-            al.moveLift(-1.5f);
+            al.moveLift(-1f);
             cl.wait(500, this);
             al.driveByBlockColumns(this, true, columnPlacement);
         } else {
