@@ -101,11 +101,11 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                     al.driveAtAngle(3, 270, telemetry, this);
                     final AutonomousLibrary newAl;
                     newAl = al;
-
+                    final LinearOpMode caller = this;
                     Thread t1 = new Thread(new Runnable() {
                         public void run() {
 
-                            newAl.lowerLift();
+                            newAl.lowerLift(caller);
                         }
                     });
 
@@ -149,7 +149,7 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                     Thread t2 = new Thread(new Runnable() {
                         public void run() {
 
-                            newAl.lowerLift();
+                            newAl.lowerLift(caller);
                         }
                     });
 

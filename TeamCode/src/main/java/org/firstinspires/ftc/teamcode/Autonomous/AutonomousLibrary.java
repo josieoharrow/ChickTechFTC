@@ -95,14 +95,14 @@ public class AutonomousLibrary {
         //robot.rightGrabber.setPosition(RIGHT_GRABBER_OPEN);
     }
 
-    public void moveLift(float rotations) {
+    public void moveLift(float rotations, LinearOpMode caller) {
 
         int oldEncoderPosition = robot.liftMotor.getCurrentPosition();
         final float ENCODER_TICKS_PER_ROTATION = 1152;
 
         if (rotations > 0) {
 
-            while (robot.liftMotor.getCurrentPosition() < (rotations * ENCODER_TICKS_PER_ROTATION) + oldEncoderPosition) {
+            while (!caller.isStopRequested() && robot.liftMotor.getCurrentPosition() < (rotations * ENCODER_TICKS_PER_ROTATION) + oldEncoderPosition) {
 
                 float closeMultiplier = 1;
                 if ((rotations * ENCODER_TICKS_PER_ROTATION + oldEncoderPosition) - robot.liftMotor.getCurrentPosition() < 200) {
@@ -113,7 +113,7 @@ public class AutonomousLibrary {
             }
         } else {
 
-            while (robot.liftMotor.getCurrentPosition() > (rotations * ENCODER_TICKS_PER_ROTATION) + oldEncoderPosition) {
+            while (!caller.isStopRequested() && robot.liftMotor.getCurrentPosition() > (rotations * ENCODER_TICKS_PER_ROTATION) + oldEncoderPosition) {
 
                 float closeMultiplier = 1;
                 if ((rotations * ENCODER_TICKS_PER_ROTATION + oldEncoderPosition) - robot.liftMotor.getCurrentPosition() > -200) {
@@ -332,9 +332,9 @@ public class AutonomousLibrary {
         resetMotorEncoders();
     }
 
-    public void lowerLift() {
+    public void lowerLift(LinearOpMode caller) {
 
-        while (robot.liftMotorTouchSensor.getState() == true) {
+        while (!caller.isStopRequested() && robot.liftMotorTouchSensor.getState() == true) {
 
             robot.liftMotor.setPower(-.25);
         }
@@ -838,7 +838,7 @@ public class AutonomousLibrary {
         // Thread t1 = new Thread(new Runnable() {
         // public void run() {
 
-        moveLift(2);
+        moveLift(2, caller);
         //  }
         // });
         //  t1.start();
@@ -847,7 +847,7 @@ public class AutonomousLibrary {
     public void halfCloseArms(CommonLibrary cl, LinearOpMode caller) {
 
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
-        cl.wait(300, caller);
+        //cl.wait(300, caller);
     }
 
 
@@ -940,7 +940,7 @@ public class AutonomousLibrary {
         double integral = 0;
         double power;
         double previousTime = 0;
-        while (Math.abs(currentError) > acceptableError) {
+        while (Math.abs(currentError) > acceptableError && !caller.isStopRequested()) {
 
             double timeChange = System.nanoTime() - previousTime;
             previousTime = System.nanoTime();

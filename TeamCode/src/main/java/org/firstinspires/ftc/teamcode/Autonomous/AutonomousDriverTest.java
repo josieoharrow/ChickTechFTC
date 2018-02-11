@@ -39,7 +39,7 @@ public class AutonomousDriverTest extends LinearOpMode {
 
         vuforiaPosition = al.pictoDecipher(telemetry, this);
         al.halfCloseArms(cl, this);
-        al.lowerLift();
+        al.lowerLift(this);
         al.closeArms(cl, this);
         telemetry.addLine("Endng close arms");
         al.decipherJewelAndKnockOff(telemetry, this, cl);
@@ -72,7 +72,7 @@ public class AutonomousDriverTest extends LinearOpMode {
             cl.wait(200, this);
             al.PIDturnRelativeToField(90, telemetry, this);//bump up
 
-            al.moveLift(-1.3f);
+            al.moveLift(-1.3f, this);
             cl.wait(500, this);
 
             al.driveByBlockColumns(this, false, columnPlacement);
@@ -103,7 +103,7 @@ public class AutonomousDriverTest extends LinearOpMode {
             cl.wait(200, this);
             al.PIDturnRelativeToField(180, telemetry, this);//bump up
 
-            al.moveLift(-1.3f);
+            al.moveLift(-1.3f, this);
             cl.wait(500, this);
 
             al.driveByBlockColumns(this, false, columnPlacement);
@@ -131,7 +131,7 @@ public class AutonomousDriverTest extends LinearOpMode {
             cl.wait(200, this);
             al.PIDturnRelativeToField(90, telemetry, this);//bump up
 
-            al.moveLift(-1.3f);
+            al.moveLift(-1.3f, this);
             cl.wait(500, this);
 
             al.driveByBlockColumns(this, true, columnPlacement);
@@ -161,7 +161,7 @@ public class AutonomousDriverTest extends LinearOpMode {
 
             cl.wait(200, this);
             //cl.wait(200, this);
-            al.moveLift(-1.3f);
+            al.moveLift(-1.3f, this);
             cl.wait(500, this);
             al.driveByBlockColumns(this, true, columnPlacement);
             al.PIDturnRelativeToField(0, telemetry, this);//bump up
