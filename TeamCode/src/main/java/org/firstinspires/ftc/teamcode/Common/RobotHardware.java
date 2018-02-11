@@ -80,8 +80,6 @@ public class RobotHardware {
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
         relicGrabberServo.setPosition(RELIC_GRABBER_DOWN);
         relicRotateServo.setPosition(RELIC_ROTATE_DOWN);
-        leftGrabber.setPosition(CommonLibrary.LEFT_GRABBER_OPEN);
-        rightGrabber.setPosition(CommonLibrary.RIGHT_GRABBER_OPEN);
 
         liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);

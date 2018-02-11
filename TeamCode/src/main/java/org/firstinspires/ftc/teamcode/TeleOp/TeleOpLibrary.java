@@ -38,7 +38,7 @@ public class TeleOpLibrary {
 
     static final double RELIC_GRABBER_CLOSED = .12;
     static final double RELIC_GRABBER_OPEN = 0.32;
-    static final double RELIC_ROTATE_DOWN = 1;
+    static final double RELIC_ROTATE_DOWN = 0.9;
     static final double RELIC_ROTATE_UP = 0.1;
 
     static final double RAMP_SERVO_DOWN = 0.0;
@@ -56,7 +56,7 @@ public class TeleOpLibrary {
     final float ENCODER_TICKS_PER_ROTATION = 1152;
     final float LIFT_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 5;//was 4
     final float LIFT_MOTOR_MINIMUM_POSITION = -10;
-    final float SPEED_REDUCTION_COEFFICIENT = .6f;
+    final float SPEED_REDUCTION_COEFFICIENT = .3f;
 
     final float RELIC_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;      //These are the same as the glyph lift so it probably needs changed
     final float RELIC_MOTOR_MINIMUM_POSITION = 10;
@@ -331,6 +331,9 @@ public class TeleOpLibrary {
         if (gamepad1.x){
             robot.relicGrabberServo.setPosition(RELIC_GRABBER_CLOSED);
         }
+        if (gamepad1.y) {
+            robot.relicGrabberServo.setPosition(RELIC_GRABBER_CLOSED + 0.1);
+        }
         if (gamepad1.b){
             robot.relicGrabberServo.setPosition(RELIC_GRABBER_OPEN);
         }
@@ -339,7 +342,7 @@ public class TeleOpLibrary {
     public void endServoReset() {
 
         //robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
-        cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Open, robot);
+        cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
         //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
         robot.relicGrabberServo.setPosition(RELIC_GRABBER_OPEN);
     }
@@ -419,18 +422,14 @@ public class TeleOpLibrary {
             telemetry.update();
             robot.leftRoller.setPower(1);
             robot.rightRoller.setPower(-1);
-        }
-        if(gamepad2.dpad_up) {
+        } else if(gamepad2.dpad_up) {
             telemetry.addLine("Push out");
             telemetry.update();
             robot.leftRoller.setPower(-1);
             robot.rightRoller.setPower(1);
-        }
-        else if (!gamepad2.dpad_up || !gamepad2.dpad_down){
+        } else {
             robot.leftRoller.setPower(0);
             robot.rightRoller.setPower(0);
         }
-
     }
-
 }
