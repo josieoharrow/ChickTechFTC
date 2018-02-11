@@ -58,54 +58,13 @@ public class TeleOpDriverTest extends OpMode {
      */
     @Override
     public void loop() {
-
-        /*if (gamepad1.a){
-            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Open, robot);
-        } else if (gamepad1.b){
-            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Close);
-        } else if (gamepad1.a){
-            cl.manipulateGrabberPosition(CommonLibrary.Grabber.Mid);
+        if (gamepad2.dpad_down){
+            telemetry.addLine("Hello");
+            telemetry.update();
+        }else if (gamepad2.dpad_up){
+            telemetry.addLine("Hi!!!!");
+            telemetry.update();
         }
-
-/*
-       if (gamepad1.dpad_left && tol.robot.relicRotateServo.getPosition() != 1) {
-
-            g1left = true;
-        } else if (g1left) {
-            tol.setServoPosition(tol.robot.relicRotateServo, (tol.robot.relicRotateServo.getPosition() + 0.1));
-            g1left = false;
-        }
-        if (gamepad1.dpad_right && tol.robot.relicRotateServo.getPosition() != 0) {
-
-            g1right = true;
-        } else if (g1right) {
-            tol.setServoPosition(tol.robot.relicRotateServo, (tol.robot.relicRotateServo.getPosition() - 0.1));
-            g1right = false;
-        }
-
-        if (gamepad1.dpad_up && tol.robot.relicGrabberServo.getPosition() != 1) {
-            g1up = true;
-        } else if (g1up) {
-            tol.setServoPosition(tol.robot.relicGrabberServo, (tol.robot.relicGrabberServo.getPosition() + 0.1));
-
-            g1up = false;
-        }
-
-        if (gamepad1.dpad_down && tol.robot.relicGrabberServo.getPosition() != 0) {
-            g1down = true;
-        } else if (g1down) {
-
-            tol.setServoPosition(tol.robot.relicGrabberServo, (tol.robot.relicGrabberServo.getPosition() - 0.1));
-
-            g1down = false;
-        }
-
-       // tol.setServoPosition(tol.robot.relicGrabberServo, (tol.robot.relicGrabberServo.getPosition() + 0.1));
-
-        telemetry.addData("grabber position ", tol.robot.relicGrabberServo.getPosition());
-        telemetry.addData("ROTATE position ", tol.robot.relicRotateServo.getPosition());
-
-        telemetry.update();*/
     }
 
     /*

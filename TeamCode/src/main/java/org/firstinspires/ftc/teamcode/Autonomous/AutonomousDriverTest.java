@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Common.RobotHardware;
  */
 
 
-@Autonomous(name = "Test Autonomous")
+@Autonomous(name = "Autonomous with MR Sensor")
 //@Disabled
 public class AutonomousDriverTest extends LinearOpMode {
 
@@ -31,11 +31,15 @@ public class AutonomousDriverTest extends LinearOpMode {
         CommonLibrary cl = new CommonLibrary();
         cl.init(hardwareMap);
         Boolean ran = false;
+        telemetry.addLine("Hey now, Hey now.\n(You can start Autonomous now)");
+        telemetry.update();
         waitForStart();
         telemetry.update();
         //al.driveByBlockColumns(this, true, 3);
 
         vuforiaPosition = al.pictoDecipher(telemetry, this);
+        al.halfCloseArms(cl, this);
+        al.lowerLift();
         al.closeArms(cl, this);
         telemetry.addLine("Endng close arms");
         al.decipherJewelAndKnockOff(telemetry, this, cl);
@@ -64,12 +68,16 @@ public class AutonomousDriverTest extends LinearOpMode {
             al.PIDturnRelativeToField(90, telemetry, this);//bump up
             cl.wait(300, this);
             //al.driveAtAngle(3, 0, telemetry, this);
-            al.driveAtAngle(3, 0, telemetry, this);
+            al.driveAtAngle(5, 0, telemetry, this);
             cl.wait(200, this);
-            al.moveLift(-1f);
+            al.PIDturnRelativeToField(90, telemetry, this);//bump up
+
+            al.moveLift(-1.3f);
             cl.wait(500, this);
 
             al.driveByBlockColumns(this, false, columnPlacement);
+            al.PIDturnRelativeToField(90, telemetry, this);//bump up
+
         } else if (al.teamColorAndPosition == 2) {
 
             //red ream center balance board
@@ -91,12 +99,16 @@ public class AutonomousDriverTest extends LinearOpMode {
             al.PIDturnRelativeToField(180, telemetry, this);//bump up when fixed
             cl.wait(300, this);
 
-            al.driveAtAngle(3, 0, telemetry, this);
+            al.driveAtAngle(10, 0, telemetry, this);
             cl.wait(200, this);
-            al.moveLift(-1f);
+            al.PIDturnRelativeToField(180, telemetry, this);//bump up
+
+            al.moveLift(-1.3f);
             cl.wait(500, this);
 
             al.driveByBlockColumns(this, false, columnPlacement);
+            al.PIDturnRelativeToField(180, telemetry, this);//bump up
+
         } else if (al.teamColorAndPosition == 3) {
 
             //blue team corner balance board
@@ -117,10 +129,14 @@ public class AutonomousDriverTest extends LinearOpMode {
             cl.wait(300, this);
             al.driveAtAngle(3, 180, telemetry, this);
             cl.wait(200, this);
-            al.moveLift(-1f);
+            al.PIDturnRelativeToField(90, telemetry, this);//bump up
+
+            al.moveLift(-1.3f);
             cl.wait(500, this);
 
             al.driveByBlockColumns(this, true, columnPlacement);
+            al.PIDturnRelativeToField(90, telemetry, this);//bump up
+
         } else if (al.teamColorAndPosition == 4) {
 
             //blue team center balance board
@@ -140,12 +156,16 @@ public class AutonomousDriverTest extends LinearOpMode {
             cl.wait(200, this);
             //al.driveAtAngle(2, 0, telemetry, this);
             cl.wait(300, this);
-            al.driveAtAngle(3, 180, telemetry, this);
+            al.driveAtAngle(5, 180, telemetry, this);
+            al.PIDturnRelativeToField(0, telemetry, this);//bump up
+
             cl.wait(200, this);
             //cl.wait(200, this);
-            al.moveLift(-1f);
+            al.moveLift(-1.3f);
             cl.wait(500, this);
             al.driveByBlockColumns(this, true, columnPlacement);
+            al.PIDturnRelativeToField(0, telemetry, this);//bump up
+
         } else {
 
             telemetry.addLine("I don't know where I am who I am what's going on");
@@ -153,6 +173,8 @@ public class AutonomousDriverTest extends LinearOpMode {
         }
 
         al.openArms(cl, this);
+        al.driveAtAngle(12, 90, telemetry, this);//push block in more
+        al.driveAtAngle(7, 270, telemetry, this);
         al.driveAtAngle(12, 90, telemetry, this);//push block in more
         al.driveAtAngle(7, 270, telemetry, this);
                     /*al.turnToAngleWithPID(90, telemetry, this);//Turn so arms won't hit block

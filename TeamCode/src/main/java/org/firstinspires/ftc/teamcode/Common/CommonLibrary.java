@@ -16,12 +16,12 @@ public class CommonLibrary {
 
     HardwareMap hardwareMap;
 
-    static final double RIGHT_GRABBER_OPEN = 1;
-    static final double RIGHT_GRABBER_MID = 0.7;
-    static final double RIGHT_GRABBER_CLOSED = 0.4;
-    static final double LEFT_GRABBER_OPEN = 0;
-    static final double LEFT_GRABBER_MID = 0.3;
-    static final double LEFT_GRABBER_CLOSED = 0.6;
+    static final double RIGHT_GRABBER_OPEN = 0.98;
+    static final double RIGHT_GRABBER_MID = 0.775;//0.5
+    static final double RIGHT_GRABBER_CLOSED = 0.50; //0.63
+    static final double LEFT_GRABBER_OPEN = 0.02;
+    static final double LEFT_GRABBER_MID = 0.225; //0.46
+    static final double LEFT_GRABBER_CLOSED = 0.5; //0.41
 
     public void init(HardwareMap hardwareMapSent) {
 
@@ -43,7 +43,7 @@ public class CommonLibrary {
     }
 
     public void manipulateBlockGrabberPosition(Grabber position, RobotHardware robot){
-        //for arms? I think?
+
         switch (position){
             case Open:
                 robot.leftGrabber.setPosition(LEFT_GRABBER_OPEN);
@@ -57,5 +57,13 @@ public class CommonLibrary {
                 robot.leftGrabber.setPosition(LEFT_GRABBER_CLOSED);
                 robot.rightGrabber.setPosition(RIGHT_GRABBER_CLOSED);
         }
+    }
+
+    public void servoControllerEnabling(RobotHardware robot) {
+        robot.sc.pwmEnable();
+    }
+
+    public void servoControllerDisabling(RobotHardware robot){
+        robot.sc.pwmDisable();
     }
 }

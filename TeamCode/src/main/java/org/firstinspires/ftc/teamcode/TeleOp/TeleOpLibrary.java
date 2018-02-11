@@ -36,8 +36,8 @@ public class TeleOpLibrary {
     static final double BLOCK_GRABBER_MID = 0.3;    //This was at 0.5
     static final double BLOCK_GRABBER_CLOSED = 1; //This was at 1
 
-    static final double RELIC_GRABBER_CLOSED = .1;
-    static final double RELIC_GRABBER_OPEN = 0.2;
+    static final double RELIC_GRABBER_CLOSED = .12;
+    static final double RELIC_GRABBER_OPEN = 0.32;
     static final double RELIC_ROTATE_DOWN = 1;
     static final double RELIC_ROTATE_UP = 0.1;
 
@@ -230,8 +230,7 @@ public class TeleOpLibrary {
         if (gamepad2.x) {
             telemetry.addLine("Opening");
             telemetry.update();
-            cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Open, robot);
-            //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
+            cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
         }
 
         if (gamepad2.a) {
@@ -239,14 +238,13 @@ public class TeleOpLibrary {
             telemetry.addLine("Mid Way");
             telemetry.update();
             cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
-            //robot.rightArmServo.setPosition(RIGHT_ARM_MID);
+
         }
         if (gamepad2.b) {
 
             telemetry.addLine("Closing");
             telemetry.update();
             cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Close, robot);
-            //robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
         }
     }
 

@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
 
 /**
  * Created by Robotics on 8/27/2017.
@@ -31,6 +32,7 @@ public class RobotHardware {
     public Servo relicRotateServo;
     public Servo leftGrabber;
     public Servo rightGrabber;
+    public ServoController sc;
     public DcMotor leftRoller;
     public DcMotor rightRoller;
     public DigitalChannel liftMotorTouchSensor;
@@ -42,7 +44,7 @@ public class RobotHardware {
     public BNO055IMU imu;
 
     static float JEWEL_ACTUATOR_UP = 0.15f;
-    static float RELIC_GRABBER_DOWN = .1f;
+    static float RELIC_GRABBER_DOWN = .2f;
     static float RELIC_ROTATE_DOWN = 1f;
 
     /* local OpMode members. */
@@ -68,8 +70,8 @@ public class RobotHardware {
         rightGrabber = hardwareMap.servo.get("right grabber");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
         relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
-        //leftRoller = hardwareMap.dcMotor.get("left roller");
-        //rightRoller = hardwareMap.dcMotor.get("right roller");
+        leftRoller = hardwareMap.dcMotor.get("left roller");
+        rightRoller = hardwareMap.dcMotor.get("right roller");
         //leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
         //rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");

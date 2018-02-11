@@ -74,7 +74,7 @@ public class TeleOpDriver extends OpMode {
             gyroInitializationRan = true;
         }
 
-        if (!liftLowered) {
+        /*if (!liftLowered) {
 
             Thread t2 = new Thread(new Runnable() {
                 public void run() {
@@ -83,10 +83,10 @@ public class TeleOpDriver extends OpMode {
             });
             t2.start();
 
-        } else {
+        } else {*/
 
             tol.setLiftMotorPower(gamepad2);
-        }
+        //}
 
         tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.armServos(gamepad2, telemetry);
