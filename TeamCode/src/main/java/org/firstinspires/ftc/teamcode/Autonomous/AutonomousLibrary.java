@@ -838,11 +838,10 @@ public class AutonomousLibrary {
 
     public void closeArms(CommonLibrary cl, LinearOpMode caller) {
 
-        //robot.blockGrabberServo.setposition(BLOCK_GRABBER_CLOSED);
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Close, robot);
+
         cl.wait(300, caller);
 
-        //robot.rightArmServo.setPosition(RIGHT_ARM_CLOSED);
         //cl.wait(200, caller);
         // Thread t1 = new Thread(new Runnable() {
         // public void run() {
@@ -862,12 +861,14 @@ public class AutonomousLibrary {
 
     public void openArms(CommonLibrary cl, LinearOpMode caller) {
 
+        moveLift(-1.5f, caller);
+        cl.wait(300, caller);
+
         //moveLift(-1.5f);
         //cl.wait(300, caller);
         //robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
 
-        //robot.rightArmServo.setPosition(RIGHT_ARM_OPEN);
     }
 
 
