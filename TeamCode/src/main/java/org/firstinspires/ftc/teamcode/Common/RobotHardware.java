@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.hardware.ServoController;
  * Created by Robotics on 8/27/2017.
  */
 public class RobotHardware {
-
+    
     //CommonLibrary cl;
 
     /* Public OpMode members. */
@@ -44,7 +44,7 @@ public class RobotHardware {
     public BNO055IMU imu;
 
     static float JEWEL_ACTUATOR_UP = 0.15f;
-    static float RELIC_GRABBER_DOWN = .1f;
+    static float RELIC_GRABBER_DOWN = .2f;
     static float RELIC_ROTATE_DOWN = 1f;
 
     /* local OpMode members. */
@@ -75,11 +75,12 @@ public class RobotHardware {
         //leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
         //rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");
-        colorSensorREV.setI2cAddress(I2cAddr.create7bit(0x39));        liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
-
+        colorSensorREV.setI2cAddress(I2cAddr.create7bit(0x39));
+        liftMotorTouchSensor.setMode(DigitalChannel.Mode.INPUT);
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
         relicGrabberServo.setPosition(RELIC_GRABBER_DOWN);
         relicRotateServo.setPosition(RELIC_ROTATE_DOWN);
+
         liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rearRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);

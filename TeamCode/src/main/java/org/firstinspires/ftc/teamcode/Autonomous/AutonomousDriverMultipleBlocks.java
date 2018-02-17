@@ -101,11 +101,11 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                     al.driveAtAngle(3, 270, telemetry, this);
                     final AutonomousLibrary newAl;
                     newAl = al;
-
+                    final LinearOpMode caller = this;
                     Thread t1 = new Thread(new Runnable() {
                         public void run() {
 
-                            newAl.lowerLift();
+                            newAl.lowerLift(caller);
                         }
                     });
 
@@ -120,9 +120,9 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
 
                         al.driveUntilWallDetection(this);
                         if (setFirstBlockInFarLeftColumn) {
-                            al.driveByBlockColumnsFromTheLeft(2, this);
+                            al.driveByBlockColumns(this, true, 2);
                         } else {
-                            al.driveByBlockColumnsFromTheLeft(1, this);
+                            al.driveByBlockColumns( this, true, 2);
                         }
                         al.driveAtAngle(10, 0, telemetry, this);
                         al.openArms(cl, this);
@@ -136,9 +136,9 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                         al.PIDturnRelativeToField(-90, telemetry, this);
                         al.driveUntilWallDetection(this);
                         if (setFirstBlockInFarLeftColumn) {
-                            al.driveByBlockColumnsFromTheLeft(2, this);
+                            al.driveByBlockColumns(this, true, 2);
                         } else {
-                            al.driveByBlockColumnsFromTheLeft(1, this);
+                            al.driveByBlockColumns(this, true, 2);
                         }
                         al.driveAtAngle(10, 0, telemetry, this);
                         al.openArms(cl, this);
@@ -149,7 +149,7 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                     Thread t2 = new Thread(new Runnable() {
                         public void run() {
 
-                            newAl.lowerLift();
+                            newAl.lowerLift(caller);
                         }
                     });
 

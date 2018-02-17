@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 /**
  * Created by Robotics on 8/27/2017.
  */
-@Autonomous(name = "Main Autonomous")
+@Autonomous(name = "Autonomous NO MR Sensor")
 //@Disabled
 
 public class AutonomousDriver extends LinearOpMode {
@@ -39,7 +39,10 @@ public class AutonomousDriver extends LinearOpMode {
 
                     telemetry.update();
                     vuforiaPosition = al.pictoDecipher(telemetry, this);
+                    al.halfCloseArms(cl, this);
+                    al.lowerLift(this);
                     al.closeArms(cl, this);
+                    al.moveLift(1, this);
                     telemetry.addLine("Endng close arms");
                     al.decipherJewelAndKnockOff(telemetry, this, cl);
                     al.robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
@@ -107,6 +110,8 @@ public class AutonomousDriver extends LinearOpMode {
                         telemetry.addLine("I don't know where I am or who I am. What's going on?!");
                         telemetry.update();
                     }
+
+                    al.moveLift(-1.5f, this);
 
                     al.openArms(cl, this);
                     al.driveAtAngle(12, 90, telemetry, this);//push block in more

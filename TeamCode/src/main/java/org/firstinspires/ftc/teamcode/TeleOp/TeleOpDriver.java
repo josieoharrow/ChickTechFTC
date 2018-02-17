@@ -74,7 +74,7 @@ public class TeleOpDriver extends OpMode {
             gyroInitializationRan = true;
         }
 
-        if (!liftLowered) {
+        /*if (!liftLowered) {
 
             Thread t2 = new Thread(new Runnable() {
                 public void run() {
@@ -83,16 +83,16 @@ public class TeleOpDriver extends OpMode {
             });
             t2.start();
 
-        } else {
+        } else {*/
 
             tol.setLiftMotorPower(gamepad2);
-        }
+        //}
 
         tol.setDrivingMotorPowers(gamepad1, telemetry);
         tol.armServos(gamepad2, telemetry);
         tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
         tol.generalTelemetry(this);
-        tol.manipulateGrabber(gamepad1);
+        tol.manipulateRelicGrabber(gamepad1);
         tol.setRelicLiftPower(gamepad1, this);
         tol.rotateGrabber(gamepad1, telemetry);
         tol.paintRollersSpin(gamepad2, telemetry);
