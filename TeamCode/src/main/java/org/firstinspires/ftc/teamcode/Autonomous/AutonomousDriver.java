@@ -104,7 +104,7 @@ public class AutonomousDriver extends LinearOpMode {
                         al.driveToVuforiaPositionFromTheLeft(telemetry, this, vuforiaPosition);
                     } else {
 
-                        telemetry.addLine("I don't know where I am who I am what's going on");
+                        telemetry.addLine("I don't know where I am or who I am. What's going on?!");
                         telemetry.update();
                     }
 
