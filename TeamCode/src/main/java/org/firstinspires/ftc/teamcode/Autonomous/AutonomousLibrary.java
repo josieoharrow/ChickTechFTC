@@ -192,6 +192,7 @@ public class AutonomousLibrary {
                     telemetry.addLine("4 = Blue Team, Center Balance Board");
                     telemetry.update();
                 }
+                //if (telemetry == null) {break;}
             }
         } catch (Exception e) {
 
@@ -385,7 +386,7 @@ public class AutonomousLibrary {
         int columnDetectedCount = 0;
         float front = 4;
         float middle = 10f;
-        float end = 16f;//17.5
+        float end = 16f;//16
         float driveDistance;
         if (position == 1) {
             driveDistance = front;
@@ -944,15 +945,9 @@ public class AutonomousLibrary {
         }
         double acceptableError = 0.5;
         double currentError = 1;
-        double previousError = 0;
-        double integral = 0;
         double power;
-        double previousTime = 0;
         while (Math.abs(currentError) > acceptableError && !caller.isStopRequested()) {
 
-            double timeChange = System.nanoTime() - previousTime;
-            previousTime = System.nanoTime();
-            timeChange = timeChange / 1e9;
             angles = robot.imu.getAngularOrientation();
             double currentAngle = angles.firstAngle;
             currentError = targetAngle - currentAngle;
@@ -965,20 +960,15 @@ public class AutonomousLibrary {
             }
             telemetry.addLine();
             telemetry.addData("Current error", currentError);
-            //integral = integral + currentError;
-            double kpError = currentError * 0.008;
-            double kiIntegral = integral * 0.0002 * timeChange;
-            double derivative = (currentError - previousError) / timeChange;
-            double kdDerivative = derivative * 0;
-            power = kpError + kiIntegral + kdDerivative;
+            power = currentError * 0.01;
             if (power > 0.75) {
                 power = 0.75;
             }
-            if (power < 0.14 && power > 0) {
-                power = 0.14;
+            if (power < 0.17 && power > 0) {
+                power = 0.17;
             }
-            if (power > -0.14 && power < 0) {
-                power = -0.14;
+            if (power > -0.17 && power < 0) {
+                power = -0.17;
             }
             if (power < -0.75) {
                 power = -0.75;
@@ -990,7 +980,6 @@ public class AutonomousLibrary {
             robot.frontRightMotor.setPower(power);
             robot.rearRightMotor.setPower(power);
             robot.rearLeftMotor.setPower(-power);
-            previousError = currentError;
             if (caller.isStopRequested()) {
                 break;
             }

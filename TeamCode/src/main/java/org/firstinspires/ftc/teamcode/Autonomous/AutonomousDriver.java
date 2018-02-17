@@ -42,6 +42,7 @@ public class AutonomousDriver extends LinearOpMode {
                     al.halfCloseArms(cl, this);
                     al.lowerLift(this);
                     al.closeArms(cl, this);
+                    al.moveLift(1, this);
                     telemetry.addLine("Endng close arms");
                     al.decipherJewelAndKnockOff(telemetry, this, cl);
                     al.robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
@@ -110,7 +111,7 @@ public class AutonomousDriver extends LinearOpMode {
                         telemetry.update();
                     }
 
-                    al.moveLift(-1f, this);
+                    al.moveLift(-1.5f, this);
 
                     al.openArms(cl, this);
                     al.driveAtAngle(12, 90, telemetry, this);//push block in more
