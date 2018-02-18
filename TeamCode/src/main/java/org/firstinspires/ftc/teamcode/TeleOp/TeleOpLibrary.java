@@ -26,25 +26,10 @@ public class TeleOpLibrary {
     TeleOpDriverTest testDriver;
     CommonLibrary cl;
 
-    /*static final double LEFT_ARM_CLOSED = 0.72;
-    static final double RIGHT_ARM_CLOSED = 0.28;
-    static final double LEFT_ARM_OPEN = 0.07;
-    static final double RIGHT_ARM_OPEN = 0.93;
-    static final double RIGHT_ARM_MID = 0.57;
-    static final double LEFT_ARM_MID = 0.45;*/
-    static final double BLOCK_GRABBER_OPEN = 0.0;
-    static final double BLOCK_GRABBER_MID = 0.3;    //This was at 0.5
-    static final double BLOCK_GRABBER_CLOSED = 1; //This was at 1
-
     static final double RELIC_GRABBER_CLOSED = .12;
     static final double RELIC_GRABBER_OPEN = 0.32;
     static final double RELIC_ROTATE_DOWN = 0.9;
     static final double RELIC_ROTATE_UP = 0.1;
-
-    static final double RAMP_SERVO_DOWN = 0.0;
-    static final double RAMP_SERVO_UP = 1.0;
-    static final double RELIC_ACTUATOR_DOWN = 1.0;
-    static final double RELIC_ACTUATOR_UP = 0.0;
 
     public double positionalMovementFLPower = 0;
     public double positionalMovementFRPower = 0;
@@ -59,18 +44,15 @@ public class TeleOpLibrary {
     final float SPEED_REDUCTION_COEFFICIENT = .3f;
 
     final float RELIC_MOTOR_MAXIMUM_POSITION = ENCODER_TICKS_PER_ROTATION * 4;      //These are the same as the glyph lift so it probably needs changed
-    final float RELIC_MOTOR_MINIMUM_POSITION = 10;
 
     float relicFluidMaximum = RELIC_MOTOR_MAXIMUM_POSITION;
 
     boolean liftMotorResetButtonPressed = false;
-    boolean isGrabberClosed = false;
 
     boolean relicResetPressed = true;
 
     float liftMotorFluidMinimum = LIFT_MOTOR_MINIMUM_POSITION;
     float liftMotorFluidMaximum = LIFT_MOTOR_MINIMUM_POSITION;      //why is this this???
-    int liftMotorEncoderPositon = 0;
 
     public enum motor {
 
@@ -142,9 +124,6 @@ public class TeleOpLibrary {
     }
 
 
-    public void testSetSlidePower(Gamepad gamepad1) {
-        robot.relicLiftMotor.setPower(gamepad1.right_stick_y);
-    }
 
 
     public void setDrivingMotorPowers(Gamepad gamepad1, Telemetry telemetry) {
@@ -156,12 +135,7 @@ public class TeleOpLibrary {
         }
 
         translateLeftStickToRotation(gamepad1);
-
-        //if (gamepad1.left_bumper) {
-        //    translateRightStickToSlidingRelativeToField(gamepad1, telemetry);
-        //} else {
-            translateRightStickToSlidingRelativeToRobot(gamepad1);
-        //}
+        translateRightStickToSlidingRelativeToRobot(gamepad1);
 
         robot.frontLeftMotor.setPower(Range.clip((clockwiseRotation + positionalMovementFLPower) * Math.abs((clockwiseRotation + positionalMovementFLPower)) * speedCoefficient, -1, 1));
         robot.frontRightMotor.setPower(Range.clip((counterclockwiseRotation + positionalMovementFRPower) * Math.abs((counterclockwiseRotation + positionalMovementFRPower)) * speedCoefficient, -1, 1));
@@ -179,24 +153,6 @@ public class TeleOpLibrary {
         positionalMovementRLPower = scaleInput(Range.clip((modifiedYValue - gamepad1.right_stick_x), -1, 1));
     }
 
-
-    public void translateRightStickToSlidingRelativeToField(Gamepad gamepad1, Telemetry telemetry) {
-
-        angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double currentHeading = ((double)angles.firstAngle * Math.PI/180);
-        double thumbstickAngle = Math.atan2(-gamepad1.right_stick_y, gamepad1.right_stick_x);
-        double thumbstickHypotenuse = Math.sqrt((gamepad1.right_stick_y * gamepad1.right_stick_y) + (gamepad1.right_stick_x * gamepad1.right_stick_x));
-        double modifiedThumbstickAngle = thumbstickAngle - currentHeading;
-
-        double modifiedThumbstickY = thumbstickHypotenuse * Math.sin(modifiedThumbstickAngle);
-        double modifiedThumbstickX = thumbstickHypotenuse * Math.cos(modifiedThumbstickAngle);
-        positionalMovementFLPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
-        positionalMovementFRPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
-        positionalMovementRRPower = scaleInput(Range.clip((modifiedThumbstickY + modifiedThumbstickX), -1, 1));
-        positionalMovementRLPower = scaleInput(Range.clip((modifiedThumbstickY - modifiedThumbstickX), -1, 1));
-    }
-
-
     public void generalTelemetry(OpMode caller) {
 
 
@@ -204,22 +160,15 @@ public class TeleOpLibrary {
         float positivePower = (scaleInput(caller.gamepad1.right_trigger))/2;
         float netPower = positivePower + negativePower;
 
-
         Telemetry telemetry = caller.telemetry;
         telemetry.clear();
         telemetry.addData("pressed? ", relicResetPressed);
         telemetry.addData("state", robot.relicLiftTouchSensor.getState());
-
-
         telemetry.addData("relic position", robot.relicLiftMotor.getCurrentPosition());
         telemetry.addData("neg ", negativePower);
         telemetry.addData("pos", positivePower);
         telemetry.addData("net", netPower);
         telemetry.addData("power ", robot.relicLiftMotor.getPower());
-
-
-
-
         telemetry.update();
     }
 

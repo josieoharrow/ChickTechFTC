@@ -42,8 +42,8 @@ public class AutonomousLibrary {
     static String vuMarkSeen = "no";
     static double SLOWING_INCHES_THRESHOLD = 10;
     static double DRIVING_POWER_SLOW_MODIFIER = 0.5;
-    static float JEWEL_ACTUATOR_DOWN = 0.8f;
-    static float JEWEL_ACTUATOR_UP = 0.5f;
+    static float JEWEL_ACTUATOR_DOWN = 0.78f;
+    static float JEWEL_ACTUATOR_UP = 0.2f;
     static double ENCODER_TICKS_TO_INCHES = 4 / 1130;
     static double INCHES_TO_ENCODER_TICKS = 288 / 4 * 0.1666666666; // * .31;
 
@@ -87,7 +87,7 @@ public class AutonomousLibrary {
     }
 
     public void moveLift(float rotations, LinearOpMode caller) {
-
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         int oldEncoderPosition = robot.liftMotor.getCurrentPosition();
         final float ENCODER_TICKS_PER_ROTATION = 1152;
 
@@ -334,6 +334,7 @@ public class AutonomousLibrary {
 
     public void lowerLift(LinearOpMode caller) {
 
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         while (!caller.isStopRequested() && robot.liftMotorTouchSensor.getState() == true) {
 
             robot.liftMotor.setPower(-.25);
@@ -478,7 +479,7 @@ public class AutonomousLibrary {
             robot.rearLeftMotor.setPower(power + rightPower);
         }
 
-        closeArms(cl, caller);
+        closeArmsAndRotateLift(cl, caller, 2);
         robot.frontLeftMotor.setPower(0);
         robot.frontRightMotor.setPower(0);
         robot.rearRightMotor.setPower(0);
@@ -486,47 +487,6 @@ public class AutonomousLibrary {
     }
 
 
-    public void blockFollowTest(LinearOpMode caller, boolean stopAtBlock) {
-
-        double power = .25;
-        caller.telemetry.addLine("in the method");
-        caller.telemetry.update();
-        boolean going = true;
-
-        while (going && !caller.isStopRequested()) {
-            double left = robot.leftSensorDistance.getDistance(DistanceUnit.CM);
-            double right = robot.rightSensorDistance.getDistance(DistanceUnit.CM);
-
-            if ((left < 3 || right < 3) && stopAtBlock) {
-                going = false;
-            }
-            caller.telemetry.addData("left Distance (cm)",
-                    String.format(Locale.US, "%.02f", robot.leftSensorDistance.getLightDetected()));
-            caller.telemetry.addData("Right Distance (cm)",
-                    String.format(Locale.US, "%.02f", robot.rightSensorDistance.getLightDetected()));
-            caller.telemetry.addData("Right ODS ", right);
-            caller.telemetry.addData("Left ODS ", left);
-            caller.telemetry.update();
-
-            double powerModifierRight = Range.clip((1 + (left - right) * power), 0.1, 0.5);
-            double powerModifierLeft = Range.clip((1 + (right - left) * power), 0.1, 0.5);
-            robot.frontLeftMotor.setPower(powerModifierLeft);
-            robot.frontRightMotor.setPower(powerModifierRight);
-            robot.rearRightMotor.setPower(powerModifierLeft);
-            robot.rearLeftMotor.setPower(powerModifierRight);
-        }
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
-        robot.rearRightMotor.setPower(0);
-        robot.rearLeftMotor.setPower(0);
-    }
-
-
-    double convertEncoderTicksToInches(double encoderTicks) {
-
-        double rotationCount = encoderTicks / 1130;
-        return rotationCount * Math.PI * 4; //this math is not correct
-    }
 
     public void resetMotorEncoders(LinearOpMode caller) {
 
@@ -552,212 +512,6 @@ public class AutonomousLibrary {
         robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-    public void motorEncoderTest(Telemetry telemetry) {
-        while (1 == 1) {
-            telemetry.addData("Left Motor Position ", robot.frontLeftMotor.getCurrentPosition());
-            telemetry.addData("Right Motor Position ", robot.frontRightMotor.getCurrentPosition());
-            telemetry.update();
-        }
-    }
-
-    public void turnToAngleWithGyro(LinearOpMode caller, int turnAngle, double speed, Telemetry telemetry) {
-
-        angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        float stopTarget;
-        boolean left = false;
-        if (turnAngle >= 360) {
-            turnAngle = turnAngle - 360;
-        }
-        if (turnAngle <= -360) {
-            turnAngle = turnAngle + 360;
-        }
-        if (turnAngle < 0) {
-            left = true;
-        }
-        if (speed < 0) {
-            speed = Math.abs(speed);
-        }
-
-        if (left) {
-            stopTarget = angles.firstAngle + turnAngle;
-            while (!caller.isStopRequested() && angles.firstAngle > stopTarget) {
-                robot.frontLeftMotor.setPower(speed);
-                robot.frontRightMotor.setPower(-speed);
-                robot.rearRightMotor.setPower(-speed);
-                robot.rearLeftMotor.setPower(speed);
-                angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            }
-        } else {
-            stopTarget = angles.firstAngle + turnAngle;
-            while (!caller.isStopRequested() && angles.firstAngle < stopTarget) {
-                robot.frontLeftMotor.setPower(-speed);
-                robot.frontRightMotor.setPower(speed);
-                robot.rearRightMotor.setPower(speed);
-                robot.rearLeftMotor.setPower(-speed);
-                angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            }
-        }
-    }
-
-    public void turnToAngleWithEncoderTicks(int turnAngle, double turnSpeed, Telemetry telemetry, LinearOpMode caller) {
-
-        resetMotorEncoders(caller);
-        boolean left = false;
-        if (turnAngle <= -360) {
-            turnAngle = turnAngle + 360;
-        }
-        if (turnAngle >= 360) {
-            turnAngle = turnAngle - 360;
-        }
-        if (turnAngle < 0) {
-            left = true;
-        }
-        if (turnSpeed < 0) {
-            turnSpeed = Math.abs(turnSpeed);
-        }
-        float angleInInches = turnAngle * 0.314f;
-        double flPower = turnSpeed;
-        double frPower = turnSpeed;
-        double rrPower = turnSpeed;
-        double rlPower = turnSpeed;
-
-        if (left) {
-
-            robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
-            robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
-            robot.rearRightMotor.setTargetPosition(robot.rearRightMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
-            robot.rearLeftMotor.setTargetPosition(robot.rearLeftMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
-
-            frPower = -turnSpeed;
-            rrPower = -turnSpeed;
-        } else {
-            robot.frontLeftMotor.setTargetPosition(robot.frontLeftMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
-            robot.frontRightMotor.setTargetPosition(robot.frontRightMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
-            robot.rearRightMotor.setTargetPosition(robot.rearRightMotor.getCurrentPosition() + (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
-            robot.rearLeftMotor.setTargetPosition(robot.rearLeftMotor.getCurrentPosition() - (int) (INCHES_TO_ENCODER_TICKS * angleInInches));
-
-            flPower = -turnSpeed;
-            rlPower = -turnSpeed;
-        }
-        robot.frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rearLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rearRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        robot.frontLeftMotor.setPower(flPower);
-        robot.frontRightMotor.setPower(frPower);
-        robot.rearRightMotor.setPower(rrPower);
-        robot.rearLeftMotor.setPower(rlPower);
-    }
-
-    public void colorSensorTelemetry(Telemetry telemetry) {
-
-        // hsvValues is an array that will hold the hue, saturation, and value information.
-        float hsvValues[] = {0F, 0F, 0F};
-
-        // values is a reference to the hsvValues array.
-        final float values[] = hsvValues;
-
-        // sometimes it helps to multiply the raw RGB values with a scale factor
-        // to amplify/attentuate the measured values.
-        final double SCALE_FACTOR = 255;
-
-        // get a reference to the RelativeLayout so we can change the background
-        // color of the Robot Controller app to match the hue detected by the RGB sensor.
-        int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
-        // convert the RGB values to HSV values.
-        // multiply by the SCALE_FACTOR.
-        // then cast it back to int (SCALE_FACTOR is a double)
-        Color.RGBToHSV((int) (robot.colorSensorREV.red() * SCALE_FACTOR),
-                (int) (robot.colorSensorREV.green() * SCALE_FACTOR),
-                (int) (robot.colorSensorREV.blue() * SCALE_FACTOR),
-                hsvValues);
-
-        telemetry.addData("Hue", hsvValues[0]);
-
-        telemetry.addData("Blue ", robot.colorSensorREV.blue());
-        telemetry.addData("Red ", robot.colorSensorREV.red());
-        telemetry.addData("Green ", robot.colorSensorREV.green());
-        telemetry.update();
-    }
-
-    public void turnToAngleWithPID(int angle, Telemetry telemetry, LinearOpMode caller) {
-
-        runWithoutEncoders();
-        if (angle >= 360) {
-            angle = angle - 360;
-        }
-        if (angle <= -360) {
-            angle = angle + 360;
-        }
-        double targetAngle = angles.firstAngle + angle;
-        if (targetAngle > 180) {
-            targetAngle = targetAngle - 360;
-        }
-        if (targetAngle <= -180) {
-            targetAngle = targetAngle + 360;
-        }
-        double acceptableError = 0.5;
-        double currentError = 1;
-        double previousError = 0;
-        double integral = 0;
-        double power;
-        double previousTime = 0;
-        while (!caller.isStopRequested() && Math.abs(currentError) > acceptableError) {
-
-            double timeChange = System.nanoTime() - previousTime;
-            previousTime = System.nanoTime();
-            timeChange = timeChange / 1e9;
-            angles = robot.imu.getAngularOrientation();
-            double currentAngle = angles.firstAngle;
-            currentError = targetAngle - currentAngle;
-            if (currentError > 180) {
-                currentError = currentError - 360;
-            }
-            if (currentError <= -180) {
-                currentError = currentError + 360;
-            }
-            telemetry.addData("Current error", currentError);
-            telemetry.addLine();
-            telemetry.addData("Target angle", targetAngle);
-            //integral = integral + currentError;
-            double kpError = currentError * 0.008;
-            double kiIntegral = integral * 0.0002 * timeChange;
-            double derivative = (currentError - previousError) / timeChange;
-            double kdDerivative = derivative * 0;//WHAT IS THIS
-            power = kpError + kiIntegral + kdDerivative;
-            if (power > 1) {
-                power = 1;
-            }
-            if (power < 0.13 && power > 0) {
-                power = 0.13;
-            }
-            if (power > -0.13 && power < 0) {
-                power = -0.13;
-            }
-            if (power < -1) {
-                power = -1;
-            }
-            telemetry.addLine();
-            telemetry.addData("Power", power);
-            telemetry.update();
-            robot.frontLeftMotor.setPower(-power);
-            robot.frontRightMotor.setPower(power);
-            robot.rearRightMotor.setPower(power);
-            robot.rearLeftMotor.setPower(-power);
-            previousError = currentError;
-            if (caller.isStopRequested()) {
-                break;
-            }
-        }
-        robot.frontLeftMotor.setPower(0);
-        robot.frontRightMotor.setPower(0);
-        robot.rearRightMotor.setPower(0);
-        robot.rearLeftMotor.setPower(0);
-        telemetry.addData("done", "done");
-        telemetry.update();
     }
 
 
@@ -822,46 +576,85 @@ public class AutonomousLibrary {
                 telemetry.update();
             }
         }
+        robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+
         telemetry.addLine("Ending Jewel knock off");
         telemetry.update();
     }
 
 
-    public void closeArms(CommonLibrary cl, LinearOpMode caller) {
+    public void closeArmsAndRotateLift(CommonLibrary cl, LinearOpMode caller, float liftRotations) {
 
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Close, robot);
-
         cl.wait(300, caller);
-
-        //cl.wait(200, caller);
-        // Thread t1 = new Thread(new Runnable() {
-        // public void run() {
-
-        moveLift(2, caller);
-        //  }
-        // });
-        //  t1.start();
+        moveLift(liftRotations, caller);
     }
 
     public void halfCloseArms(CommonLibrary cl, LinearOpMode caller) {
 
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
-        //cl.wait(300, caller);
+        cl.wait(300, caller);
     }
 
 
-    public void openArms(CommonLibrary cl, LinearOpMode caller) {
+    public void openArmsAndRotateLift(CommonLibrary cl, LinearOpMode caller, float liftRotations) {
 
-        moveLift(-1.5f, caller);
+        moveLift(liftRotations, caller);
         cl.wait(300, caller);
-
-        //moveLift(-1.5f);
-        //cl.wait(300, caller);
-        //robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
 
     }
 
+    public void lowerLiftAndSpinRollersOut(LinearOpMode caller) {
+
+        lowerLift(caller);
+        rollerSpinOut(1, caller);
+    }
+
+    public void rollersSpinIn(double timeInSeconds, Telemetry telemetry, LinearOpMode caller) {
+        double spinStart = System.nanoTime();
+        while (caller.opModeIsActive()) {
+            telemetry.addLine("Suck in");
+            telemetry.update();
+            robot.leftRoller.setPower(1);
+            robot.rightRoller.setPower(-1);
+            if (System.nanoTime() > ((spinStart + (timeInSeconds * 1e9)))) {
+                telemetry.addLine("Stop");
+                telemetry.update();
+                robot.leftRoller.setPower(0);
+                robot.rightRoller.setPower(0);
+                break;
+            }
+        }
+    }
+
+    public void setLiftToStay(LinearOpMode caller) {
+
+        int position = robot.liftMotor.getCurrentPosition();
+        robot.liftMotor.setTargetPosition(position);
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (!caller.isStopRequested() && robot.liftMotor.isBusy()) {
+
+        }
+    }
+
+    public void rollerSpinOut(double timeInSeconds, LinearOpMode caller) {
+
+        double spinStart = System.nanoTime();
+        while (caller.opModeIsActive()){
+            caller.telemetry.addLine("Spit out");
+            caller.telemetry.update();
+            robot.leftRoller.setPower(-1);
+            robot.rightRoller.setPower(1);
+            if (System.nanoTime() > ((spinStart + (timeInSeconds * 1e9)))) {
+                caller.telemetry.addLine("Stop");
+                caller.telemetry.update();
+                robot.leftRoller.setPower(0);
+                robot.rightRoller.setPower(0);
+                break;
+            }
+        }
+    }
 
     public void driveToVuforiaPositionFromTheLeft(Telemetry telemetry, LinearOpMode caller, String vuforiaPosition) {
 
@@ -991,40 +784,5 @@ public class AutonomousLibrary {
         while (!caller.isStopRequested() && robot.liftMotor.isBusy()) {
         }
 
-    }
-
-
-    public void rollersSpinIn(double timeInSeconds, Telemetry telemetry, LinearOpMode caller) {
-        double spinStart = System.nanoTime();
-        while (caller.opModeIsActive()) {
-            telemetry.addLine("Suck in");
-            telemetry.update();
-            robot.leftRoller.setPower(1);
-            robot.rightRoller.setPower(-1);
-            if (System.nanoTime() > ((spinStart + (timeInSeconds * 1e9)))) {
-                telemetry.addLine("Stop");
-                telemetry.update();
-                robot.leftRoller.setPower(0);
-                robot.rightRoller.setPower(0);
-                break;
-            }
-        }
-    }
-
-    public void rollerSpinOut(double timeInSeconds, Telemetry telemetry, LinearOpMode caller) {
-        double spinStart = System.nanoTime();
-        while (caller.opModeIsActive()){
-            telemetry.addLine("Spit out");
-            telemetry.update();
-            robot.leftRoller.setPower(-1);
-            robot.rightRoller.setPower(1);
-            if (System.nanoTime() > ((spinStart + (timeInSeconds * 1e9)))) {
-                telemetry.addLine("Stop");
-                telemetry.update();
-                robot.leftRoller.setPower(0);
-                //robot.rightRoller.setPower(0);
-                break;
-            }
-        }
     }
 }

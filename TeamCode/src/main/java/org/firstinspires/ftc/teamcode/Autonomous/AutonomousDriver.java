@@ -41,7 +41,7 @@ public class AutonomousDriver extends LinearOpMode {
                     vuforiaPosition = al.pictoDecipher(telemetry, this);
                     al.halfCloseArms(cl, this);
                     al.lowerLift(this);
-                    al.closeArms(cl, this);
+                    al.closeArmsAndRotateLift(cl, this, 2);
                     al.moveLift(1, this);
                     telemetry.addLine("Endng close arms");
                     al.decipherJewelAndKnockOff(telemetry, this, cl);
@@ -111,9 +111,7 @@ public class AutonomousDriver extends LinearOpMode {
                         telemetry.update();
                     }
 
-                    al.moveLift(-1.5f, this);
-
-                    al.openArms(cl, this);
+                    al.openArmsAndRotateLift(cl, this, -1.5f);
                     al.driveAtAngle(12, 90, telemetry, this);//push block in more
                     al.driveAtAngle(7, 270, telemetry, this);
                     /*al.turnToAngleWithPID(90, telemetry, this);//Turn so arms won't hit block

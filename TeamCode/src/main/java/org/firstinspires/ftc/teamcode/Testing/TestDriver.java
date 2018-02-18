@@ -10,8 +10,8 @@ import org.firstinspires.ftc.teamcode.TeleOp.TeleOpLibrary;
  * Created by Robotics on 8/27/2017.
  */
 
-@TeleOp(name = "Test")
-//@Disabled
+@TeleOp(name = "Test driver")
+
 public class TestDriver extends OpMode {
 
     @Override
