@@ -638,13 +638,13 @@ public class AutonomousLibrary {
     }
 
     public void setLiftToStay(LinearOpMode caller) {
-
-        int position = robot.liftMotor.getCurrentPosition();
+        robot.liftMotor.setPower(0.025);
+        /*int position = robot.liftMotor.getCurrentPosition();
         robot.liftMotor.setTargetPosition(position);
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         while (!caller.isStopRequested() && robot.liftMotor.isBusy()) {
 
-        }
+        }*/
     }
 
     public void rollerSpinOut(double timeInSeconds, LinearOpMode caller) {
