@@ -42,8 +42,8 @@ public class AutonomousLibrary {
     static String vuMarkSeen = "no";
     static double SLOWING_INCHES_THRESHOLD = 10;
     static double DRIVING_POWER_SLOW_MODIFIER = 0.5;
-    static float JEWEL_ACTUATOR_DOWN = 0.8f;
-    static float JEWEL_ACTUATOR_UP = 0.5f;
+    static float JEWEL_ACTUATOR_DOWN = 0.78f;
+    static float JEWEL_ACTUATOR_UP = 0.2f;
     static double ENCODER_TICKS_TO_INCHES = 4 / 1130;
     static double INCHES_TO_ENCODER_TICKS = 288 / 4 * 0.1666666666; // * .31;
 
@@ -96,7 +96,7 @@ public class AutonomousLibrary {
     }
 
     public void moveLift(float rotations, LinearOpMode caller) {
-
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         int oldEncoderPosition = robot.liftMotor.getCurrentPosition();
         final float ENCODER_TICKS_PER_ROTATION = 1152;
 
@@ -343,6 +343,7 @@ public class AutonomousLibrary {
 
     public void lowerLift(LinearOpMode caller) {
 
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         while (!caller.isStopRequested() && robot.liftMotorTouchSensor.getState() == true) {
 
             robot.liftMotor.setPower(-.25);
@@ -487,7 +488,7 @@ public class AutonomousLibrary {
             robot.rearLeftMotor.setPower(power + rightPower);
         }
 
-        closeArms(cl, caller);
+        closeArmsAndRotateLift(cl, caller, 2);
         robot.frontLeftMotor.setPower(0);
         robot.frontRightMotor.setPower(0);
         robot.rearRightMotor.setPower(0);
@@ -584,46 +585,85 @@ public class AutonomousLibrary {
                 telemetry.update();
             }
         }
+        robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
+
         telemetry.addLine("Ending Jewel knock off");
         telemetry.update();
     }
 
 
-    public void closeArms(CommonLibrary cl, LinearOpMode caller) {
+    public void closeArmsAndRotateLift(CommonLibrary cl, LinearOpMode caller, float liftRotations) {
 
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Close, robot);
-
         cl.wait(300, caller);
-
-        //cl.wait(200, caller);
-        // Thread t1 = new Thread(new Runnable() {
-        // public void run() {
-
-        moveLift(2, caller);
-        //  }
-        // });
-        //  t1.start();
+        moveLift(liftRotations, caller);
     }
 
     public void halfCloseArms(CommonLibrary cl, LinearOpMode caller) {
 
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
-        //cl.wait(300, caller);
+        cl.wait(300, caller);
     }
 
 
-    public void openArms(CommonLibrary cl, LinearOpMode caller) {
+    public void openArmsAndRotateLift(CommonLibrary cl, LinearOpMode caller, float liftRotations) {
 
-        moveLift(-1.5f, caller);
+        moveLift(liftRotations, caller);
         cl.wait(300, caller);
-
-        //moveLift(-1.5f);
-        //cl.wait(300, caller);
-        //robot.blockGrabberServo.setPosition(BLOCK_GRABBER_OPEN);
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Mid, robot);
 
     }
 
+    public void lowerLiftAndSpinRollersOut(LinearOpMode caller) {
+
+        lowerLift(caller);
+        rollerSpinOut(1, caller);
+    }
+
+    public void rollersSpinIn(double timeInSeconds, Telemetry telemetry, LinearOpMode caller) {
+        double spinStart = System.nanoTime();
+        while (caller.opModeIsActive()) {
+            telemetry.addLine("Suck in");
+            telemetry.update();
+            robot.leftRoller.setPower(1);
+            robot.rightRoller.setPower(-1);
+            if (System.nanoTime() > ((spinStart + (timeInSeconds * 1e9)))) {
+                telemetry.addLine("Stop");
+                telemetry.update();
+                robot.leftRoller.setPower(0);
+                robot.rightRoller.setPower(0);
+                break;
+            }
+        }
+    }
+
+    public void setLiftToStay(LinearOpMode caller) {
+
+        int position = robot.liftMotor.getCurrentPosition();
+        robot.liftMotor.setTargetPosition(position);
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (!caller.isStopRequested() && robot.liftMotor.isBusy()) {
+
+        }
+    }
+
+    public void rollerSpinOut(double timeInSeconds, LinearOpMode caller) {
+
+        double spinStart = System.nanoTime();
+        while (caller.opModeIsActive()){
+            caller.telemetry.addLine("Spit out");
+            caller.telemetry.update();
+            robot.leftRoller.setPower(-1);
+            robot.rightRoller.setPower(1);
+            if (System.nanoTime() > ((spinStart + (timeInSeconds * 1e9)))) {
+                caller.telemetry.addLine("Stop");
+                caller.telemetry.update();
+                robot.leftRoller.setPower(0);
+                robot.rightRoller.setPower(0);
+                break;
+            }
+        }
+    }
 
     public void driveToVuforiaPositionFromTheLeft(Telemetry telemetry, LinearOpMode caller, String vuforiaPosition) {
 
@@ -754,7 +794,4 @@ public class AutonomousLibrary {
         }
 
     }
-
-
-
 }
