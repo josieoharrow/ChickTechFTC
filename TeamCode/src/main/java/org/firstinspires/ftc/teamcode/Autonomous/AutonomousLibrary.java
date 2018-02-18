@@ -82,8 +82,6 @@ public class AutonomousLibrary {
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         startAngles = robot.imu.getAngularOrientation();
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Open, robot);
-        //robot.leftGrabber.setPosition(LEFT_GRABBER_OPEN);
-        //robot.rightGrabber.setPosition(RIGHT_GRABBER_OPEN);
     }
 
     public void moveLift(float rotations, LinearOpMode caller) {
@@ -582,7 +580,6 @@ public class AutonomousLibrary {
         telemetry.update();
     }
 
-
     public void closeArmsAndRotateLift(CommonLibrary cl, LinearOpMode caller, float liftRotations) {
 
         cl.manipulateBlockGrabberPosition(CommonLibrary.Grabber.Close, robot);
@@ -784,5 +781,23 @@ public class AutonomousLibrary {
         while (!caller.isStopRequested() && robot.liftMotor.isBusy()) {
         }
 
+    }
+
+    public void whiskerDrive(Telemetry telemetry, LinearOpMode caller){
+        while (robot.whiskerTouchLeft.getState() == false || robot.whiskerTouchRight.getState() == false){
+            //if calculations are right, the red positions will be from the left so it will hit the right button
+            //the blue side will drive to the right and will hit the left button
+
+            if (teamColorAndPosition == 1 || teamColorAndPosition == 2){
+                //Red team drives left
+                driveAtAngle(10, 0, telemetry, caller);     //This angle has to be changed because this is probably not left
+            } else if (teamColorAndPosition == 3 | teamColorAndPosition == 4){
+                //Blue team drives right
+                driveAtAngle(10, 90, telemetry, caller);    //This angle has to be changed because this is probably not right
+            } else {
+                 telemetry.addLine("I don't know who I am or where I am");
+                 telemetry.update();
+            }
+        }
     }
 }
