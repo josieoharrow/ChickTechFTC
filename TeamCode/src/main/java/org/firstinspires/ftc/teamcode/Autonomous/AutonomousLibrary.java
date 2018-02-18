@@ -47,15 +47,6 @@ public class AutonomousLibrary {
     static double ENCODER_TICKS_TO_INCHES = 4 / 1130;
     static double INCHES_TO_ENCODER_TICKS = 288 / 4 * 0.1666666666; // * .31;
 
-    /*static final double LEFT_ARM_CLOSED = 0.72;
-    static final double RIGHT_ARM_CLOSED = 0.28;
-    static final double LEFT_ARM_OPEN = 0.07;
-    static final double RIGHT_ARM_OPEN = 0.93;
-    static final double RIGHT_ARM_MID = 0.57;
-    static final double LEFT_ARM_MID = 0.45;*/
-    static final double BLOCK_GRABBER_OPEN = 0.0;
-    static final double BLOCK_GRABBER_MID = 0.5;
-    static final double BLOCK_GRABBER_CLOSED = 1;
     public ColorSensor colorSensorREV;
     public int teamColorAndPosition = 0;
 

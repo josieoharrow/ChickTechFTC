@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.TeleOpLibrary;
  */
 
 @TeleOp(name = "Test driver")
-//@Disabled
+
 public class TestDriver extends OpMode {
 
     @Override
