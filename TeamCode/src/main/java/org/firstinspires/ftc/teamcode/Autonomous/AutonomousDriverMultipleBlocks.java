@@ -40,7 +40,7 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
 
                     telemetry.update();
                     vuforiaPosition = al.pictoDecipher(telemetry, this);
-                    al.closeArms(cl, this);
+                    al.closeArmsAndRotateLift(cl, this, 2);
                     telemetry.addLine("Endng close arms");
                     al.decipherJewelAndKnockOff(telemetry, this, cl);
                     al.robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
@@ -96,7 +96,7 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                         telemetry.update();
                     }
 
-                    al.openArms(cl, this);
+                    al.openArmsAndRotateLift(cl, this, 2);
                     al.driveAtAngle(10, 90, telemetry, this);//push block in more
                     al.driveAtAngle(3, 270, telemetry, this);
                     final AutonomousLibrary newAl;
@@ -125,7 +125,7 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                             al.driveByBlockColumns( this, true, 2);
                         }
                         al.driveAtAngle(10, 0, telemetry, this);
-                        al.openArms(cl, this);
+                        al.openArmsAndRotateLift(cl, this, -1.5f);
                         al.driveAtAngle(10, 90, telemetry, this);//push block in more
                         al.driveAtAngle(3, 270, telemetry, this);
                     } else if (al.teamColorAndPosition == 4) {
@@ -141,7 +141,7 @@ public class AutonomousDriverMultipleBlocks extends LinearOpMode {
                             al.driveByBlockColumns(this, true, 2);
                         }
                         al.driveAtAngle(10, 0, telemetry, this);
-                        al.openArms(cl, this);
+                        al.openArmsAndRotateLift(cl, this, -1.5f);
                         al.driveAtAngle(10, 90, telemetry, this);//push block in more
                         al.driveAtAngle(3, 270, telemetry, this);
                     }

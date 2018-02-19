@@ -27,7 +27,7 @@ public class TeleOpLibrary {
     CommonLibrary cl;
 
     static final double RELIC_GRABBER_CLOSED = .12;
-    static final double RELIC_GRABBER_OPEN = 0.32;
+    static final double RELIC_GRABBER_OPEN = 0.35;//was 0.32
     static final double RELIC_ROTATE_DOWN = 0.9;
     static final double RELIC_ROTATE_UP = 0.1;
 
@@ -369,16 +369,19 @@ public class TeleOpLibrary {
         if(gamepad2.dpad_down) {
             telemetry.addLine("Suck in");
             telemetry.update();
-            robot.leftRoller.setPower(1);
-            robot.rightRoller.setPower(-1);
+            //robot.leftRoller.setPower(1);
+            //robot.rightRoller.setPower(-1);
+            robot.grabberRollers.setPower(-1);
         } else if(gamepad2.dpad_up) {
             telemetry.addLine("Push out");
             telemetry.update();
-            robot.leftRoller.setPower(-1);
-            robot.rightRoller.setPower(1);
+            //robot.leftRoller.setPower(-1);
+            //robot.rightRoller.setPower(1);
+            robot.grabberRollers.setPower(1);
         } else {
-            robot.leftRoller.setPower(0);
-            robot.rightRoller.setPower(0);
+            //robot.leftRoller.setPower(0);
+            //robot.rightRoller.setPower(0);
+            robot.grabberRollers.setPower(0);
         }
     }
 }

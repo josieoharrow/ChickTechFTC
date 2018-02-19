@@ -9,15 +9,13 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 /**
  * Created by Robotics on 8/27/2017.
  */
-@Autonomous(name = "Autonomous NO MR Sensor")
+@Autonomous(name = "Autonomous Driver")
 //@Disabled
 
 public class AutonomousDriver extends LinearOpMode {
 
     boolean runLinearCode = true;
-    boolean setFirstBlockInFarLeftColumn = false;
     String vuforiaPosition = "unknown";
-
     static float JEWEL_ACTUATOR_UP = 0.2f;
 
     public void initLoop(LinearOpMode caller) {
@@ -30,7 +28,7 @@ public class AutonomousDriver extends LinearOpMode {
             if (caller.isStopRequested()){break;}
         }
     }
-
+    
     @Override
     public void runOpMode() {
 
@@ -51,22 +49,15 @@ public class AutonomousDriver extends LinearOpMode {
                     vuforiaPosition = al.pictoDecipher(telemetry, this);
                     al.halfCloseArms(cl, this);
                     al.lowerLift(this);
-                    al.closeArms(cl, this);
-                    al.moveLift(1, this);
-                    telemetry.addLine("Endng close arms");
+                    al.closeArmsAndRotateLift(cl, this, 2);
+                    al.setLiftToStay(this);
                     al.decipherJewelAndKnockOff(telemetry, this, cl);
-                    al.robot.jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
                     telemetry.addData("vuforia ", vuforiaPosition);
                     telemetry.update();
-                    cl.wait(400, this);
-
-                    if (vuforiaPosition == "left") {
-
-                        setFirstBlockInFarLeftColumn = true;
-                    }
+                    //cl.wait(400, this);
 
                     if (al.teamColorAndPosition == 1) {
-
+                        al.setLiftToStay(this);
                         //red team corner balance board
                         telemetry.addLine("I am on the red team and in the corner");
                         telemetry.update();
@@ -79,6 +70,7 @@ public class AutonomousDriver extends LinearOpMode {
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 2) {
 
+                        al.setLiftToStay(this);
                         //red ream center balance board
                         telemetry.addLine("I am on the red team and in the center");
                         telemetry.update();
@@ -93,6 +85,7 @@ public class AutonomousDriver extends LinearOpMode {
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 3) {
 
+                        al.setLiftToStay(this);
                         //blue team corner balance board
                         telemetry.addLine("I am on the blue team and in the corner");
                         telemetry.update();
@@ -103,15 +96,16 @@ public class AutonomousDriver extends LinearOpMode {
                         al.driveToVuforiaPositionFromTheLeft(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 4) {
 
+                        al.setLiftToStay(this);
                         //blue team center balance board
                         telemetry.addLine("I am on the blue team and in the center");
                         telemetry.update();
                         al.driveAtAngle(24, 90, telemetry, this);
-                        cl.wait(200, this);
+                        //cl.wait(200, this);
                         al.PIDturnRelativeToField(0, telemetry, this);//bump up when fixed
-                        cl.wait(200, this);
-                        al.driveAtAngle(2, 0, telemetry, this);
-                        cl.wait(300, this);
+                        //cl.wait(200, this);
+                        al.driveAtAngle(4, 0, telemetry, this);
+                        //cl.wait(300, this);
 
                         //cl.wait(200, this);
                         al.driveToVuforiaPositionFromTheLeft(telemetry, this, vuforiaPosition);
@@ -121,15 +115,11 @@ public class AutonomousDriver extends LinearOpMode {
                         telemetry.update();
                     }
 
-                    al.moveLift(-1.5f, this);
+                    al.setLiftToStay(this);
+                    al.driveAtAngle(6, 90, telemetry, this); //Approach CryptoBox
+                    al.lowerLiftAndSpinRollersOut(this); //Place Block
+                    al.driveAtAngle(2, 270, telemetry, this); //Park
 
-                    al.openArms(cl, this);
-                    al.driveAtAngle(12, 90, telemetry, this);//push block in more
-                    al.driveAtAngle(7, 270, telemetry, this);
-                    /*al.turnToAngleWithPID(90, telemetry, this);//Turn so arms won't hit block
-                    al.driveAtAngle(15, 0, telemetry, this);
-                    al.driveAtAngle(10, 180, telemetry, this);
-                   // al.driveAtAngle(10, 90, telemetry, this);
                    /* final AutonomousLibrary newAl;
                     newAl = al;
 

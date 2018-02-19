@@ -32,11 +32,15 @@ public class RobotHardware {
     public Servo relicRotateServo;
     public Servo leftGrabber;
     public Servo rightGrabber;
+    public Servo whiskerRotateServo;
     public ServoController sc;
-    public DcMotor leftRoller;
-    public DcMotor rightRoller;
+    //public DcMotor leftRoller;
+    //public DcMotor rightRoller;
+    public DcMotor grabberRollers;
     public DigitalChannel liftMotorTouchSensor;
     public DigitalChannel relicLiftTouchSensor;
+    public DigitalChannel whiskerTouchRight;
+    public DigitalChannel whiskerTouchLeft;
     public LynxI2cColorRangeSensor leftSensorDistance;
     public LynxI2cColorRangeSensor rightSensorDistance;
     public ModernRoboticsI2cRangeSensor mrRangeSensor;
@@ -46,6 +50,7 @@ public class RobotHardware {
     static float JEWEL_ACTUATOR_UP = 0.15f;
     static float RELIC_GRABBER_DOWN = .2f;
     static float RELIC_ROTATE_DOWN = 1f;
+
 
     /* local OpMode members. */
     HardwareMap hardwareMap;
@@ -66,12 +71,16 @@ public class RobotHardware {
         jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
         relicGrabberServo = hardwareMap.servo.get("relic grabber servo");
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
+        whiskerRotateServo = hardwareMap.servo.get("whisker rotate servo");
         leftGrabber = hardwareMap.servo.get("left grabber");
         rightGrabber = hardwareMap.servo.get("right grabber");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
         relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
-        leftRoller = hardwareMap.dcMotor.get("left roller");
-        rightRoller = hardwareMap.dcMotor.get("right roller");
+        whiskerTouchRight = hardwareMap.digitalChannel.get("right whisker touch");
+        whiskerTouchLeft = hardwareMap.digitalChannel.get("left whisker touch");
+        //leftRoller = hardwareMap.dcMotor.get("left roller");
+        //rightRoller = hardwareMap.dcMotor.get("right roller");
+        grabberRollers = hardwareMap.dcMotor.get("grabber rollers");
         //leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
         //rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");
@@ -80,6 +89,7 @@ public class RobotHardware {
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
         relicGrabberServo.setPosition(RELIC_GRABBER_DOWN);
         relicRotateServo.setPosition(RELIC_ROTATE_DOWN);
+        whiskerRotateServo.setPosition(CommonLibrary.WHISKER_SERVO_IN);
 
         liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
