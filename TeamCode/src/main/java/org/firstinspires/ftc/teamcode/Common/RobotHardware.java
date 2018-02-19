@@ -33,8 +33,9 @@ public class RobotHardware {
     public Servo leftGrabber;
     public Servo rightGrabber;
     public ServoController sc;
-    public DcMotor leftRoller;
-    public DcMotor rightRoller;
+    //public DcMotor leftRoller;
+    //public DcMotor rightRoller;
+    public DcMotor grabberRollers;
     public DigitalChannel liftMotorTouchSensor;
     public DigitalChannel relicLiftTouchSensor;
     public DigitalChannel whiskerTouchRight;
@@ -72,10 +73,11 @@ public class RobotHardware {
         rightGrabber = hardwareMap.servo.get("right grabber");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
         relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
-        whiskerTouchRight = hardwareMap.digitalChannel.get("right whisker touch");
-        whiskerTouchLeft = hardwareMap.digitalChannel.get("left whisker touch");
-        leftRoller = hardwareMap.dcMotor.get("left roller");
-        rightRoller = hardwareMap.dcMotor.get("right roller");
+        //whiskerTouchRight = hardwareMap.digitalChannel.get("right whisker touch");
+        //whiskerTouchLeft = hardwareMap.digitalChannel.get("left whisker touch");
+        //leftRoller = hardwareMap.dcMotor.get("left roller");
+        //rightRoller = hardwareMap.dcMotor.get("right roller");
+        grabberRollers = hardwareMap.dcMotor.get("grabber rollers");
         //leftSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "left ds");
         //rightSensorDistance = hardwareMap.get(LynxI2cColorRangeSensor.class, "right ds");
         mrRangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "mr range sensor");

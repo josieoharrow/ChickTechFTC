@@ -613,13 +613,15 @@ public class AutonomousLibrary {
         while (caller.opModeIsActive()) {
             telemetry.addLine("Suck in");
             telemetry.update();
-            robot.leftRoller.setPower(1);
-            robot.rightRoller.setPower(-1);
+            //robot.leftRoller.setPower(1);
+            //robot.rightRoller.setPower(-1);
+            robot.grabberRollers.setPower(1);   //This may need reversed
             if (System.nanoTime() > ((spinStart + (timeInSeconds * 1e9)))) {
                 telemetry.addLine("Stop");
                 telemetry.update();
-                robot.leftRoller.setPower(0);
-                robot.rightRoller.setPower(0);
+                //robot.leftRoller.setPower(0);
+                //robot.rightRoller.setPower(0);
+                robot.grabberRollers.setPower(0);
                 break;
             }
         }
@@ -641,13 +643,15 @@ public class AutonomousLibrary {
         while (caller.opModeIsActive()){
             caller.telemetry.addLine("Spit out");
             caller.telemetry.update();
-            robot.leftRoller.setPower(-1);
-            robot.rightRoller.setPower(1);
+            //robot.leftRoller.setPower(-1);
+            //robot.rightRoller.setPower(1);
+            //robot.grabberRollers.setPower(-1);      //This may need to be reversed
             if (System.nanoTime() > ((spinStart + (timeInSeconds * 1e9)))) {
                 caller.telemetry.addLine("Stop");
                 caller.telemetry.update();
-                robot.leftRoller.setPower(0);
-                robot.rightRoller.setPower(0);
+                //robot.leftRoller.setPower(0);
+                //robot.rightRoller.setPower(0);
+                robot.grabberRollers.setPower(0);
                 break;
             }
         }
@@ -784,20 +788,39 @@ public class AutonomousLibrary {
     }
 
     public void whiskerDrive(Telemetry telemetry, LinearOpMode caller){
+        float power;
+
+        resetMotorEncoders(caller);
         while (robot.whiskerTouchLeft.getState() == false || robot.whiskerTouchRight.getState() == false){
             //if calculations are right, the red positions will be from the left so it will hit the right button
             //the blue side will drive to the right and will hit the left button
 
+            power = 0.4f;
             if (teamColorAndPosition == 1 || teamColorAndPosition == 2){
                 //Red team drives left
-                driveAtAngle(10, 0, telemetry, caller);     //This angle has to be changed because this is probably not left
+                robot.frontLeftMotor.setPower(-power);
+                robot.frontRightMotor.setPower(power);
+                robot.rearRightMotor.setPower(-power);
+                robot.rearLeftMotor.setPower(power);
             } else if (teamColorAndPosition == 3 | teamColorAndPosition == 4){
                 //Blue team drives right
-                driveAtAngle(10, 90, telemetry, caller);    //This angle has to be changed because this is probably not right
+                robot.frontLeftMotor.setPower(power);
+                robot.frontRightMotor.setPower(-power);
+                robot.rearRightMotor.setPower(power);
+                robot.rearLeftMotor.setPower(-power);
             } else {
                  telemetry.addLine("I don't know who I am or where I am");
                  telemetry.update();
             }
+            if (robot.frontLeftMotor.getCurrentPosition() * ENCODER_TICKS_TO_INCHES > 20 || robot.rearLeftMotor.getCurrentPosition() * ENCODER_TICKS_TO_INCHES >20 ){
+                break;
+            }
+
         }
+        power = 0;
+        robot.frontLeftMotor.setPower(power);
+        robot.frontRightMotor.setPower(power);
+        robot.rearRightMotor.setPower(power);
+        robot.rearLeftMotor.setPower(power);
     }
 }
