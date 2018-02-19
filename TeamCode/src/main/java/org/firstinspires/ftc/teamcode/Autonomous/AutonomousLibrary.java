@@ -71,14 +71,18 @@ public class AutonomousLibrary {
 
     public void init(HardwareMap hardwareMapSent, Telemetry telemetry, Gamepad gamepad1, LinearOpMode caller) {
 
-        setTeamColorAndPosition(gamepad1, telemetry, caller);
-        telemetry.addLine("initializing");
-        telemetry.update();
-        hardwareMap = hardwareMapSent;
+        while (!caller.opModeIsActive()) {
+            setTeamColorAndPosition(gamepad1, telemetry, caller);
+            if (caller.isStopRequested()){break;}
+            telemetry.addLine("initializing");
+            telemetry.update();
+            hardwareMap = hardwareMapSent;
+            break;
+        }
         robot = new RobotHardware();
-        cl = new CommonLibrary();
         robot.init(hardwareMap);
         robot.initGyro();
+        cl = new CommonLibrary();
         cl.init(hardwareMapSent);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
@@ -132,8 +136,6 @@ public class AutonomousLibrary {
         int position = 0;
         String teamColorText = "";
         String positionText = "";
-        try {
-
             while (teamColorAndPosition == 0 && !caller.isStarted()) { //Added opModeI
 
                 if (teamColor + position == 0 || gamepad1.left_stick_button) {
@@ -192,12 +194,10 @@ public class AutonomousLibrary {
                     telemetry.addLine("4 = Blue Team, Center Balance Board");
                     telemetry.update();
                 }
+                if (caller.isStopRequested()){break;}
                 //if (telemetry == null) {break;}
             }
-        } catch (Exception e) {
 
-            telemetry.addData("Initialization interrupted. \nERROR: ", e);
-        }
         return teamColorAndPosition;
     }
 
@@ -706,27 +706,15 @@ public class AutonomousLibrary {
             double currentAngle = angles.firstAngle;
             currentError = targetAngle - currentAngle;
             telemetry.addData("Current angle", currentAngle);
-            if (currentError > 180) {
-                currentError = currentError - 360;
-            }
-            if (currentError <= -180) {
-                currentError = currentError + 360;
-            }
+            if (currentError > 180){currentError = currentError - 360;}
+            if (currentError <= -180){currentError = currentError + 360;}
             telemetry.addLine();
             telemetry.addData("Current error", currentError);
             power = currentError * 0.01;
-            if (power > 0.75) {
-                power = 0.75;
-            }
-            if (power < 0.17 && power > 0) {
-                power = 0.17;
-            }
-            if (power > -0.17 && power < 0) {
-                power = -0.17;
-            }
-            if (power < -0.75) {
-                power = -0.75;
-            }
+            if (power > 0.75){power = 0.75;}
+            if (power < 0.17 && power > 0){power = 0.17;}
+            if (power > -0.17 && power < 0){power = -0.17;}
+            if (power < -0.75){power = -0.75;}
             telemetry.addLine();
             telemetry.addData("Power", power);
             telemetry.update();
@@ -734,9 +722,7 @@ public class AutonomousLibrary {
             robot.frontRightMotor.setPower(power);
             robot.rearRightMotor.setPower(power);
             robot.rearLeftMotor.setPower(-power);
-            if (caller.isStopRequested()) {
-                break;
-            }
+            if (caller.isStopRequested()){break;}
         }
         robot.frontLeftMotor.setPower(0);
         robot.frontRightMotor.setPower(0);

@@ -20,13 +20,23 @@ public class AutonomousDriver extends LinearOpMode {
 
     static float JEWEL_ACTUATOR_UP = 0.2f;
 
+    public void initLoop(LinearOpMode caller) {
+
+        while (!caller.opModeIsActive()) {
+            AutonomousLibrary al = new AutonomousLibrary();
+            al.init(hardwareMap, telemetry, gamepad1, this);
+            CommonLibrary cl = new CommonLibrary();
+            cl.init(hardwareMap);
+            if (caller.isStopRequested()){break;}
+        }
+    }
+
     @Override
     public void runOpMode() {
 
         AutonomousLibrary al = new AutonomousLibrary();
-        al.init(hardwareMap, telemetry, gamepad1, this);
         CommonLibrary cl = new CommonLibrary();
-        cl.init(hardwareMap);
+        initLoop(this);
         telemetry.addLine("ready to start");
         telemetry.update();
         waitForStart();
