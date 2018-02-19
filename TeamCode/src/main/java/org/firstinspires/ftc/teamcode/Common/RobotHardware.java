@@ -71,13 +71,13 @@ public class RobotHardware {
         jewelActuatorServo = hardwareMap.servo.get("jewel actuator");
         relicGrabberServo = hardwareMap.servo.get("relic grabber servo");
         relicRotateServo = hardwareMap.servo.get("relic rotate servo");
-        whiskerRotateServo = hardwareMap.servo.get("whisker rotate servo");
+        //whiskerRotateServo = hardwareMap.servo.get("whisker rotate servo");
         leftGrabber = hardwareMap.servo.get("left grabber");
         rightGrabber = hardwareMap.servo.get("right grabber");
         liftMotorTouchSensor = hardwareMap.digitalChannel.get("lift motor touch sensor");
         relicLiftTouchSensor = hardwareMap.digitalChannel.get("relic lift touch sensor");
-        whiskerTouchRight = hardwareMap.digitalChannel.get("right whisker touch");
-        whiskerTouchLeft = hardwareMap.digitalChannel.get("left whisker touch");
+        //whiskerTouchRight = hardwareMap.digitalChannel.get("right whisker touch");
+        //whiskerTouchLeft = hardwareMap.digitalChannel.get("left whisker touch");
         //leftRoller = hardwareMap.dcMotor.get("left roller");
         //rightRoller = hardwareMap.dcMotor.get("right roller");
         grabberRollers = hardwareMap.dcMotor.get("grabber rollers");
@@ -89,7 +89,7 @@ public class RobotHardware {
         jewelActuatorServo.setPosition(JEWEL_ACTUATOR_UP);
         relicGrabberServo.setPosition(RELIC_GRABBER_DOWN);
         relicRotateServo.setPosition(RELIC_ROTATE_DOWN);
-        whiskerRotateServo.setPosition(CommonLibrary.WHISKER_SERVO_IN);
+        // whiskerRotateServo.setPosition(CommonLibrary.WHISKER_SERVO_IN);
 
         liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
