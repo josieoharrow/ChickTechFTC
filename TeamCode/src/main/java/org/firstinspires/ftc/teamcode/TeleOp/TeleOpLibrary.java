@@ -369,16 +369,19 @@ public class TeleOpLibrary {
         if(gamepad2.dpad_down) {
             telemetry.addLine("Suck in");
             telemetry.update();
-            robot.leftRoller.setPower(1);
-            robot.rightRoller.setPower(-1);
+            //robot.leftRoller.setPower(1);
+            //robot.rightRoller.setPower(-1);
+            robot.grabberRollers.setPower(1);
         } else if(gamepad2.dpad_up) {
             telemetry.addLine("Push out");
             telemetry.update();
-            robot.leftRoller.setPower(-1);
-            robot.rightRoller.setPower(1);
+            //robot.leftRoller.setPower(-1);
+            //robot.rightRoller.setPower(1);
+            robot.grabberRollers.setPower(-1);
         } else {
-            robot.leftRoller.setPower(0);
-            robot.rightRoller.setPower(0);
+            //robot.leftRoller.setPower(0);
+            //robot.rightRoller.setPower(0);
+            robot.grabberRollers.setPower(0);
         }
     }
 }
