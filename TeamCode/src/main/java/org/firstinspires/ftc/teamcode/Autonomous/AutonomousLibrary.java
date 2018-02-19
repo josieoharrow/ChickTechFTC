@@ -645,7 +645,7 @@ public class AutonomousLibrary {
             caller.telemetry.update();
             //robot.leftRoller.setPower(-1);
             //robot.rightRoller.setPower(1);
-            robot.grabberRollers.setPower(1);      //This may need to be reversed
+            //robot.grabberRollers.setPower(-1);      //This may need to be reversed
             if (System.nanoTime() > ((spinStart + (timeInSeconds * 1e9)))) {
                 caller.telemetry.addLine("Stop");
                 caller.telemetry.update();
@@ -774,9 +774,8 @@ public class AutonomousLibrary {
     }
 
     public void whiskerDrive(Telemetry telemetry, LinearOpMode caller){
-
         float power;
-        robot.whiskerRotateServo.setPosition(CommonLibrary.WHISKER_SERVO_OUT);
+
         resetMotorEncoders(caller);
         while (robot.whiskerTouchLeft.getState() == false || robot.whiskerTouchRight.getState() == false){
             //if calculations are right, the red positions will be from the left so it will hit the right button
@@ -809,6 +808,5 @@ public class AutonomousLibrary {
         robot.frontRightMotor.setPower(power);
         robot.rearRightMotor.setPower(power);
         robot.rearLeftMotor.setPower(power);
-        robot.whiskerRotateServo.setPosition(CommonLibrary.WHISKER_SERVO_IN);
     }
 }
