@@ -22,6 +22,8 @@ public class CommonLibrary {
     static final double LEFT_GRABBER_OPEN = 0.02;
     static final double LEFT_GRABBER_MID = 0.225; //0.46
     static final double LEFT_GRABBER_CLOSED = 0.45; //0.41
+    public static float WHISKER_SERVO_IN = 1f;
+    public static float WHISKER_SERVO_OUT = 0.15f;
 
     public void init(HardwareMap hardwareMapSent) {
 

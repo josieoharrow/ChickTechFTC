@@ -46,7 +46,7 @@ public class AutonomousDriver extends LinearOpMode {
                     //cl.wait(400, this);
 
                     if (al.teamColorAndPosition == 1) {
-
+                        al.setLiftToStay(this);
                         //red team corner balance board
                         telemetry.addLine("I am on the red team and in the corner");
                         telemetry.update();
@@ -59,7 +59,7 @@ public class AutonomousDriver extends LinearOpMode {
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 2) {
 
-
+                        al.setLiftToStay(this);
                         //red ream center balance board
                         telemetry.addLine("I am on the red team and in the center");
                         telemetry.update();
@@ -74,6 +74,7 @@ public class AutonomousDriver extends LinearOpMode {
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 3) {
 
+                        al.setLiftToStay(this);
                         //blue team corner balance board
                         telemetry.addLine("I am on the blue team and in the corner");
                         telemetry.update();
@@ -84,6 +85,7 @@ public class AutonomousDriver extends LinearOpMode {
                         al.driveToVuforiaPositionFromTheLeft(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 4) {
 
+                        al.setLiftToStay(this);
                         //blue team center balance board
                         telemetry.addLine("I am on the blue team and in the center");
                         telemetry.update();
@@ -101,7 +103,9 @@ public class AutonomousDriver extends LinearOpMode {
                         telemetry.addLine("I don't know where I am or who I am. What's going on?!");
                         telemetry.update();
                     }
-                    al.driveAtAngle(4, 90, telemetry, this); //Approach CryptoBox
+
+                    al.setLiftToStay(this);
+                    al.driveAtAngle(6, 90, telemetry, this); //Approach CryptoBox
                     al.lowerLiftAndSpinRollersOut(this); //Place Block
                     al.driveAtAngle(2, 270, telemetry, this); //Park
 
