@@ -54,10 +54,10 @@ public class AutonomousDriverTest extends LinearOpMode {
                         al.driveAtAngle(23, 270, telemetry, this);
                         cl.wait(200, this);
                         al.PIDturnRelativeToField(90, telemetry, this);//bump up
-                        cl.wait(300, this);
-                        //al.driveAtAngle(3, 0, telemetry, this);
+                        al.whiskerDrive(telemetry, this);
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 2) {
+
 
                         //red ream center balance board
                         telemetry.addLine("I am on the red team and in the center");
@@ -68,8 +68,7 @@ public class AutonomousDriverTest extends LinearOpMode {
                         cl.wait(200, this);
                         al.PIDturnRelativeToField(180, telemetry, this);//bump up when fixed
                         cl.wait(300, this);
-
-                        al.driveAtAngle(1, 180, telemetry, this);
+                        al.whiskerDrive(telemetry, this);
                         al.driveToVuforiaPositionFromTheRight(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 3) {
 
@@ -80,6 +79,7 @@ public class AutonomousDriverTest extends LinearOpMode {
                         cl.wait(200, this);
                         al.PIDturnRelativeToField(90, telemetry, this);
                         cl.wait(300, this);
+                        al.whiskerDrive(telemetry, this);
                         al.driveToVuforiaPositionFromTheLeft(telemetry, this, vuforiaPosition);
                     } else if (al.teamColorAndPosition == 4) {
 
@@ -89,11 +89,7 @@ public class AutonomousDriverTest extends LinearOpMode {
                         al.driveAtAngle(24, 90, telemetry, this);
                         //cl.wait(200, this);
                         al.PIDturnRelativeToField(0, telemetry, this);//bump up when fixed
-                        //cl.wait(200, this);
-                        al.driveAtAngle(4, 0, telemetry, this);
-                        //cl.wait(300, this);
-
-                        //cl.wait(200, this);
+                        al.whiskerDrive(telemetry, this);
                         al.driveToVuforiaPositionFromTheLeft(telemetry, this, vuforiaPosition);
                     } else {
 
