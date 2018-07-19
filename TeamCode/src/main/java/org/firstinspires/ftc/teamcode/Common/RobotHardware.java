@@ -23,9 +23,9 @@ public class RobotHardware {
     public DcMotor leftMotor;
     public Servo servoOne;
     public Servo servoTwo;
-    public ModernRoboticsI2cRangeSensor mrRangeSensor;
-    public ColorSensor colorSensorREV;
-    public BNO055IMU imu;
+    public OpticalDistanceSensor odsSensor;
+    public ModernRoboticsI2cGyro gyro;
+    public TouchSensor touchSensor;
 
     /* local OpMode members. */
     HardwareMap hardwareMap;
@@ -41,6 +41,9 @@ public class RobotHardware {
         servoOne = hardwareMap.servo.get("servoOne");
         servoTwo = hardwareMap.servo.get("servoTwo");
 
+        odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
+        gyro = hardwareMap.modernRoboticsI2cGyro.get("gyro");
+        touchSensor = hardwareMap.touchSensor.get("touchSensor");
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
