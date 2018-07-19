@@ -14,27 +14,12 @@ import org.firstinspires.ftc.teamcode.Common.CommonLibrary;
 public class TeleOpDriver extends OpMode {
 
     TeleOpLibrary tol;
-    CommonLibrary cl;
-    OpMode op;
-    Boolean gyroInitializationRan = false;
-    public Boolean running = true;
-    public Boolean liftLowered = false;
 
     @Override
     public void init() {
         /* Initialize the hardware variables.
-         * The init() method of the hardware class does all the work here
         */
-
-        telemetry.addLine("Initializing. please wait.");
-        telemetry.update();
-        cl = new CommonLibrary();
-        telemetry.addLine("Initializing CommonLibrary. Please wait.");
-        telemetry.update();
-        cl.init(hardwareMap);
         tol = new TeleOpLibrary();
-        telemetry.addLine("Initializing TeleOpLibrary. Please wait.");
-        telemetry.update();
         tol.init(this);
         telemetry.addLine("Initializing complete.");
         telemetry.update();
@@ -61,68 +46,6 @@ public class TeleOpDriver extends OpMode {
     @Override
     public void loop() {
 
-        op = this;
-
-        if (!gyroInitializationRan) {
-
-            Thread t1 = new Thread(new Runnable() {
-                public void run() {
-                    tol.initGyro();
-                }
-            });
-            t1.start();
-            gyroInitializationRan = true;
-        }
-
-        /*if (!liftLowered) {
-
-            Thread t2 = new Thread(new Runnable() {
-                public void run() {
-                    tol.lowerLift();
-                }
-            });
-            t2.start();
-
-        } else {*/
-
-            tol.setLiftMotorPower(gamepad2);
-        //}
-
-        tol.setDrivingMotorPowers(gamepad1, telemetry);
-        tol.armServos(gamepad2, telemetry);
-        tol.resetLiftMotorEncoderBasedOnTouchSensorActivation(telemetry);
-        tol.generalTelemetry(this);
-        tol.manipulateRelicGrabber(gamepad1);
-        tol.setRelicLiftPower(gamepad1, this);
-        tol.rotateGrabber(gamepad1, telemetry);
-        tol.paintRollersSpin(gamepad2, telemetry);
-    }
-
-    public Boolean getRunning() {
-
-        return running;
-    }
-
-    public void setLiftLowered(Boolean liftLowered) {
-        this.liftLowered = liftLowered;
-    }
-
-    public Boolean getLiftLowered() {
-        return liftLowered;
-    }
-
-    /*
-            * Code to run ONCE after the driver hits STOP
-            */
-    @Override
-    public void stop() {
-
-        tol.endServoReset();
-        running = false;
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        tol.updateTelemetryWithText("Running TeleOp");
     }
 }
