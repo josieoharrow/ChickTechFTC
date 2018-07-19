@@ -52,7 +52,7 @@ private class AutonomousLibrary {
 
         robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        while (!caller.isStopRequested() && robot.leftMotor.isBusy() || robot.rightMotor.isBusy()) {
+        while (!caller.isStopRequested() && (robot.leftMotor.isBusy() || robot.rightMotor.isBusy())) {
         }
     }
 
